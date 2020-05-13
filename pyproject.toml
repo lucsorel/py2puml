@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "py2puml"
+version = "0.1.0"
+description = "Generate Plantuml diagrams to document your python code "
+authors = ["Luc Sorel-Giffo"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[virtualenvs]
+create = true
+in-project = true
