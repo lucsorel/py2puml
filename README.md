@@ -86,6 +86,10 @@ py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlattribute.UmlAttribute
 @enduml
 ```
 
+Which renders like this:
+
+![](https://www.plantuml.com/plantuml/png/ZP0_2y8m4CNtV8gRXNPmx5HnTNKIaMWY199Bp5s68ltkfi7KWlXd-xrty7uXFR6Cd9mL5ok980pha5Ehl9C6suoIEPfpOjtkdTtK07S1WDBf3eXZPXx2ayUFKwMVPhOJl4rSRmehprRgO6U83qlvyPl3k-39iF5OJAzOVEMSK9rcMIrH8o_QKVny_wff_lulqMjK-Ve0)
+
 # Tests
 
 ```sh
