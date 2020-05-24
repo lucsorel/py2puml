@@ -1,3 +1,14 @@
+<div align="center">
+  <a href="https://www.python.org/psf-landing/" target="_blank">
+    <img width="350px" alt="Python logo"
+      src="https://www.python.org/static/community_logos/python-logo-generic.svg" />
+  </a>
+  <a href="http://plantuml.com/" target="_blank">
+    <img width="116px" height="112px" alt="PlantUML logo" src="http://s.plantuml.com/logoc.png" style="margin-bottom: 40px" vspace="40px" />
+  </a>
+  <h1>Python to PlantUML</h1>
+</div>
+
 Generate Plantuml diagrams to document your python code
 
 # How it works
@@ -32,20 +43,19 @@ Install from the github repository:
 * with `pip`:
 
 ```sh
-pip3 install git+https://github.com/lucsorel/py2puml.git
+pip install py2puml
 ```
 
 * with [poetry](https://pipenv.readthedocs.io/en/latest/):
 
 ```sh
-poetry add git+https://github.com/lucsorel/py2puml.git
+poetry add py2puml
 ```
 
 * with [pipenv](https://pipenv.readthedocs.io/en/latest/):
 
 ```sh
-# should be installed in editable mode to ensure an up-to-date copy of the repository and that it includes all known dependencies -> '-e'
-pipenv install -e git+https://github.com/lucsorel/py2puml.git#egg=py2puml
+pipenv install py2puml
 ```
 
 # Usage
@@ -109,7 +119,7 @@ Pull-requests are welcome and will be processed on a best-effort basis.
 
 # Alternatives
 
-If `py2uml` does not meet your needs (suggestions and pull-requests are welcome), you can have a look at these projects which follow other approaches (AST, linting, modeling):
+If `py2puml` does not meet your needs (suggestions and pull-requests are welcome), you can have a look at these projects which follow other approaches (AST, linting, modeling):
 
 * [cb109/pyplantuml](https://github.com/cb109/pyplantuml)
 * [deadbok/py-puml-tools](https://github.com/deadbok/py-puml-tools)
