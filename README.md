@@ -79,20 +79,36 @@ with open('py2puml/domain.puml', 'w') as puml_file:
 
 ```plantuml
 @startuml
-class py2puml.domain.umlattribute.UmlAttribute {
+class py2puml.domain.umlclass.UmlAttribute {
   name: str
   type: str
 }
 class py2puml.domain.umlclass.UmlClass {
-  name: str
-  fqdn: str
   attributes: List[UmlAttribute]
 }
-class py2puml.domain.umlcomposition.UmlComposition {
-  compound_fqdn: str
-  component_fqdn: str
+class py2puml.domain.umlitem.UmlItem {
+  name: str
+  fqdn: str
 }
-py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlattribute.UmlAttribute
+class py2puml.domain.umlenum.Member {
+  name: str
+  value: str
+}
+class py2puml.domain.umlenum.UmlEnum {
+  members: List[Member]
+}
+enum py2puml.domain.umlrelation.RelType {
+  COMPOSITION: *
+  INHERITANCE: <|
+}
+class py2puml.domain.umlrelation.UmlRelation {
+  source_fqdn: str
+  target_fqdn: str
+  type: RelType
+}
+py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
+py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
+py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
