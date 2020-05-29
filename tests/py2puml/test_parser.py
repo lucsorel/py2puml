@@ -4,11 +4,12 @@ from py2puml.parser import parse_type, parse_enum_type
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
 from py2puml.domain.umlenum import UmlEnum, Member
-from py2puml.domain.umlrelation import UmlRelation
+from py2puml.domain.umlrelation import UmlRelation, RelType
 
 from tests.modules.withbasictypes import Contact
 from tests.modules.withcomposition import Worker
 from tests.modules.withenum import TimeUnit
+from tests.modules.withinheritancewithinmodule import GlowingFish
 
 def assert_attribute(attribute: UmlAttribute, expected_name: str, expected_type: str):
     assert attribute.name == expected_name
@@ -72,3 +73,25 @@ def test_parse_enum_type():
     assert_member(members[2], 'MINUTE', 'm')
 
     assert len(domain_relations) == 0, 'parsing enum adds no relation'
+
+def test_parse_inheritance_within_module():
+    domain_items_by_fqdn: Dict[str, UmlItem] = {}
+    domain_relations: List[UmlRelation] = []
+    parse_type(GlowingFish, 'tests.modules.withinheritancewithinmodule', domain_items_by_fqdn, domain_relations)
+
+    umlitems_by_fqdn = list(domain_items_by_fqdn.values())
+    assert len(umlitems_by_fqdn) == 1, 'the class with multiple inheritance has been parsed'
+    child_class: UmlClass = umlitems_by_fqdn[0]
+    assert child_class.name == 'GlowingFish'
+    assert child_class.fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish'
+
+    assert len(domain_relations) == 2, '2 inheritance relations must have been parsed'
+    inheritance: UmlRelation = domain_relations[0]
+    assert inheritance.type == RelType.INHERITANCE
+    assert inheritance.source_fqdn == 'tests.modules.withinheritancewithinmodule.Fish', 'parent class'
+    assert inheritance.target_fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish', 'child class'
+
+    inheritance: UmlRelation = domain_relations[1]
+    assert inheritance.type == RelType.INHERITANCE
+    assert inheritance.source_fqdn == 'tests.modules.withinheritancewithinmodule.Light', 'parent class'
+    assert inheritance.target_fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish', 'child class'

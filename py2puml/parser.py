@@ -1,4 +1,4 @@
-from typing import Iterable, Type, List, Dict, ForwardRef
+from typing import Iterable, Type, List, Dict
 from types import ModuleType
 from enum import Enum
 from inspect import getmembers
@@ -45,6 +45,19 @@ def parse_enum_type(
         members=enum_members
     )
     domain_items_by_fqdn[enum_type_fqdn] = enum_class
+
+def handle_inheritance_relation(
+    class_type: Type,
+    class_fqdn: str,
+    root_module_name: str,
+    domain_relations: List[UmlRelation]
+):
+    for base_type in getattr(class_type, '__bases__', ()):
+        base_type_fqdn = f'{base_type.__module__}.{base_type.__name__}'
+        if base_type_fqdn.startswith(root_module_name):
+            domain_relations.append(
+                UmlRelation(base_type_fqdn, class_fqdn, RelType.INHERITANCE)
+            )
 
 def parse_class_type(
     class_type: Type,
@@ -95,6 +108,9 @@ def parse_class_type(
                     attr_type = attr_raw_type
             uml_attr = UmlAttribute(attr_name, attr_type)
             definition_attrs.append(uml_attr)
+
+    handle_inheritance_relation(class_type, class_type_fqdn, root_module_name, domain_relations)
+
 
 def parse_type(
     definition_type: Type,

@@ -107,20 +107,27 @@ class py2puml.domain.umlrelation.UmlRelation {
   type: RelType
 }
 py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
+py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlclass.UmlClass
 py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
+py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlenum.UmlEnum
 py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
 Which renders like this:
 
-![](https://www.plantuml.com/plantuml/png/ZP0_2y8m4CNtV8gRXNPmx5HnTNKIaMWY199Bp5s68ltkfi7KWlXd-xrty7uXFR6Cd9mL5ok980pha5Ehl9C6suoIEPfpOjtkdTtK07S1WDBf3eXZPXx2ayUFKwMVPhOJl4rSRmehprRgO6U83qlvyPl3k-39iF5OJAzOVEMSK9rcMIrH8o_QKVny_wff_lulqMjK-Ve0)
+![](https://www.plantuml.com/plantuml/png/ZP91IyGm48Nl-HKvBsmF7iiUTbaA1jnMQZs9I7OxIY19Qp8H5jV_xZIse5GsFULrQBvvCozRZz9XC9gTjFIUz-URdhwojZDIsOnah6UFHkyGdJe61Fx9EBVIGCuzEj9uxaVzbSRi1n4HSWBwdDyfZq-_cpnVOIa4Cw04dJCph--jJPa16qns07C4Dxl_8NM0HG1oKD0P2IR2fa5-qCC8mu__t7UW9QhEPZNeXhON6VlgS5yzY4PKPSvNL13bRL6BPbVkYvnlBdC_SnvvgaSTcRuBxWGlSIbJMjAz0SRItm17BzGc6TzglLxqL5WYlCs5GAbkBB5_CdCzuoKk4Y6pPJkFNj9niotObkhi6m00)
 
 # Tests
 
 ```sh
-poetry run python3 -W ignore::DeprecationWarning -m pytest -v
+python3 -m pytest -v
 ```
+
+# Changelog
+
+* `0.2.0`: handle inheritance relationships and enums. Unit tested
+* `0.1.3`: first release, handle all module of a folder and compositions of domain classes
 
 # Licence
 
