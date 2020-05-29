@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from py2puml.domain.umlitem import UmlItem
 
 @dataclass
-class UmlAttribute(object):
+class Member(object):
     name: str
-    type: str
+    value: str
 
 @dataclass
-class UmlClass(UmlItem):
-    attributes: List[UmlAttribute]
+class UmlEnum(UmlItem):
+    members: List[Member]

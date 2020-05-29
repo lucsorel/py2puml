@@ -1,3 +1,14 @@
+<div align="center">
+  <a href="https://www.python.org/psf-landing/" target="_blank">
+    <img width="350px" alt="Python logo"
+      src="https://www.python.org/static/community_logos/python-logo-generic.svg" />
+  </a>
+  <a href="http://plantuml.com/" target="_blank">
+    <img width="116px" height="112px" alt="PlantUML logo" src="http://s.plantuml.com/logoc.png" style="margin-bottom: 40px" vspace="40px" />
+  </a>
+  <h1>Python to PlantUML</h1>
+</div>
+
 Generate Plantuml diagrams to document your python code
 
 # How it works
@@ -32,20 +43,19 @@ Install from the github repository:
 * with `pip`:
 
 ```sh
-pip3 install git+https://github.com/lucsorel/py2puml.git
+pip install py2puml
 ```
 
 * with [poetry](https://pipenv.readthedocs.io/en/latest/):
 
 ```sh
-poetry add git+https://github.com/lucsorel/py2puml.git
+poetry add py2puml
 ```
 
 * with [pipenv](https://pipenv.readthedocs.io/en/latest/):
 
 ```sh
-# should be installed in editable mode to ensure an up-to-date copy of the repository and that it includes all known dependencies -> '-e'
-pipenv install -e git+https://github.com/lucsorel/py2puml.git#egg=py2puml
+pipenv install py2puml
 ```
 
 # Usage
@@ -69,32 +79,55 @@ with open('py2puml/domain.puml', 'w') as puml_file:
 
 ```plantuml
 @startuml
-class py2puml.domain.umlattribute.UmlAttribute {
+class py2puml.domain.umlclass.UmlAttribute {
   name: str
   type: str
 }
 class py2puml.domain.umlclass.UmlClass {
-  name: str
-  fqdn: str
   attributes: List[UmlAttribute]
 }
-class py2puml.domain.umlcomposition.UmlComposition {
-  compound_fqdn: str
-  component_fqdn: str
+class py2puml.domain.umlitem.UmlItem {
+  name: str
+  fqdn: str
 }
-py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlattribute.UmlAttribute
+class py2puml.domain.umlenum.Member {
+  name: str
+  value: str
+}
+class py2puml.domain.umlenum.UmlEnum {
+  members: List[Member]
+}
+enum py2puml.domain.umlrelation.RelType {
+  COMPOSITION: *
+  INHERITANCE: <|
+}
+class py2puml.domain.umlrelation.UmlRelation {
+  source_fqdn: str
+  target_fqdn: str
+  type: RelType
+}
+py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
+py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlclass.UmlClass
+py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
+py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlenum.UmlEnum
+py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
 Which renders like this:
 
-![](https://www.plantuml.com/plantuml/png/ZP0_2y8m4CNtV8gRXNPmx5HnTNKIaMWY199Bp5s68ltkfi7KWlXd-xrty7uXFR6Cd9mL5ok980pha5Ehl9C6suoIEPfpOjtkdTtK07S1WDBf3eXZPXx2ayUFKwMVPhOJl4rSRmehprRgO6U83qlvyPl3k-39iF5OJAzOVEMSK9rcMIrH8o_QKVny_wff_lulqMjK-Ve0)
+![](https://www.plantuml.com/plantuml/png/ZP91IyGm48Nl-HKvBsmF7iiUTbaA1jnMQZs9I7OxIY19Qp8H5jV_xZIse5GsFULrQBvvCozRZz9XC9gTjFIUz-URdhwojZDIsOnah6UFHkyGdJe61Fx9EBVIGCuzEj9uxaVzbSRi1n4HSWBwdDyfZq-_cpnVOIa4Cw04dJCph--jJPa16qns07C4Dxl_8NM0HG1oKD0P2IR2fa5-qCC8mu__t7UW9QhEPZNeXhON6VlgS5yzY4PKPSvNL13bRL6BPbVkYvnlBdC_SnvvgaSTcRuBxWGlSIbJMjAz0SRItm17BzGc6TzglLxqL5WYlCs5GAbkBB5_CdCzuoKk4Y6pPJkFNj9niotObkhi6m00)
 
 # Tests
 
 ```sh
-poetry run python3 -W ignore::DeprecationWarning -m pytest -v
+python3 -m pytest -v
 ```
+
+# Changelog
+
+* `0.2.0`: handle inheritance relationships and enums. Unit tested
+* `0.1.3`: first release, handle all module of a folder and compositions of domain classes
 
 # Licence
 
@@ -109,7 +142,7 @@ Pull-requests are welcome and will be processed on a best-effort basis.
 
 # Alternatives
 
-If `py2uml` does not meet your needs (suggestions and pull-requests are welcome), you can have a look at these projects which follow other approaches (AST, linting, modeling):
+If `py2puml` does not meet your needs (suggestions and pull-requests are welcome), you can have a look at these projects which follow other approaches (AST, linting, modeling):
 
 * [cb109/pyplantuml](https://github.com/cb109/pyplantuml)
 * [deadbok/py-puml-tools](https://github.com/deadbok/py-puml-tools)

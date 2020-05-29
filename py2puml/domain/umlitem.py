@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
 @dataclass
-class UmlAttribute(object):
+class UmlItem(object):
     name: str
-    type: str
+    fqdn: str
