@@ -10,6 +10,7 @@ from tests.modules.withbasictypes import Contact
 from tests.modules.withcomposition import Worker
 from tests.modules.withenum import TimeUnit
 from tests.modules.withinheritancewithinmodule import GlowingFish
+from tests.modules.withnamedtuple import Circle
 
 def assert_attribute(attribute: UmlAttribute, expected_name: str, expected_type: str):
     assert attribute.name == expected_name
@@ -95,3 +96,23 @@ def test_parse_inheritance_within_module():
     assert inheritance.type == RelType.INHERITANCE
     assert inheritance.source_fqdn == 'tests.modules.withinheritancewithinmodule.Light', 'parent class'
     assert inheritance.target_fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish', 'child class'
+
+def test_parse_namedtupled_class():
+    domain_items_by_fqdn: Dict[str, UmlItem] = {}
+    domain_relations: List[UmlRelation] = []
+    parse_type(Circle, 'tests.modules.withnamedtuple', domain_items_by_fqdn, domain_relations)
+
+    umlitems_by_fqdn = list(domain_items_by_fqdn.items())
+    assert len(umlitems_by_fqdn) == 1, 'one namedtupled class has been parsed'
+    namedtupled_class: UmlClass
+    fqdn, namedtupled_class = umlitems_by_fqdn[0]
+    assert fqdn == 'tests.modules.withnamedtuple.Circle'
+    assert namedtupled_class.fqdn == fqdn
+    assert namedtupled_class.name == 'Circle'
+    attributes = namedtupled_class.attributes
+    assert len(attributes) == 3, 'namedtupled class has 3 attributes'
+    assert_attribute(attributes[0], 'x', 'any')
+    assert_attribute(attributes[1], 'y', 'any')
+    assert_attribute(attributes[2], 'radius', 'any')
+
+    assert len(domain_relations) == 0, 'parsing enum adds no relation'

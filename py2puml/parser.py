@@ -34,17 +34,29 @@ def parse_enum_type(
     enum_type_fqdn: str,
     domain_items_by_fqdn: Dict[str, UmlItem]
 ):
-    enum_members = [
-        Member(name=enum_member.name, value=enum_member.value)
-        for enum_member in enum_type.__members__.values()
-    ]
-
-    enum_class = UmlEnum(
+    domain_items_by_fqdn[enum_type_fqdn] = UmlEnum(
         name=enum_type.__name__,
         fqdn=enum_type_fqdn,
-        members=enum_members
+        members=[
+            Member(name=enum_member.name, value=enum_member.value)
+            for enum_member in enum_type.__members__.values()
+        ]
     )
-    domain_items_by_fqdn[enum_type_fqdn] = enum_class
+
+def parse_namedtupled_class(
+    namedtupled_type: Type,
+    namedtupled_type_fqdn: str,
+    domain_items_by_fqdn: Dict[str, UmlItem]
+):
+    domain_items_by_fqdn[namedtupled_type_fqdn] = UmlClass(
+        name=namedtupled_type.__name__,
+        fqdn=namedtupled_type_fqdn,
+        attributes=[
+            UmlAttribute(tuple_field, 'any')
+            for tuple_field in namedtupled_type._fields
+        ]
+    )
+
 
 def handle_inheritance_relation(
     class_type: Type,
@@ -122,6 +134,8 @@ def parse_type(
     if definition_type_fqdn not in domain_items_by_fqdn:
         if issubclass(definition_type, Enum):
             parse_enum_type(definition_type, definition_type_fqdn, domain_items_by_fqdn)
+        elif getattr(definition_type, '_fields', None) is not None:
+            parse_namedtupled_class(definition_type, definition_type_fqdn, domain_items_by_fqdn)
         else:
             parse_class_type(definition_type, definition_type_fqdn, root_module_name, domain_items_by_fqdn, domain_relations)
 

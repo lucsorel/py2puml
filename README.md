@@ -13,20 +13,22 @@ Generate Plantuml diagrams to document your python code
 
 # How it works
 
+## Features
+
 From a given path corresponding to a folder containing python code, `py2puml` loads each file as a module and generate a class diagram with the [PlantUML](https://plantuml.com/en/class-diagram) using:
 
 * inspection to detect the classes to document (see the [inspect](https://docs.python.org/3/library/inspect.html) module)
 * annotations (the python type hinting syntax) to detect the attributes and their types (see the [typing](https://docs.python.org/3/library/typing.html) module)
+* fields for classes derived from namedtuples
+* composition and inheritance relationships are drawn only between the domain classes (this is designed on purpose, for documentation sake)
 
-Current limitations:
+## Current limitations
 
-* type hinting is optional when writing the code and discarded when it is executed, as mentionned in the official documentation. The quality of the diagram output by `py2puml` depends on the reliability with which the annotations were written
+* type hinting is optional when writing Python code and discarded when it is executed, as mentionned in the [typing official documentation](https://docs.python.org/3/library/typing.html). The quality of the diagram output by `py2puml` depends on the reliability with which the type annotations were written
 
 > The Python runtime does not enforce function and variable type annotations. They can be used by third party tools such as type checkers, IDEs, linters, etc.
 
 * complex type hints with more than one level of genericity are not properly handled for the moment: `List[MyClass]` or `Dict[str, MyClass]` are handled properly, `Dict[str, List[MyClass]]` is not. If your domain classes (also called business objects or DTOs) have attributes with complex type hints, it may be a code smell indicating that you should write a class which would better represent the business logic. But I may improve this part of the library as well 😀
-
-* composition relationships are detected and drawn. Inheritance relationships are not handled for now
 
 * `py2puml` does not inspect sub-folders recursively, but it is planned
 
@@ -34,7 +36,7 @@ Current limitations:
 
 * `py2puml` uses features of python 3 (generators for example) and thus won't work with python 2 runtimes. It relies on native python modules and uses no 3rd-party library, except [pytest](https://docs.pytest.org/en/latest/) as a development dependency for running the unit-tests
 
-You may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project: A webpack loader which converts PlantUML files into images during the webpack processing (useful to [include PlantUML diagrams in your slides](https://github.com/lucsorel/markdown-image-loader/blob/master/README.md#web-based-slideshows) with RevealJS or RemarkJS).
+If you like tools around PlantUML, you may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project: A webpack loader which converts PlantUML files into images during the webpack processing (useful to [include PlantUML diagrams in your slides](https://github.com/lucsorel/markdown-image-loader/blob/master/README.md#web-based-slideshows) with RevealJS or RemarkJS).
 
 # Install
 
@@ -126,6 +128,7 @@ python3 -m pytest -v
 
 # Changelog
 
+* `0.3.0`: handle classes derived from namedtuples (attribute types are `any`)
 * `0.2.0`: handle inheritance relationships and enums. Unit tested
 * `0.1.3`: first release, handle all module of a folder and compositions of domain classes
 
@@ -142,7 +145,7 @@ Pull-requests are welcome and will be processed on a best-effort basis.
 
 # Alternatives
 
-If `py2puml` does not meet your needs (suggestions and pull-requests are welcome), you can have a look at these projects which follow other approaches (AST, linting, modeling):
+If `py2puml` does not meet your needs (suggestions and pull-requests are **welcome**), you can have a look at these projects which follow other approaches (AST, linting, modeling):
 
 * [cb109/pyplantuml](https://github.com/cb109/pyplantuml)
 * [deadbok/py-puml-tools](https://github.com/deadbok/py-puml-tools)
