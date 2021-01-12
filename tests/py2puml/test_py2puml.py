@@ -7,8 +7,6 @@ def test_version():
 
 def test_py2puml():
     """test py2puml on py2puml/domain."""
-    out = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
-
     expected = """@startuml
 class py2puml.domain.umlclass.UmlAttribute {
   name: str
@@ -49,4 +47,6 @@ py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlenum.UmlEnum
 py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 """
-    assert ''.join(out) == expected
+    puml_content = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
+
+    assert ''.join(puml_content) == expected
