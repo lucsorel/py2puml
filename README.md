@@ -138,6 +138,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 # Contributions
 
 * [Luc Sorel-Giffo](https://github.com/lucsorel)
+* [Doyou Jung](https://github.com/doyou89)
 
 Pull-requests are welcome and will be processed on a best-effort basis.
 
