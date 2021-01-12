@@ -132,15 +132,12 @@ def parse_type(
 ):
     definition_type_fqdn = f'{definition_type.__module__}.{definition_type.__name__}'
     if definition_type_fqdn not in domain_items_by_fqdn:
-        try:
-            if issubclass(definition_type, Enum):
-                parse_enum_type(definition_type, definition_type_fqdn, domain_items_by_fqdn)
-            elif getattr(definition_type, '_fields', None) is not None:
-                parse_namedtupled_class(definition_type, definition_type_fqdn, domain_items_by_fqdn)
-            else:
-                parse_class_type(definition_type, definition_type_fqdn, root_module_name, domain_items_by_fqdn, domain_relations)
-        except TypeError:
-            pass
+        if issubclass(definition_type, Enum):
+            parse_enum_type(definition_type, definition_type_fqdn, domain_items_by_fqdn)
+        elif getattr(definition_type, '_fields', None) is not None:
+            parse_namedtupled_class(definition_type, definition_type_fqdn, domain_items_by_fqdn)
+        else:
+            parse_class_type(definition_type, definition_type_fqdn, root_module_name, domain_items_by_fqdn, domain_relations)
 
 
 def parse_item_module(
