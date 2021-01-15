@@ -8,7 +8,6 @@ from py2puml.domain.umlrelation import UmlRelation, RelType
 
 from tests.modules.withbasictypes import Contact
 from tests.modules.withcomposition import Worker
-from tests.modules.withsubdomain import Car
 from tests.modules.withenum import TimeUnit
 from tests.modules.withinheritancewithinmodule import GlowingFish
 from tests.modules.withnamedtuple import Circle
@@ -55,27 +54,6 @@ def test_parse_type_single_class_with_composition():
     assert len(domain_relations) == 1, 'class has 1 domain component'
     assert domain_relations[0].source_fqdn == 'tests.modules.withcomposition.Worker'
     assert domain_relations[0].target_fqdn == 'tests.modules.withcomposition.Address'
-
-def test_parse_type_single_class_with_subdomain():
-    domain_items_by_fqdn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
-    parse_type(Car, 'tests.modules.withsubdomain', domain_items_by_fqdn, domain_relations)
-
-    umlitems_by_fqdn = list(domain_items_by_fqdn.items())
-    print(umlitems_by_fqdn)
-    assert len(umlitems_by_fqdn) == 1, 'one class has been parsed'
-
-    umlclass: UmlClass
-    fqdn, umlclass = umlitems_by_fqdn[0]
-    assert fqdn == 'tests.modules.withsubdomain.Car'
-    assert umlclass.fqdn == fqdn
-    assert umlclass.name == 'Car'
-    attributes = umlclass.attributes
-    assert len(attributes) == 2, 'class has 2 attributes'
-    assert_attribute(attributes[0], 'name', 'str')
-    assert_attribute(attributes[1], 'engine', 'py2puml.domain.subdomain.subdomain.UmlSubDomainClass')
-
-    assert len(domain_relations) == 0, 'class has no component'
 
 def test_parse_enum_type():
     domain_items_by_fqdn: Dict[str, UmlItem] = {}
