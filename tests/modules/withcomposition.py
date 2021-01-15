@@ -1,4 +1,4 @@
-from typing import List, ForwardRef
+from typing import List
 
 class Address(object):
     street: str
