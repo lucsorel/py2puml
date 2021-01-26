@@ -121,6 +121,10 @@ Which renders like this:
 # Tests
 
 ```sh
+# directly with poetry
+poetry run python -m pytest -v
+
+# in a virtual environment
 python3 -m pytest -v
 ```
 
