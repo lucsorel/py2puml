@@ -45,40 +45,39 @@ py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
     puml_content = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
     assert ''.join(puml_content) == expected
 
-def test_py2puml_with_subdomain_not_recursive():
+# def test_py2puml_with_subdomain_not_recursive():
+#     expected = """@startuml
+# class tests.modules.withsubdomain.withsubdomain.Car {
+#   name: str
+#   engine: Engine
+# }
+# class tests.modules.withsubdomain.subdomain.insubdomain.Engine {
+#   horsepower: int
+# }
+# tests.modules.withsubdomain.withsubdomain.Car *-- tests.modules.withsubdomain.subdomain.insubdomain.Engine
+# @enduml
+# """
+#     puml_content = py2puml.py2puml(
+#       'tests/modules/withsubdomain/', 'tests.modules.withsubdomain'
+#     )
+#     assert ''.join(puml_content) == expected
+
+def test_py2puml_with_subdomain():
     expected = """@startuml
+class tests.modules.withsubdomain.subdomain.insubdomain.Engine {
+  horsepower: int
+}
+class tests.modules.withsubdomain.subdomain.insubdomain.Pilot {
+  name: str
+}
 class tests.modules.withsubdomain.withsubdomain.Car {
   name: str
   engine: Engine
-}
-class tests.modules.withsubdomain.subdomain.insubdomain.Engine {
-  horsepower: int
 }
 tests.modules.withsubdomain.withsubdomain.Car *-- tests.modules.withsubdomain.subdomain.insubdomain.Engine
 @enduml
 """
     puml_content = py2puml.py2puml(
       'tests/modules/withsubdomain/', 'tests.modules.withsubdomain'
-    )
-    assert ''.join(puml_content) == expected
-
-def test_py2puml_with_subdomain_recursive():
-    expected = """@startuml
-class tests.modules.withsubdomain.withsubdomain.Car {
-  name: str
-  engine: Engine
-}
-class tests.modules.withsubdomain.subdomain.insubdomain.Engine {
-  horsepower: int
-}
-class tests.modules.withsubdomain.subdomain.insubdomain.Pilot {
-  name: int
-}
-tests.modules.withsubdomain.withsubdomain.Car *-- tests.modules.withsubdomain.subdomain.insubdomain.Engine
-@enduml
-"""
-    puml_content = py2puml.py2puml(
-      'tests/modules/withsubdomain/', 'tests.modules.withsubdomain',
-      recursive=True
     )
     assert ''.join(puml_content) == expected
