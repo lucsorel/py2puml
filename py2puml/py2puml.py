@@ -9,11 +9,10 @@ from py2puml.parser import parse_item_module
 from py2puml.exportpuml import to_puml_content
 
 
-def py2puml(domain_path: str, domain_module: str, recursive: bool=False) -> Iterable[str]:
+def py2puml(domain_path: str, domain_module: str) -> Iterable[str]:
     domain_items_by_fqdn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
-    # TODO implement recursive sub-package exploration if recursive==True
-    for _, name, is_pkg in walk_packages([domain_path], domain_module + '.'):
+    for _, name, is_pkg in walk_packages([domain_path], f'{domain_module}.'):
         if not is_pkg:
             domain_item_module: ModuleType = import_module(name)
             parse_item_module(

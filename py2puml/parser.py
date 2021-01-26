@@ -1,7 +1,7 @@
 from typing import Iterable, Type, List, Dict
 from types import ModuleType
 from enum import Enum
-from inspect import getmembers
+from inspect import getmembers, isclass
 from re import compile
 
 from py2puml.domain.umlitem import UmlItem
@@ -11,17 +11,18 @@ from py2puml.domain.umlrelation import UmlRelation, RelType
 from py2puml.utils import inspect_type
 
 CONCRETE_TYPE_PATTERN = compile("^<(?:class|enum) '([\\.|\\w]+)'>$")
-
 def filter_domain_definitions(module: ModuleType, root_module_name: str) -> Iterable[Type]:
     for definition_key in dir(module):
         definition_type = getattr(module, definition_key)
-        definition_members = getmembers(definition_type)
-        definition_module_member = next(
-            (member for member in definition_members if member[0] == '__module__' and member[1].startswith(root_module_name)),
-            None
-        )
-        if definition_module_member is not None:
-            yield definition_type
+        if isclass(definition_type):
+            definition_members = getmembers(definition_type)
+            definition_module_member = next((
+                member for member in definition_members
+                # ensures that the type belongs to the module being parsed
+                if member[0] == '__module__' and member[1].startswith(root_module_name)
+            ), None)
+            if definition_module_member is not None:
+                yield definition_type
 
 def get_type_name(type: Type, root_module_name: str):
     if type.__module__.startswith(root_module_name):
