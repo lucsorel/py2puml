@@ -30,8 +30,6 @@ From a given path corresponding to a folder containing python code, `py2puml` lo
 
 * complex type hints with more than one level of genericity are not properly handled for the moment: `List[MyClass]` or `Dict[str, MyClass]` are handled properly, `Dict[str, List[MyClass]]` is not. If your domain classes (also called business objects or DTOs) have attributes with complex type hints, it may be a code smell indicating that you should write a class which would better represent the business logic. But I may improve this part of the library as well 😀
 
-* `py2puml` does not inspect sub-folders recursively, but it is planned
-
 * `py2puml` outputs diagrams in PlantUML syntax, which can be saved in text files along your python code and versioned with them. To generate image files, use the PlantUML runtime or a docker image (see [think/plantuml](https://hub.docker.com/r/think/plantuml))
 
 * `py2puml` uses features of python 3 (generators for example) and thus won't work with python 2 runtimes. It relies on native python modules and uses no 3rd-party library, except [pytest](https://docs.pytest.org/en/latest/) as a development dependency for running the unit-tests
@@ -123,11 +121,16 @@ Which renders like this:
 # Tests
 
 ```sh
+# directly with poetry
+poetry run python -m pytest -v
+
+# in a virtual environment
 python3 -m pytest -v
 ```
 
 # Changelog
 
+* `0.3.1`: inspect sub-folders recursively
 * `0.3.0`: handle classes derived from namedtuples (attribute types are `any`)
 * `0.2.0`: handle inheritance relationships and enums. Unit tested
 * `0.1.3`: first release, handle all module of a folder and compositions of domain classes
@@ -139,6 +142,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 # Contributions
 
 * [Luc Sorel-Giffo](https://github.com/lucsorel)
+* [Doyou Jung](https://github.com/doyou89)
 
 Pull-requests are welcome and will be processed on a best-effort basis.
 
