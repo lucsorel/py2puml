@@ -9,6 +9,9 @@ authors = ["Luc Sorel-Giffo"]
 maintainers = ["Luc Sorel-Giffo"]
 license = "MIT"
 
+[tool.poetry.scripts]
+py2puml = 'py2puml.cli:run'
+
 [tool.poetry.dependencies]
 python = "^3.7"
 
