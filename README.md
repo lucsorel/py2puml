@@ -163,6 +163,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 
 * [Luc Sorel-Giffo](https://github.com/lucsorel)
 * [Doyou Jung](https://github.com/doyou89)
+* [Julien Jerphanion](https://github.com/jjerphan)
 
 Pull-requests are welcome and will be processed on a best-effort basis.
 
