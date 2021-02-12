@@ -60,22 +60,16 @@ pipenv install py2puml
 
 # Usage
 
-For example, to create the diagram of the classes used by `py2puml`:
+## CLI
 
-* import the py2puml function in your script (see [py2puml/example.py](py2puml/example.py)):
+Once `py2puml` is install, an eponymous command is available in your environment shell.
 
-```python
-from py2puml.py2puml import py2puml
-
-# outputs the PlantUML content in the terminal
-print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
-
-# writes the PlantUML content in a file
-with open('py2puml/domain.puml', 'w') as puml_file:
-    puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
+For example, to create the diagram of the classes used by `py2puml`, one can use:
+```sh
+py2puml py2puml/domain/ py2puml.domain
 ```
 
-* running it (`python3 -m py2puml.example`) will output the PlantUML diagram in the terminal and write it in a file
+This will output the following PlantUML script:
 
 ```plantuml
 @startuml
@@ -114,9 +108,34 @@ py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
-Which renders like this:
+Using PlantUML, this script renders this diagram:
 
-![](https://www.plantuml.com/plantuml/png/ZP91IyGm48Nl-HKvBsmF7iiUTbaA1jnMQZs9I7OxIY19Qp8H5jV_xZIse5GsFULrQBvvCozRZz9XC9gTjFIUz-URdhwojZDIsOnah6UFHkyGdJe61Fx9EBVIGCuzEj9uxaVzbSRi1n4HSWBwdDyfZq-_cpnVOIa4Cw04dJCph--jJPa16qns07C4Dxl_8NM0HG1oKD0P2IR2fa5-qCC8mu__t7UW9QhEPZNeXhON6VlgS5yzY4PKPSvNL13bRL6BPbVkYvnlBdC_SnvvgaSTcRuBxWGlSIbJMjAz0SRItm17BzGc6TzglLxqL5WYlCs5GAbkBB5_CdCzuoKk4Y6pPJkFNj9niotObkhi6m00)
+![py2puml UML Diagram](https://www.plantuml.com/plantuml/png/ZP91IyGm48Nl-HKvBsmF7iiUTbaA1jnMQZs9I7OxIY19Qp8H5jV_xZIse5GsFULrQBvvCozRZz9XC9gTjFIUz-URdhwojZDIsOnah6UFHkyGdJe61Fx9EBVIGCuzEj9uxaVzbSRi1n4HSWBwdDyfZq-_cpnVOIa4Cw04dJCph--jJPa16qns07C4Dxl_8NM0HG1oKD0P2IR2fa5-qCC8mu__t7UW9QhEPZNeXhON6VlgS5yzY4PKPSvNL13bRL6BPbVkYvnlBdC_SnvvgaSTcRuBxWGlSIbJMjAz0SRItm17BzGc6TzglLxqL5WYlCs5GAbkBB5_CdCzuoKk4Y6pPJkFNj9niotObkhi6m00)
+
+For a full overview of the CLI, run:
+
+```sh
+py2puml --help
+```
+
+## Python API
+
+For example, to create the diagram of the classes used by `py2puml`:
+
+* import the py2puml function in your script (see [py2puml/example.py](py2puml/example.py)):
+
+```python
+from py2puml.py2puml import py2puml
+
+# outputs the PlantUML content in the terminal
+print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
+
+# writes the PlantUML content in a file
+with open('py2puml/domain.puml', 'w') as puml_file:
+    puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
+```
+* running it (`python3 -m py2puml.example`) will output the previous PlantUML diagram in the terminal and write it in a file.
+
 
 # Tests
 
