@@ -149,6 +149,7 @@ python3 -m pytest -v
 
 # Changelog
 
+* `0.4.0`: add a simple CLI
 * `0.3.1`: inspect sub-folders recursively
 * `0.3.0`: handle classes derived from namedtuples (attribute types are `any`)
 * `0.2.0`: handle inheritance relationships and enums. Unit tested
