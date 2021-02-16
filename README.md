@@ -38,7 +38,7 @@ If you like tools around PlantUML, you may also be interested in this [lucsorel/
 
 # Install
 
-Install from the github repository:
+Install from PyPI:
 
 * with `pip`:
 
@@ -62,7 +62,7 @@ pipenv install py2puml
 
 ## CLI
 
-Once `py2puml` is install, an eponymous command is available in your environment shell.
+Once `py2puml` is installed at the system level, an eponymous command is available in your environment shell.
 
 For example, to create the diagram of the classes used by `py2puml`, one can use:
 ```sh

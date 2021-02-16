@@ -4,7 +4,7 @@ from py2puml import __version__, py2puml
 
 
 def test_version():
-    assert __version__ == '0.3.1'
+    assert __version__ == '0.4.0'
 
 
 def test_py2puml_model():
