@@ -66,7 +66,7 @@ Once `py2puml` is installed at the system level, an eponymous command is availab
 
 For example, to create the diagram of the classes used by `py2puml`, one can use:
 ```sh
-py2puml py2puml/domain/ py2puml.domain
+py2puml py2puml/domain py2puml.domain
 ```
 
 This will output the following PlantUML script:
@@ -116,6 +116,12 @@ For a full overview of the CLI, run:
 
 ```sh
 py2puml --help
+```
+
+The CLI can also be launched as a python module:
+
+```sh
+python -m py2puml.cli py2puml/domain py2puml.domain
 ```
 
 ## Python API
