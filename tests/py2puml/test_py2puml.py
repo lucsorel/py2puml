@@ -1,10 +1,13 @@
 import subprocess
 
-from py2puml import __version__, py2puml
+from py2puml import __version__, __description__, py2puml
 
 
 def test_version():
     assert __version__ == '0.4.0'
+
+def test_description():
+    assert __description__ == 'Generate Plantuml diagrams to document your python code'
 
 
 def test_py2puml_model():
