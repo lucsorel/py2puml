@@ -1,4 +1,4 @@
-import subprocess
+from subprocess import run, PIPE
 
 from py2puml import __version__, __description__, py2puml
 
@@ -74,11 +74,23 @@ tests.modules.withsubdomain.withsubdomain.Car *-- tests.modules.withsubdomain.su
 
 def test_cli_consistency():
     """ Check CLI consistency with the default configuration."""
-    cli_stdout = subprocess.run(['py2puml', 'py2puml/domain', 'py2puml.domain'],
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                text=True,
-                                check=True).stdout
+    cli_stdout = run(
+        ['py2puml', 'py2puml/domain', 'py2puml.domain'],
+        stdout=PIPE, stderr=PIPE,
+        text=True, check=True
+    ).stdout
+
+    puml_content = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
+
+    assert ''.join(puml_content).strip() == cli_stdout.strip()
+
+def test_cli_module_consistency():
+    """ Check CLI-as-a-module consistency with the default configuration."""
+    cli_stdout = run(
+        ['python', '-m', 'py2puml.cli', 'py2puml/domain', 'py2puml.domain'],
+        stdout=PIPE, stderr=PIPE,
+        text=True, check=True
+    ).stdout
 
     puml_content = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
 
