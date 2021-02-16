@@ -84,6 +84,7 @@ def test_cli_consistency():
 
     assert ''.join(puml_content).strip() == cli_stdout.strip()
 
+
 def test_cli_module_consistency():
     """ Check CLI-as-a-module consistency with the default configuration."""
     cli_stdout = run(
