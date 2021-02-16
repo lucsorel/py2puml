@@ -1,5 +1,5 @@
 from os.path import dirname, realpath, join
-from re import compile, Match
+from re import compile
 from itertools import takewhile
 
 # exports the version and the project description read from the pyproject.toml file
