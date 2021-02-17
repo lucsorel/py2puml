@@ -121,7 +121,13 @@ py2puml --help
 The CLI can also be launched as a python module:
 
 ```sh
-python -m py2puml.cli py2puml/domain py2puml.domain
+python -m py2puml py2puml/domain py2puml.domain
+```
+
+Pipe the result of the CLI with a PlantUML server for instantaneous documentation:
+
+```sh
+py2puml py2puml/domain py2puml.domain | curl -X POST --data-binary @- https://www.plantuml.com/plantuml/png/ --output - | display
 ```
 
 ## Python API
