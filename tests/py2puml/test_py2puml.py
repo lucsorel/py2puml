@@ -1,19 +1,8 @@
-from subprocess import run, PIPE
-
-import pytest
 
 from py2puml import __version__, __description__, py2puml
 
 
-def test_version():
-    assert __version__ == '0.4.0'
-
-def test_description():
-    assert __description__ == 'Generate Plantuml diagrams to document your python code'
-
-
-def test_py2puml_model():
-    """test py2puml on py2puml/domain."""
+def test_py2puml_model_on_py2uml_domain():
     expected = """@startuml
 class py2puml.domain.umlclass.UmlAttribute {
   name: str
@@ -72,21 +61,3 @@ tests.modules.withsubdomain.withsubdomain.Car *-- tests.modules.withsubdomain.su
       'tests/modules/withsubdomain/', 'tests.modules.withsubdomain'
     )
     assert ''.join(puml_content) == expected
-
-
-@pytest.mark.parametrize("entrypoint",
-                         [
-                             ['py2puml'],
-                             ['python', '-m', 'py2puml']
-                         ])
-def test_cli_consistency(entrypoint):
-    """ Check CLI consistency with the default configuration."""
-    command = entrypoint + ['py2puml/domain', 'py2puml.domain']
-    cli_stdout = run(command,
-        stdout=PIPE, stderr=PIPE,
-        text=True, check=True
-    ).stdout
-
-    puml_content = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
-
-    assert ''.join(puml_content).strip() == cli_stdout.strip()
