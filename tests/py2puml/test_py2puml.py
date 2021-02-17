@@ -1,5 +1,5 @@
 
-from py2puml import __version__, __description__, py2puml
+from py2puml import py2puml
 
 
 def test_py2puml_model_on_py2uml_domain():
