@@ -44,7 +44,7 @@ def test_cli_version(version_command: List[str]):
 @mark.parametrize(
     'help_command', [
         ['-h'],
-        # ['--help']
+        ['--help']
     ]
 )
 def test_cli_help(help_command: List[str]):
