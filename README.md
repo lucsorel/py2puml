@@ -132,7 +132,7 @@ docker run -d -p 1234:8080 --name plantumlserver plantuml/plantuml-server:jetty
 
 py2puml py2puml/domain py2puml.domain | curl -X POST --data-binary @- http://localhost:1234/svg/ --output - | display
 
-# stops the container when you don't need it anymore, restart it later, removes it
+# stops the container when you don't need it anymore, restarts it later, removes it
 docker stop plantumlserver
 docker start plantumlserver
 docker rm plantumlserver
