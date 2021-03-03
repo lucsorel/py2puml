@@ -124,10 +124,18 @@ The CLI can also be launched as a python module:
 python -m py2puml py2puml/domain py2puml.domain
 ```
 
-Pipe the result of the CLI with a PlantUML server for instantaneous documentation:
+Pipe the result of the CLI with a PlantUML server for instantaneous documentation (rendered by ImageMagick):
 
 ```sh
-py2puml py2puml/domain py2puml.domain | curl -X POST --data-binary @- https://www.plantuml.com/plantuml/png/ --output - | display
+# runs a local PlantUML server from a docker container:
+docker run -d -p 1234:8080 --name plantumlserver plantuml/plantuml-server:jetty 
+
+py2puml py2puml/domain py2puml.domain | curl -X POST --data-binary @- http://localhost:1234/svg/ --output - | display
+
+# stops the container when you don't need it anymore, restart it later, removes it
+docker stop plantumlserver
+docker start plantumlserver
+docker rm plantumlserver
 ```
 
 ## Python API
