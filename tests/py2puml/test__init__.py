@@ -1,4 +1,4 @@
-from py2puml import __version__, __description__
+from tests import __version__, __description__
 
 # Ensures the library version is modified in the pyproject.toml file when upgrading it (pull request)
 def test_version():

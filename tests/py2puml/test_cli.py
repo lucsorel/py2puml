@@ -3,7 +3,8 @@ from typing import List
 from pytest import mark
 from subprocess import run, PIPE
 
-from py2puml import py2puml, __version__, __description__
+from py2puml import py2puml
+from tests import __version__, __description__
 
 @mark.parametrize(
     'entrypoint', [
