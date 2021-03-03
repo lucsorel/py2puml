@@ -1,12 +1,8 @@
-from py2puml import __version__, py2puml
+
+from py2puml import py2puml
 
 
-def test_version():
-    assert __version__ == '0.3.1'
-
-
-def test_py2puml_model():
-    """test py2puml on py2puml/domain."""
+def test_py2puml_model_on_py2uml_domain():
     expected = """@startuml
 class py2puml.domain.umlclass.UmlAttribute {
   name: str

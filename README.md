@@ -38,7 +38,7 @@ If you like tools around PlantUML, you may also be interested in this [lucsorel/
 
 # Install
 
-Install from the github repository:
+Install from PyPI:
 
 * with `pip`:
 
@@ -60,22 +60,16 @@ pipenv install py2puml
 
 # Usage
 
-For example, to create the diagram of the classes used by `py2puml`:
+## CLI
 
-* import the py2puml function in your script (see [py2puml/example.py](py2puml/example.py)):
+Once `py2puml` is installed at the system level, an eponymous command is available in your environment shell.
 
-```python
-from py2puml.py2puml import py2puml
-
-# outputs the PlantUML content in the terminal
-print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
-
-# writes the PlantUML content in a file
-with open('py2puml/domain.puml', 'w') as puml_file:
-    puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
+For example, to create the diagram of the classes used by `py2puml`, one can use:
+```sh
+py2puml py2puml/domain py2puml.domain
 ```
 
-* running it (`python3 -m py2puml.example`) will output the PlantUML diagram in the terminal and write it in a file
+This will output the following PlantUML script:
 
 ```plantuml
 @startuml
@@ -114,9 +108,54 @@ py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
-Which renders like this:
+Using PlantUML, this script renders this diagram:
 
-![](https://www.plantuml.com/plantuml/png/ZP91IyGm48Nl-HKvBsmF7iiUTbaA1jnMQZs9I7OxIY19Qp8H5jV_xZIse5GsFULrQBvvCozRZz9XC9gTjFIUz-URdhwojZDIsOnah6UFHkyGdJe61Fx9EBVIGCuzEj9uxaVzbSRi1n4HSWBwdDyfZq-_cpnVOIa4Cw04dJCph--jJPa16qns07C4Dxl_8NM0HG1oKD0P2IR2fa5-qCC8mu__t7UW9QhEPZNeXhON6VlgS5yzY4PKPSvNL13bRL6BPbVkYvnlBdC_SnvvgaSTcRuBxWGlSIbJMjAz0SRItm17BzGc6TzglLxqL5WYlCs5GAbkBB5_CdCzuoKk4Y6pPJkFNj9niotObkhi6m00)
+![py2puml UML Diagram](https://www.plantuml.com/plantuml/png/ZP91IyGm48Nl-HKvBsmF7iiUTbaA1jnMQZs9I7OxIY19Qp8H5jV_xZIse5GsFULrQBvvCozRZz9XC9gTjFIUz-URdhwojZDIsOnah6UFHkyGdJe61Fx9EBVIGCuzEj9uxaVzbSRi1n4HSWBwdDyfZq-_cpnVOIa4Cw04dJCph--jJPa16qns07C4Dxl_8NM0HG1oKD0P2IR2fa5-qCC8mu__t7UW9QhEPZNeXhON6VlgS5yzY4PKPSvNL13bRL6BPbVkYvnlBdC_SnvvgaSTcRuBxWGlSIbJMjAz0SRItm17BzGc6TzglLxqL5WYlCs5GAbkBB5_CdCzuoKk4Y6pPJkFNj9niotObkhi6m00)
+
+For a full overview of the CLI, run:
+
+```sh
+py2puml --help
+```
+
+The CLI can also be launched as a python module:
+
+```sh
+python -m py2puml py2puml/domain py2puml.domain
+```
+
+Pipe the result of the CLI with a PlantUML server for instantaneous documentation (rendered by ImageMagick):
+
+```sh
+# runs a local PlantUML server from a docker container:
+docker run -d -p 1234:8080 --name plantumlserver plantuml/plantuml-server:jetty 
+
+py2puml py2puml/domain py2puml.domain | curl -X POST --data-binary @- http://localhost:1234/svg/ --output - | display
+
+# stops the container when you don't need it anymore, restarts it later, removes it
+docker stop plantumlserver
+docker start plantumlserver
+docker rm plantumlserver
+```
+
+## Python API
+
+For example, to create the diagram of the classes used by `py2puml`:
+
+* import the py2puml function in your script (see [py2puml/example.py](py2puml/example.py)):
+
+```python
+from py2puml.py2puml import py2puml
+
+# outputs the PlantUML content in the terminal
+print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
+
+# writes the PlantUML content in a file
+with open('py2puml/domain.puml', 'w') as puml_file:
+    puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
+```
+* running it (`python3 -m py2puml.example`) will output the previous PlantUML diagram in the terminal and write it in a file.
+
 
 # Tests
 
@@ -130,6 +169,7 @@ python3 -m pytest -v
 
 # Changelog
 
+* `0.4.0`: add a simple CLI
 * `0.3.1`: inspect sub-folders recursively
 * `0.3.0`: handle classes derived from namedtuples (attribute types are `any`)
 * `0.2.0`: handle inheritance relationships and enums. Unit tested
@@ -143,6 +183,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 
 * [Luc Sorel-Giffo](https://github.com/lucsorel)
 * [Doyou Jung](https://github.com/doyou89)
+* [Julien Jerphanion](https://github.com/jjerphan)
 
 Pull-requests are welcome and will be processed on a best-effort basis.
 
