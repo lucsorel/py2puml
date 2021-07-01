@@ -2,6 +2,7 @@ from typing import List, Iterable
 
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass
+from py2puml.domain.umlfunc import UmlFunc
 from py2puml.domain.umlenum import UmlEnum
 from py2puml.domain.umlrelation import UmlRelation
 
@@ -27,6 +28,12 @@ def to_puml_content(uml_items: List[UmlItem], uml_relations: List[UmlRelation]) 
         elif isinstance(uml_item, UmlClass):
             uml_class: UmlClass = uml_item
             yield PUML_ITEM_START_TPL.format(item_type='class', item_fqdn=uml_class.fqdn)
+            for uml_attr in uml_class.attributes:
+                yield PUML_ATTR_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type)
+            yield PUML_ITEM_END
+        elif isinstance(uml_item, UmlFunc):
+            uml_class: UmlFunc = uml_item
+            yield PUML_ITEM_START_TPL.format(item_type='object', item_fqdn=uml_class.fqdn)
             for uml_attr in uml_class.attributes:
                 yield PUML_ATTR_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type)
             yield PUML_ITEM_END
