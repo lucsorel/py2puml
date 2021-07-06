@@ -11,6 +11,7 @@ from tests.modules.withcomposition import Worker
 from tests.modules.withenum import TimeUnit
 from tests.modules.withinheritancewithinmodule import GlowingFish
 from tests.modules.withnamedtuple import Circle
+from tests.modules.withconstructor import Point
 
 def assert_attribute(attribute: UmlAttribute, expected_name: str, expected_type: str):
     assert attribute.name == expected_name
@@ -116,3 +117,93 @@ def test_parse_namedtupled_class():
     assert_attribute(attributes[2], 'radius', 'any')
 
     assert len(domain_relations) == 0, 'parsing enum adds no relation'
+
+# from typing import NoneType
+from ast import NodeVisitor, arg, FunctionDef, Assign, Attribute, Name, Subscript, get_source_segment
+from collections import namedtuple
+Argument = namedtuple('Argument', ['id', 'type'])
+
+class ArgumentsCollector(NodeVisitor):
+    def __init__(self, constructor_source: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.constructor_source = constructor_source
+        self.class_self_id: str = None
+        self.arguments: List[Argument] = []
+
+    def visit_arg(self, node: arg):
+        if node.annotation is None:
+            argument = Argument(node.arg, None)
+        elif isinstance(node.annotation, Name):
+            argument = Argument(node.arg, None if node.annotation is None else node.annotation.id)
+        elif isinstance(node.annotation, Subscript):
+            argument = Argument(node.arg, get_source_segment(self.constructor_source, node.annotation))
+        else:
+            raise ValueError(f'constructor parameter {node.arg} has an annotation of type {type(node.annotation)}, which is not currently handled')
+
+        # first constructor argument is the name for the self reference
+        if self.class_self_id is None:
+            self.class_self_id = argument.id
+        # other arguments are constructor parameters
+        else:
+            self.arguments.append(argument)
+
+class ConstructorVisitor(NodeVisitor):
+    def __init__(self, constructor_source: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.constructor_source = constructor_source
+        self.class_self_id: Argument = None
+        self.constructor_arguments: List[Argument] = []
+        self.uml_attributes: List[UmlAttribute] = []
+
+    def is_constructor_argument(self, argument_id: str) -> bool:
+        return any((
+            constructor_argument.id == argument_id
+            for constructor_argument in self.constructor_arguments
+        ))
+    def get_constructor_argument(self, argument_id: str) -> Argument:
+        return next((
+            constructor_argument
+            for constructor_argument in self.constructor_arguments
+            if constructor_argument.id == argument_id
+        ))
+
+    def generic_visit(self, node):
+        NodeVisitor.generic_visit(self, node)
+
+    def visit_FunctionDef(self, node: FunctionDef):
+        # retrieves constructor arguments ('self' reference and typed arguments)
+        if node.name == '__init__':
+            arguments_collector = ArgumentsCollector(self.constructor_source)
+            arguments_collector.visit(node)
+            self.class_self_id: str = arguments_collector.class_self_id
+            self.constructor_arguments = arguments_collector.arguments
+        self.generic_visit(node)
+
+    def visit_Assign(self, node: Assign):
+        # recipient of the assignment
+        for assigned_target in node.targets:
+            # another visitor?
+            if isinstance(assigned_target, Attribute) and isinstance(assigned_target.value, Name):
+                # the assignment involves an attribute of self
+                if assigned_target.value.id == self.class_self_id:
+                    # assigned a named variable
+                    if isinstance(node.value, Name) and self.is_constructor_argument(node.value.id):
+                        self.uml_attributes.append(UmlAttribute(
+                            assigned_target.attr, self.get_constructor_argument(node.value.id).type
+                        ))
+                    else:
+                        self.uml_attributes.append(UmlAttribute(assigned_target.attr, None))
+
+def test_parse_constructor():
+    from inspect import getsource
+    from textwrap import dedent
+    point = Point
+    constructor_source = getsource(Point.__init__.__code__)
+    from ast import parse
+    tree = parse(dedent(constructor_source))
+    visitor = ConstructorVisitor(dedent(constructor_source))
+    visitor.visit(tree)
+    print('visitor.class_self_id', visitor.class_self_id)
+    print('visitor.constructor_arguments', visitor.constructor_arguments)
+    print('visitor.uml_attributes', visitor.uml_attributes)
+    assert len(visitor.uml_attributes) == 6
