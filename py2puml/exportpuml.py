@@ -11,7 +11,7 @@ PUML_FILE_END = '@enduml\n'
 PUML_ITEM_START_TPL = '{item_type} {item_fqdn} {{\n'
 PUML_ATTR_TPL = '  {attr_name}: {attr_type}\n'
 PUML_ITEM_END = '}\n'
-PUML_COMPOSITION_TPL = '{source_fqdn} {rel_type}-- {target_fqdn}\n'
+PUML_COMPOSITION_TPL = '{source_fqdn} {rel_type} {target_fqdn}\n'
 
 
 def to_puml_content(uml_items: List[UmlItem], uml_relations: List[UmlRelation]) -> Iterable[str]:

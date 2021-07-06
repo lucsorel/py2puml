@@ -99,8 +99,13 @@ def parse_func_type(
                 concrete_type = concrete_type_match.group(1)
                 if attr_class.__module__.startswith(root_module_name):
                     attr_type = attr_class.__name__
+                    if attr_name == 'return':
+                        rel = RelType.OUTPUTYPE
+                    else:
+                        rel = RelType.INPUTTYPE
+
                     domain_relations.append(
-                        UmlRelation(uml_class.fqdn, f'{attr_class.__module__}.{attr_class.__name__}', RelType.COMPOSITION)
+                        UmlRelation(uml_class.fqdn, f'{attr_class.__module__}.{attr_class.__name__}', rel)
                     )
                 else:
                     attr_type = concrete_type
@@ -120,8 +125,13 @@ def parse_func_type(
                         # filters out forward refs
                         if getattr(component_class, '__name__', None) is not None
                     ]
+                    if attr_name == 'return':
+                        rel = RelType.OUTPUTYPE
+                    else:
+                        rel = RelType.INPUTTYPE
+
                     domain_relations.extend([
-                        UmlRelation(uml_class.fqdn, f'{component_class.__module__}.{component_class.__name__}', RelType.COMPOSITION)
+                        UmlRelation(uml_class.fqdn, f'{component_class.__module__}.{component_class.__name__}', rel)
                         for component_class in component_classes
                         if component_class.__module__.startswith(root_module_name)
                     ])
