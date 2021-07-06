@@ -10,6 +10,7 @@ PUML_FILE_START = '@startuml\n'
 PUML_FILE_END = '@enduml\n'
 PUML_ITEM_START_TPL = '{item_type} {item_fqdn} {item_style} {{\n'
 PUML_ATTR_TPL = '  {attr_name}: {attr_type}\n'
+PUML_RETURNS_TPL = ' ..{attr_name}..\n  {attr_type}\n'
 PUML_ITEM_END = '}\n'
 PUML_COMPOSITION_TPL = '{source_fqdn} {rel_type} {target_fqdn}\n'
 
@@ -35,7 +36,10 @@ def to_puml_content(uml_items: List[UmlItem], uml_relations: List[UmlRelation]) 
             uml_class: UmlFunc = uml_item
             yield PUML_ITEM_START_TPL.format(item_type='interface', item_fqdn=uml_class.fqdn, item_style='<< (F,#FF7700) function >>')
             for uml_attr in uml_class.attributes:
-                yield PUML_ATTR_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type)
+                if uml_attr.name == 'return':
+                    yield PUML_RETURNS_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type)
+                else:
+                    yield PUML_ATTR_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type)
             yield PUML_ITEM_END
         else:
             raise TypeError(f'cannot process uml_item of type {uml_item.__class__}')
