@@ -186,6 +186,17 @@ def parse_class_type(
                     attr_type = f"{composition_rel}[{', '.join(component_names)}]"
                 else:
                     attr_type = attr_raw_type
+
+                    component_module = getattr(attr_class, '__module__', None)
+                    if component_module == 'typing':
+                        component_name = getattr(attr_class, '__name__', None)
+                        if component_name:
+                            component_origin = getattr(attr_class, '__supertype__', None)
+                            if component_origin:
+                                attr_type = f"{component_name}[{component_origin.__name__}]"
+                            else:
+                                attr_type = component_name
+
             uml_attr = UmlAttribute(attr_name, attr_type)
             definition_attrs.append(uml_attr)
 
