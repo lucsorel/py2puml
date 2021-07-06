@@ -28,6 +28,8 @@ def filter_domain_definitions(module: ModuleType, root_module_name: str) -> Iter
 def get_type_name(type: Type, root_module_name: str):
     if type.__module__.startswith(root_module_name):
         return type.__name__
+    elif type.__module__ == 'builtins':
+        return type.__name__
     else:
         return f'{type.__module__}.{type.__name__}'
 
