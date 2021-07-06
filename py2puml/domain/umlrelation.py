@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from enum import Enum
 
 class RelType(Enum):
-    COMPOSITION = '*--'
-    INHERITANCE = '<|--'
-    INPUTTYPE = '.*'
-    OUTPUTYPE = '*.'
+    COMPOSITION = '*..'
+    INHERITANCE = '<|..'
+    INPUTTYPE = '<-'
+    OUTPUTYPE = '->'
 
 @dataclass
 class UmlRelation(object):
