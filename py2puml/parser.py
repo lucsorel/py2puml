@@ -105,6 +105,12 @@ def parse_func_type(
             else:
                 composition_rel = getattr(attr_class, '_name', None)
                 component_classes = getattr(attr_class, '__args__', None)
+
+                if composition_rel is None:
+                    component_origin = getattr(attr_class, '__origin__', None)
+                    if str(component_origin).startswith('typing.'):
+                        composition_rel = str(component_origin).split('typing.')[-1]
+
                 if composition_rel and component_classes:
                     component_names = [
                         get_type_name(component_class, root_module_name)
@@ -155,9 +161,16 @@ def parse_class_type(
                     )
                 else:
                     attr_type = concrete_type
+
             else:
                 composition_rel = getattr(attr_class, '_name', None)
                 component_classes = getattr(attr_class, '__args__', None)
+
+                if composition_rel is None:
+                    component_origin = getattr(attr_class, '__origin__', None)
+                    if str(component_origin).startswith('typing.'):
+                        composition_rel = str(component_origin).split('typing.')[-1]
+
                 if composition_rel and component_classes:
                     component_names = [
                         get_type_name(component_class, root_module_name)
