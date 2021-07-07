@@ -35,8 +35,29 @@ def get_type_name(type: Type, root_module_name: str):
         component_origin = getattr(type, '__supertype__', None)
         if component_origin:
             return f"{component_name}[{component_origin.__name__}]"
-        else:
-            return type.__name__
+
+        composition_rel = getattr(type, '_name', None)
+        component_classes = getattr(type, '__args__', None)
+
+        if composition_rel is None:
+            component_origin = getattr(type, '__origin__', None)
+            if str(component_origin).startswith('typing.'):
+                composition_rel = str(component_origin).split('typing.')[-1]
+
+                if composition_rel and component_classes:
+                    component_names = [
+                        get_type_name(component_class, root_module_name)
+                        for component_class in component_classes
+                        # filters out forward refs
+                        if getattr(component_class, '__name__', None) is not None
+                        or getattr(component_class, '__module__', None) == 'typing'
+                    ]
+
+                    return f"{composition_rel}[{', '.join(component_names)}]"
+
+        elif component_name:
+            return component_name
+
     else:
         return f'{type.__module__}.{type.__name__}'
 
@@ -129,6 +150,7 @@ def parse_func_type(
                         for component_class in component_classes
                         # filters out forward refs
                         if getattr(component_class, '__name__', None) is not None
+                        or getattr(component_class, '__module__', None) == 'typing'
                     ]
                     if attr_name == 'return':
                         rel = RelType.OUTPUTYPE
