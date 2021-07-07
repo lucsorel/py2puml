@@ -101,12 +101,10 @@ def parse_func_type(
                     attr_type = attr_class.__name__
                     if attr_name == 'return':
                         rel = RelType.OUTPUTYPE
-                    else:
-                        rel = RelType.INPUTTYPE
 
-                    domain_relations.append(
-                        UmlRelation(uml_class.fqdn, f'{attr_class.__module__}.{attr_class.__name__}', rel)
-                    )
+                        domain_relations.append(
+                            UmlRelation(uml_class.fqdn, f'{attr_class.__module__}.{attr_class.__name__}', rel)
+                        )
                 else:
                     attr_type = concrete_type
             else:
@@ -127,14 +125,12 @@ def parse_func_type(
                     ]
                     if attr_name == 'return':
                         rel = RelType.OUTPUTYPE
-                    else:
-                        rel = RelType.INPUTTYPE
 
-                    domain_relations.extend([
-                        UmlRelation(uml_class.fqdn, f'{component_class.__module__}.{component_class.__name__}', rel)
-                        for component_class in component_classes
-                        if component_class.__module__.startswith(root_module_name)
-                    ])
+                        domain_relations.extend([
+                            UmlRelation(uml_class.fqdn, f'{component_class.__module__}.{component_class.__name__}', rel)
+                            for component_class in component_classes
+                            if component_class.__module__.startswith(root_module_name)
+                        ])
                     attr_type = f"{composition_rel}[{', '.join(component_names)}]"
                 else:
                     attr_type = attr_raw_type

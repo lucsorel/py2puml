@@ -5,7 +5,7 @@ class RelType(Enum):
     COMPOSITION = '*--'
     INHERITANCE = '<|--'
     INPUTTYPE = '<-[hidden]-'
-    OUTPUTYPE = '-[hidden]->'
+    OUTPUTYPE = '->'
 
 @dataclass
 class UmlRelation(object):
