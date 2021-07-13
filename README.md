@@ -38,7 +38,7 @@ If you like tools around PlantUML, you may also be interested in this [lucsorel/
 
 # Install
 
-Install from PyPI:
+Install from [PyPI](https://pypi.org/project/py2puml/):
 
 * with `pip`:
 
@@ -46,7 +46,7 @@ Install from PyPI:
 pip install py2puml
 ```
 
-* with [poetry](https://pipenv.readthedocs.io/en/latest/):
+* with [poetry](https://python-poetry.org/docs/):
 
 ```sh
 poetry add py2puml
