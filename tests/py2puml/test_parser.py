@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from py2puml.parser import parse_type, parse_enum_type
 from py2puml.domain.umlitem import UmlItem
@@ -119,11 +119,17 @@ def test_parse_namedtupled_class():
     assert len(domain_relations) == 0, 'parsing enum adds no relation'
 
 # from typing import NoneType
-from ast import NodeVisitor, arg, FunctionDef, Assign, Attribute, Name, Subscript, get_source_segment
+from ast import (
+    NodeVisitor, arg, expr,
+    FunctionDef, Assign, AnnAssign,
+    Attribute, Name, Tuple as AstTuple, Subscript, get_source_segment
+)
+from py2puml.inspection.moduleresolver import ModuleResolver, NamespacedType
 from collections import namedtuple
 Argument = namedtuple('Argument', ['id', 'type'])
 
 class ArgumentsCollector(NodeVisitor):
+    '''Collects the arguments and their type annotations from the signature of a constructor method'''
     def __init__(self, constructor_source: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.constructor_source = constructor_source
@@ -140,7 +146,7 @@ class ArgumentsCollector(NodeVisitor):
         else:
             raise ValueError(f'constructor parameter {node.arg} has an annotation of type {type(node.annotation)}, which is not currently handled')
 
-        # first constructor argument is the name for the self reference
+        # first constructor argument is the name for the 'self' reference
         if self.class_self_id is None:
             self.class_self_id = argument.id
         # other arguments are constructor parameters
@@ -148,12 +154,16 @@ class ArgumentsCollector(NodeVisitor):
             self.arguments.append(argument)
 
 class ConstructorVisitor(NodeVisitor):
-    def __init__(self, constructor_source: str, *args, **kwargs):
+    '''Identifies the assignments done to self in the body of a constructor method'''
+    def __init__(self, constructor_source: str, class_name: str, module_resolver: ModuleResolver, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.constructor_source = constructor_source
+        self.class_name = class_name
+        self.module_resolver = module_resolver
         self.class_self_id: Argument = None
         self.constructor_arguments: List[Argument] = []
         self.uml_attributes: List[UmlAttribute] = []
+        self.uml_relations: List[UmlRelation] = []
 
     def is_constructor_argument(self, argument_id: str) -> bool:
         return any((
@@ -177,33 +187,100 @@ class ConstructorVisitor(NodeVisitor):
             arguments_collector.visit(node)
             self.class_self_id: str = arguments_collector.class_self_id
             self.constructor_arguments = arguments_collector.arguments
+
         self.generic_visit(node)
+
+    def visit_AnnAssign(self, node: AnnAssign):
+        self.process_assignment(node.target, node.annotation, node.value)
 
     def visit_Assign(self, node: Assign):
         # recipient of the assignment
         for assigned_target in node.targets:
-            # another visitor?
-            if isinstance(assigned_target, Attribute) and isinstance(assigned_target.value, Name):
-                # the assignment involves an attribute of self
-                if assigned_target.value.id == self.class_self_id:
-                    # assigned a named variable
-                    if isinstance(node.value, Name) and self.is_constructor_argument(node.value.id):
-                        self.uml_attributes.append(UmlAttribute(
-                            assigned_target.attr, self.get_constructor_argument(node.value.id).type
-                        ))
-                    else:
-                        self.uml_attributes.append(UmlAttribute(assigned_target.attr, None))
+            if isinstance(assigned_target, AstTuple):
+                for assigned_tuple_element in assigned_target.elts:
+                    self.process_assignment(assigned_tuple_element, None, node.value)
+            else:
+                self.process_assignment(assigned_target, None, node.value)
+
+    def process_assignment(self, assigned_target: expr, target_annotation: expr, assigned_value: expr):
+        is_self_assignment, attribute_name = self.is_self_assignment(assigned_target)
+        if not is_self_assignment:
+            return
+
+        short_type, full_namespaced_definitions =self.deduce_assignment_types(assigned_value, target_annotation)
+        self.uml_attributes.append(UmlAttribute(attribute_name, short_type))
+
+    def is_self_assignment(self, target: expr) -> Tuple[bool, str]:
+        '''
+        Returns whether the assignment is done to self and the name of the attribute
+        '''
+        if isinstance(target, Attribute) \
+            and isinstance(target.value, Name) \
+            and target.value.id == self.class_self_id:
+                return True, target.attr
+        else:
+            return False, None
+
+    def deduce_assignment_types(self, value: expr, annotation: expr=None) -> Tuple[str, List[str]]:
+        '''
+        From a type annotation
+        - a short version of the type (withenum.TimeUnit -> TimeUnit, Tuple[withenum.TimeUnit] -> Tuple[TimeUnit])
+        - a list of the full-namespaced definitions involved in the type annotation (in order to build the relationships)
+        '''
+        # no annotation, reference to a signature argument (which may be annotated)
+        if annotation is None:
+            # assigned a named variable
+            if isinstance(value, Name) and self.is_constructor_argument(value.id):
+                full_namespaced_type, short_type = self.module_resolver.resolve_full_namespace_type(
+                    self.get_constructor_argument(value.id).type
+                )
+                return short_type, [full_namespaced_type]
+            return None, []
+        else:
+            # annotation: primitive type, object definition
+            if isinstance(annotation, Name):
+                full_namespaced_type, short_type = self.module_resolver.resolve_full_namespace_type(
+                    annotation.id
+                )
+                return short_type, [full_namespaced_type]
+            # annotation: definition from module
+            elif isinstance(annotation, Attribute):
+                full_namespaced_type, short_type = self.module_resolver.resolve_full_namespace_type(
+                    get_source_segment(self.constructor_source, annotation)
+                )
+                return short_type, [full_namespaced_type]
+            # annotation: compound type (List[...], Dict, Tuple)
+            elif isinstance(annotation, Subscript):
+                complex_type = get_source_segment(self.constructor_source, annotation)
+                print('need to handle (and shorten)', complex_type)
+                # TODO:
+                # - regexp to extract assignments
+                # - infer the full namespaced types
+                # - from types extracted from the source code, replace by the types as they were regexped by their short name
+                assignment_types = []
+                return complex_type, []
+
+            # TODO composition relationships with type annotation or signature reference
+            return None, []
 
 def test_parse_constructor():
     from inspect import getsource
     from textwrap import dedent
-    point = Point
     constructor_source = getsource(Point.__init__.__code__)
     from ast import parse
     tree = parse(dedent(constructor_source))
-    visitor = ConstructorVisitor(dedent(constructor_source))
+
+    from importlib import import_module
+    class_module = import_module(Point.__module__)
+    module_resolver = ModuleResolver(class_module)
+
+    visitor = ConstructorVisitor(dedent(constructor_source), Point.__name__, module_resolver)
     visitor.visit(tree)
     print('visitor.class_self_id', visitor.class_self_id)
     print('visitor.constructor_arguments', visitor.constructor_arguments)
     print('visitor.uml_attributes', visitor.uml_attributes)
-    assert len(visitor.uml_attributes) == 6
+    # print(hasattr(class_module, 'Coordinates'))
+    # print(class_module.Coordinates.__module__)
+    # print(class_module.modules.withenum.TimeUnit.__module__)
+    # print(class_module.withenum.TimeUnit.__module__)
+    assert len(visitor.uml_attributes) == 10

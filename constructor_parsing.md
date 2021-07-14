@@ -39,33 +39,65 @@ tree.body[0].args.args[1].annotation.id == 'int'
 Point.__init__.__annotations__ == {'x': <class 'int'>, 'y': <class 'str'>}
 ```
 
-# Constructor assignments
-
-tree.body[0].body == [<_ast.Assign object ...e42715290>, <_ast.Expr object at...e426f7890>, <_ast.Assign object ...e426f7750>, <_ast.Assign object ...e426f76d0>]
-
-## Assignment to a 3rd party variable
-
-tree.body[0].body[0] == <_ast.Assign object at 0x7fee42715290>
-tree.body[0].body[0].targets[0] == <_ast.Name object at 0x7fee42715b10>
-tree.body[0].body[0].targets[0].id == 'z'
-tree.body[0].body[0].value == <_ast.Add object at 0x7fee52f12f10>
-
-
-## Assignment to instance
-
-tree.body[0].body[2] == <_ast.Assign object at 0x7fee426f7750>
-
-tree.body[0].body[2].targets = [<_ast.Attribute obje...e426f7790>]
-tree.body[0].body[2].targets[0] == <_ast.Attribute object at 0x7fee426f7790>
-tree.body[0].body[2].targets[0].attr == 'x'
-tree.body[0].body[2].targets[0].value == <_ast.Name object at 0x7fee426f7910>
-tree.body[0].body[2].targets[0].value.id == 'self'
-
-tree.body[0].body[2].value == <_ast.Name object at 0x7fee426f7850>
-tree.body[0].body[2].value.id == 'x'
 
 ## Tuple assignment
+
+```python
+self.u, self.v = (1, y)
+```
+node.targets[0] (ast.Tuple).elts
+
+## Annotated assignment
+
+```python
+self.coordinates: Coordinates = Coordinates(x, y)
+```
+annotation (Name).id = 'Coordinates'
+
+```python
+self.unit: withenum.TimeUnit = withenum.TimeUnit.DAYS
+```
+
+annotation (Attribute).attr = 'TimeUnit'
+annotation (Attribute).value (Name) = 'withenum'
+
+```python
+self.hour_unit: modules.withenum.TimeUnit = modules.withenum.TimeUnit.HOURS
+```
+
+annotation (Attribute).attr = 'TimeUnit'
+annotation (Attribute).value (Attribute).attr = 'withenum'
+annotation (Attribute).value (Attribute).value (Name) = 'modules'
+
+print(class_module.modules.withenum.TimeUnit.__module__)
+print(class_module.withenum.TimeUnit.__module__)
+
+```python
+self.z: str = z
+```
+
+annotation (Name).id = 'str'
+target (Attribute).attr = 'z'
+target.value (Name).id = 'self'
+value (Name).id = 'z'
+
+```python
+self.l: List[int] = [1, 2]
+```
+
+annotation (Subscript) -> get_source_segment
+annotation.value (Name).id = 'List'
+annotation.slice (Index).value (Name).id = 'int'
+target (Attribute).attr = 'l'
+target.value (Name).id = 'self'
+
+
+## Tuple assignment
+
+```python
 self.u, self.v = 1, y
+```
+
 node.targets (assigned_target): ast.Tuple
 .elts: List[Attribute] = [
     Attribute.attr = 'u'
