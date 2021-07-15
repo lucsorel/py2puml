@@ -31,7 +31,8 @@ class ModuleResolver(object):
     def resolve_full_namespace_type(self, partial_dotted_path: str) -> Tuple[str, str]:
         '''
         Returns a tuple of 2 strings:
-        - the full namespaced
+        - the full namespaced type
+        - the short named type
         '''
         if partial_dotted_path is None:
             return EMPTY_NAMESPACED_TYPE

@@ -47,6 +47,16 @@ self.u, self.v = (1, y)
 ```
 node.targets[0] (ast.Tuple).elts
 
+```python
+z, (r, t) = str(x) + y, ('r', 't')
+```
+
+targets (List)[0] (Tuple).elts
+- (Name).id = 'z'
+- (Tuple).elts
+  - (Name).id = 'r'
+  - (Name).id = 't'
+
 ## Annotated assignment
 
 ```python
