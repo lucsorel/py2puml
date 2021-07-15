@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, unique
 
+@unique
 class RelType(Enum):
     COMPOSITION = '*'
     INHERITANCE = '<|'

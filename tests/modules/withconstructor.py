@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from tests.modules import withenum
 from tests import modules

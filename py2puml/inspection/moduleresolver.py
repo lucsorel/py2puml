@@ -47,9 +47,11 @@ class ModuleResolver(object):
         if leaf_type is None:
             return EMPTY_NAMESPACED_TYPE
         else:
+            # https://bugs.python.org/issue34422#msg323772
+            short_type = getattr(leaf_type, '__name__', getattr(leaf_type, '_name', None))
             return NamespacedType(
-                f'{leaf_type.__module__}.{leaf_type.__name__}',
-                leaf_type.__name__
+                f'{leaf_type.__module__}.{short_type}',
+                short_type
             )
 
     def get_module_full_name(self) -> str:
