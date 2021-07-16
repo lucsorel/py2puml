@@ -10,8 +10,8 @@ from collections import namedtuple
 
 from py2puml.domain.umlclass import UmlAttribute
 from py2puml.domain.umlrelation import UmlRelation, RelType
-from py2puml.inspection.compoundtypesplitter import CompoundTypeSplitter, SPLITTING_CHARACTERS
-from py2puml.inspection.moduleresolver import ModuleResolver, NamespacedType
+from py2puml.parsing.compoundtypesplitter import CompoundTypeSplitter, SPLITTING_CHARACTERS
+from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
 
 Variable = namedtuple('Variable', ['id', 'type_expr'])
 

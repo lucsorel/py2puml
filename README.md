@@ -169,11 +169,12 @@ python3 -m pytest -v
 
 # Changelog
 
+* `0.5.0`: handle instance attributes in class constructors
 * `0.4.0`: add a simple CLI
 * `0.3.1`: inspect sub-folders recursively
-* `0.3.0`: handle classes derived from namedtuples (attribute types are `any`)
-* `0.2.0`: handle inheritance relationships and enums. Unit tested
-* `0.1.3`: first release, handle all module of a folder and compositions of domain classes
+* `0.3.0`: handle classes derived from namedtuples (attribute types are `Any`)
+* `0.2.0`: handle inheritance relationships and enums
+* `0.1.3`: first release, handle all modules of a folder and compositions of domain classes
 
 # Licence
 

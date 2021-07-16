@@ -3,7 +3,7 @@ from typing import List
 from pytest import mark
 from subprocess import run, PIPE
 
-from py2puml import py2puml
+from py2puml.py2puml import py2puml
 from tests import __version__, __description__
 
 @mark.parametrize(
@@ -19,7 +19,7 @@ def test_cli_consistency_with_the_default_configuration(entrypoint: List[str]):
         text=True, check=True
     ).stdout
 
-    puml_content = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
+    puml_content = py2puml('py2puml/domain', 'py2puml.domain')
 
     assert ''.join(puml_content).strip() == cli_stdout.strip()
 

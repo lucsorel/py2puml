@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from py2puml.inspection.compoundtypesplitter import CompoundTypeSplitter
+from py2puml.parsing.compoundtypesplitter import CompoundTypeSplitter
 
 from pytest import raises, mark
 

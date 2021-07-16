@@ -1,5 +1,5 @@
 
-from py2puml.inspection.moduleresolver import ModuleResolver
+from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
 
 class MockedInstance(object):
     '''
@@ -15,6 +15,9 @@ class MockedInstance(object):
             if isinstance(value, dict):
                 setattr(instance, instance_attribute, MockedInstance(value))
 
+def assert_NamespacedType(namespaced_type: NamespacedType, full_namespace_type: str, short_type: str):
+    assert namespaced_type.full_namespace == full_namespace_type
+    assert namespaced_type.type_name == short_type
 
 def test_ModuleResolver_resolve_full_namespace_type():
     source_module = MockedInstance({
@@ -39,15 +42,15 @@ def test_ModuleResolver_resolve_full_namespace_type():
         }
     })
     module_resolver = ModuleResolver(source_module)
-    assert module_resolver.resolve_full_namespace_type(
+    assert_NamespacedType(module_resolver.resolve_full_namespace_type(
         'modules.withenum.TimeUnit'
-    ) == 'tests.modules.withenum.TimeUnit'
-    assert module_resolver.resolve_full_namespace_type(
+    ), 'tests.modules.withenum.TimeUnit', 'TimeUnit')
+    assert_NamespacedType(module_resolver.resolve_full_namespace_type(
         'withenum.TimeUnit'
-    ) == 'tests.modules.withenum.TimeUnit'
-    assert module_resolver.resolve_full_namespace_type(
+    ), 'tests.modules.withenum.TimeUnit', 'TimeUnit')
+    assert_NamespacedType(module_resolver.resolve_full_namespace_type(
         'Coordinates'
-    ) == 'tests.modules.withconstructor.Coordinates'
+    ), 'tests.modules.withconstructor.Coordinates', 'Coordinates')
 
 def test_ModuleResolver_get_module_full_name():
     source_module = MockedInstance({
