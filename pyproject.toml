@@ -17,6 +17,14 @@ python = "^3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "6.2.2"
+pytest-cov = "2.12.1"
+
+[tool.pytest.ini_options]
+minversion = "6.2"
+testpaths = [
+    "tests"
+]
+console_output_style = "count"
 
 [build-system]
 requires = ["poetry>=0.12"]

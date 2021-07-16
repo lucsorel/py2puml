@@ -167,6 +167,12 @@ poetry run python -m pytest -v
 python3 -m pytest -v
 ```
 
+Code coverage (with missed statements):
+
+```sh
+poetry run python -m pytest -v --cov=py2puml --cov-report term-missing
+```
+
 # Changelog
 
 * `0.5.0`: handle instance attributes in class constructors
