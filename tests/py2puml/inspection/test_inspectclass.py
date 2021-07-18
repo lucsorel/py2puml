@@ -1,73 +1,65 @@
-from typing import Dict, List, Tuple
 
-from py2puml.inspection.inspectmodule import inspect_type
-from py2puml.domain.umlitem import UmlItem
+from importlib import import_module
+
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
-from py2puml.domain.umlrelation import UmlRelation, RelType
+from py2puml.inspection.inspectmodule import inspect_module
+from py2puml.parsing.astvisitors import ConstructorVisitor
+from py2puml.parsing.moduleresolver import ModuleResolver
+from py2puml.parsing.parseclassconstructor import parse_class_constructor
 
-from tests.modules.withbasictypes import Contact
-from tests.modules.withcomposition import Worker
-from tests.modules.withinheritancewithinmodule import GlowingFish
-
-
-def assert_attribute(attribute: UmlAttribute, expected_name: str, expected_type: str):
-    assert attribute.name == expected_name
-    assert attribute.type == expected_type
+from tests.asserts.attribute import assert_attribute
+from tests.asserts.relation import assert_relation
 
 
-def test_inspect_type_single_class_without_composition():
+def test_inspect_module_should_find_static_and_instance_attributes():
     domain_items_by_fqdn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
-    inspect_type(Contact, 'tests.modules.withbasictypes', domain_items_by_fqdn, domain_relations)
+    inspect_module(
+        import_module('tests.modules.withconstructor'),
+        'tests.modules.withconstructor',
+        domain_items_by_fqdn, domain_relations
+    )
+    print('domain_items_by_fqdn', domain_items_by_fqdn)
+    print('domain_relations', domain_relations)
 
-    umlitems_by_fqdn = list(domain_items_by_fqdn.items())
-    assert len(umlitems_by_fqdn) == 1, 'one class has been parsed'
+    assert len(domain_items_by_fqdn) == 2, 'two classes were inspected'
 
-    umlclass: UmlClass
-    fqdn, umlclass = umlitems_by_fqdn[0]
-    assert fqdn == 'tests.modules.withbasictypes.Contact'
-    assert umlclass.fqdn == fqdn
-    assert umlclass.name == 'Contact'
-    attributes = umlclass.attributes
-    assert len(attributes) == 4, 'class has 4 attributes'
-    assert_attribute(attributes[0], 'full_name', 'str')
-    assert_attribute(attributes[1], 'age', 'int')
-    assert_attribute(attributes[2], 'weight', 'float')
-    assert_attribute(attributes[3], 'can_twist_tongue', 'bool')
+    coordinates_umlitem: UmlClass = domain_items_by_fqdn['tests.modules.withconstructor.Coordinates']
+    assert len(coordinates_umlitem.attributes) == 2, '2 attributes of Coordinates were inspected'
+    x_attribute, y_attribute = coordinates_umlitem.attributes
+    assert_attribute(x_attribute, 'x', 'float', False)
+    assert_attribute(y_attribute, 'y', 'float', False)
 
-    assert len(domain_relations) == 0, 'class has no component'
+    point_umlitem: UmlClass = domain_items_by_fqdn['tests.modules.withconstructor.Point']
+    point_expected_attributes = {
+        'PI': ('float', True),
+        'coordinates': ('Coordinates', False),
+        'day_unit': ('TimeUnit', False),
+        'hour_unit': ('TimeUnit', False),
+        'time_resolution': ('Tuple[str,TimeUnit]', False),
+        'x': ('int', False),
+        'y': ('str', False),
+        'z': (None, False),
+        'z': ('int', False),
+        'u': ('int', False),
+        'u': (None, False),
+        'v': (None, False),
+        'dates': ('List[date]', False),
+    }
+    assert len(point_umlitem.attributes) == len(point_expected_attributes), 'all Point attributes must be verified'
+    for attribute_name, (atrribute_type, attribute_staticity) in point_expected_attributes.items():
+        point_attribute: UmlAttribute = next((
+            attribute
+            for attribute in point_umlitem.attributes
+            if attribute.name == attribute_name
+        ), None)
+        assert point_attribute is not None, f'attribute {attribute_name} has been detected'
+        assert_attribute(point_attribute, attribute_name, atrribute_type, attribute_staticity)
 
-def test_inspect_type_single_class_with_composition():
-    domain_items_by_fqdn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
-    inspect_type(Worker, 'tests.modules.withcomposition', domain_items_by_fqdn, domain_relations)
-
-    umlitems_by_fqdn = list(domain_items_by_fqdn.items())
-    assert len(umlitems_by_fqdn) == 1, 'one class has been parsed'
-
-    assert len(domain_relations) == 1, 'class has 1 domain component'
-    assert domain_relations[0].source_fqdn == 'tests.modules.withcomposition.Worker'
-    assert domain_relations[0].target_fqdn == 'tests.modules.withcomposition.Address'
-
-
-def test_parse_inheritance_within_module():
-    domain_items_by_fqdn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
-    inspect_type(GlowingFish, 'tests.modules.withinheritancewithinmodule', domain_items_by_fqdn, domain_relations)
-
-    umlitems_by_fqdn = list(domain_items_by_fqdn.values())
-    assert len(umlitems_by_fqdn) == 1, 'the class with multiple inheritance has been parsed'
-    child_class: UmlClass = umlitems_by_fqdn[0]
-    assert child_class.name == 'GlowingFish'
-    assert child_class.fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish'
-
-    assert len(domain_relations) == 2, '2 inheritance relations must have been parsed'
-    inheritance: UmlRelation = domain_relations[0]
-    assert inheritance.type == RelType.INHERITANCE
-    assert inheritance.source_fqdn == 'tests.modules.withinheritancewithinmodule.Fish', 'parent class'
-    assert inheritance.target_fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish', 'child class'
-
-    inheritance: UmlRelation = domain_relations[1]
-    assert inheritance.type == RelType.INHERITANCE
-    assert inheritance.source_fqdn == 'tests.modules.withinheritancewithinmodule.Light', 'parent class'
-    assert inheritance.target_fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish', 'child class'
+    assert len(domain_relations) == 1, '1 composition'
+    assert_relation(
+        domain_relations[0],
+        'tests.modules.withconstructor.Point',
+        'tests.modules.withconstructor.Coordinates',
+        RelType.COMPOSITION
+    )

@@ -76,6 +76,7 @@ This will output the following PlantUML script:
 class py2puml.domain.umlclass.UmlAttribute {
   name: str
   type: str
+  static: bool
 }
 class py2puml.domain.umlclass.UmlClass {
   attributes: List[UmlAttribute]
@@ -92,8 +93,8 @@ class py2puml.domain.umlenum.UmlEnum {
   members: List[Member]
 }
 enum py2puml.domain.umlrelation.RelType {
-  COMPOSITION: *
-  INHERITANCE: <|
+  COMPOSITION: * {static}
+  INHERITANCE: <| {static}
 }
 class py2puml.domain.umlrelation.UmlRelation {
   source_fqdn: str
@@ -110,7 +111,7 @@ py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 
 Using PlantUML, this script renders this diagram:
 
-![py2puml UML Diagram](https://www.plantuml.com/plantuml/png/ZP91IyGm48Nl-HKvBsmF7iiUTbaA1jnMQZs9I7OxIY19Qp8H5jV_xZIse5GsFULrQBvvCozRZz9XC9gTjFIUz-URdhwojZDIsOnah6UFHkyGdJe61Fx9EBVIGCuzEj9uxaVzbSRi1n4HSWBwdDyfZq-_cpnVOIa4Cw04dJCph--jJPa16qns07C4Dxl_8NM0HG1oKD0P2IR2fa5-qCC8mu__t7UW9QhEPZNeXhON6VlgS5yzY4PKPSvNL13bRL6BPbVkYvnlBdC_SnvvgaSTcRuBxWGlSIbJMjAz0SRItm17BzGc6TzglLxqL5WYlCs5GAbkBB5_CdCzuoKk4Y6pPJkFNj9niotObkhi6m00)
+![py2puml UML Diagram](http://www.plantuml.com/plantuml/png/ZPB1QuCm5CRl-IjoBjJ3Zj93YmWJLXtEdSOOKT-6a4INF0VIzd_VCxPsu51FURwOt_VbVTbR50PR9LaXXRMywHuQ-lBAMebAUrIwllUgv07HL7cBm4-CSoqK-DoYeHgxPgo9XrNXyxok9RiiKuE-S4HnurkVFrKMt_vgli-mAWJLeo9Q9zu-lqljwXa0w5PvHr0vcCdv7o5RM0KW1o6jZg0Sx7QH0TrVeV_nd_C694sjrbuACkkQOS91SdnENg8iIcAVR_XfcEo5TgBuCKoZx107eSztvt5hwd2gG2xJQ-rKRDsQ0ZxkOw8uXVa275ltXA_kI6OnqCrsk-ejiOKuTsS2BQcnXKJ8p7pggrpCYx2LCoSlAnu0suCkgVyB)
 
 For a full overview of the CLI, run:
 

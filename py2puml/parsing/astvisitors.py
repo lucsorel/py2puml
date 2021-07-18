@@ -81,7 +81,7 @@ class ConstructorVisitor(NodeVisitor):
         })
 
     def is_in_variables_namespace(self, variable_id: str) -> bool:
-        return self.get_from_namespace(variable_id) == None
+        return self.get_from_namespace(variable_id) != None
 
     def get_from_namespace(self, variable_id: str) -> Variable:
         return next((
@@ -112,7 +112,7 @@ class ConstructorVisitor(NodeVisitor):
         short_type, full_namespaced_definitions = self.derive_type_annotation_details(node.annotation)
         # if any, there is at most one self-assignment
         for variable in variables_collector.self_attributes:
-            self.uml_attributes.append(UmlAttribute(variable.id, short_type))
+            self.uml_attributes.append(UmlAttribute(variable.id, short_type, False))
             self.extend_relations(full_namespaced_definitions)
 
         # if any, there is at most one typed variable added to the scope
@@ -136,13 +136,13 @@ class ConstructorVisitor(NodeVisitor):
                 short_type, full_namespaced_definitions = self.derive_type_annotation_details(
                     assigned_variable.type_expr
                 )
-                self.uml_attributes.append(UmlAttribute(assigned_variable.id, short_type))
+                self.uml_attributes.append(UmlAttribute(assigned_variable.id, short_type, False))
                 self.extend_relations(full_namespaced_definitions)
 
             else:
                 for variable in variables_collector.self_attributes:
                     short_type, full_namespaced_definitions = self.derive_type_annotation_details(variable.type_expr)
-                    self.uml_attributes.append(UmlAttribute(variable.id, short_type))
+                    self.uml_attributes.append(UmlAttribute(variable.id, short_type, False))
                     self.extend_relations(full_namespaced_definitions)
 
             self.variables_namespace.extend(variables_collector.variables)

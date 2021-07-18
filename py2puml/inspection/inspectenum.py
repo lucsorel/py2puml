@@ -15,7 +15,6 @@ def inspect_enum_type(
         fqdn=enum_type_fqdn,
         members=[
             Member(name=enum_member.name, value=enum_member.value)
-            # for enum_member in enum_type TODO simply this should work
-            for enum_member in enum_type.__members__.values()
+            for enum_member in enum_type
         ]
     )

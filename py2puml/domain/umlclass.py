@@ -7,6 +7,7 @@ from py2puml.domain.umlitem import UmlItem
 class UmlAttribute(object):
     name: str
     type: str
+    static: bool
 
 @dataclass
 class UmlClass(UmlItem):

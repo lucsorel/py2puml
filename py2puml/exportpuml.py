@@ -8,10 +8,12 @@ from py2puml.domain.umlrelation import UmlRelation
 PUML_FILE_START = '@startuml\n'
 PUML_FILE_END = '@enduml\n'
 PUML_ITEM_START_TPL = '{item_type} {item_fqdn} {{\n'
-PUML_ATTR_TPL = '  {attr_name}: {attr_type}\n'
+PUML_ATTR_TPL = '  {attr_name}: {attr_type}{staticity}\n'
 PUML_ITEM_END = '}\n'
 PUML_COMPOSITION_TPL = '{source_fqdn} {rel_type}-- {target_fqdn}\n'
 
+FEATURE_STATIC = ' {static}'
+FEATURE_INSTANCE = ''
 
 def to_puml_content(uml_items: List[UmlItem], uml_relations: List[UmlRelation]) -> Iterable[str]:
     yield PUML_FILE_START
@@ -22,13 +24,13 @@ def to_puml_content(uml_items: List[UmlItem], uml_relations: List[UmlRelation]) 
             uml_enum: UmlEnum = uml_item
             yield PUML_ITEM_START_TPL.format(item_type='enum', item_fqdn=uml_enum.fqdn)
             for member in uml_enum.members:
-                yield PUML_ATTR_TPL.format(attr_name=member.name, attr_type=member.value)
+                yield PUML_ATTR_TPL.format(attr_name=member.name, attr_type=member.value, staticity=FEATURE_STATIC)
             yield PUML_ITEM_END
         elif isinstance(uml_item, UmlClass):
             uml_class: UmlClass = uml_item
             yield PUML_ITEM_START_TPL.format(item_type='class', item_fqdn=uml_class.fqdn)
             for uml_attr in uml_class.attributes:
-                yield PUML_ATTR_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type)
+                yield PUML_ATTR_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type, staticity=FEATURE_STATIC if uml_attr.static else FEATURE_INSTANCE)
             yield PUML_ITEM_END
         else:
             raise TypeError(f'cannot process uml_item of type {uml_item.__class__}')

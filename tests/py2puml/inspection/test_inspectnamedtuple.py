@@ -3,15 +3,15 @@ from typing import Dict, List
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass
 from py2puml.domain.umlrelation import UmlRelation
-from py2puml.inspection.inspectmodule import inspect_type
+from py2puml.inspection.inspectmodule import inspect_domain_definition
 
 from tests.modules.withnamedtuple import Circle
-from tests.py2puml.inspection.test_inspectclass import assert_attribute
+from tests.asserts.attribute import assert_attribute
 
 def test_parse_namedtupled_class():
     domain_items_by_fqdn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
-    inspect_type(Circle, 'tests.modules.withnamedtuple', domain_items_by_fqdn, domain_relations)
+    inspect_domain_definition(Circle, 'tests.modules.withnamedtuple', domain_items_by_fqdn, domain_relations)
 
     umlitems_by_fqdn = list(domain_items_by_fqdn.items())
     assert len(umlitems_by_fqdn) == 1, 'one namedtupled class has been parsed'
@@ -22,8 +22,8 @@ def test_parse_namedtupled_class():
     assert namedtupled_class.name == 'Circle'
     attributes = namedtupled_class.attributes
     assert len(attributes) == 3, 'namedtupled class has 3 attributes'
-    assert_attribute(attributes[0], 'x', 'Any')
-    assert_attribute(attributes[1], 'y', 'Any')
-    assert_attribute(attributes[2], 'radius', 'Any')
+    assert_attribute(attributes[0], 'x', 'Any', False)
+    assert_attribute(attributes[1], 'y', 'Any', False)
+    assert_attribute(attributes[2], 'radius', 'Any', False)
 
     assert len(domain_relations) == 0, 'parsing enum adds no relation'

@@ -2,12 +2,13 @@
 from typing import Dict, Iterable, List, Type
 from types import ModuleType
 
+from dataclasses import is_dataclass
 from enum import Enum
 from inspect import getmembers, isclass
 
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlrelation import UmlRelation
-from py2puml.inspection.inspectclass import inspect_class_type
+from py2puml.inspection.inspectclass import inspect_dataclass_type, inspect_class_type
 from py2puml.inspection.inspectenum import inspect_enum_type
 from py2puml.inspection.inspectnamedtuple import inspect_namedtuple_type
 
@@ -24,7 +25,7 @@ def filter_domain_definitions(module: ModuleType, root_module_name: str) -> Iter
             if definition_module_member is not None:
                 yield definition_type
 
-def inspect_type(
+def inspect_domain_definition(
     definition_type: Type,
     root_module_name: str,
     domain_items_by_fqdn: Dict[str, UmlItem],
@@ -36,6 +37,11 @@ def inspect_type(
             inspect_enum_type(definition_type, definition_type_fqdn, domain_items_by_fqdn)
         elif getattr(definition_type, '_fields', None) is not None:
             inspect_namedtuple_type(definition_type, definition_type_fqdn, domain_items_by_fqdn)
+        elif is_dataclass(definition_type):
+            inspect_dataclass_type(
+                definition_type, definition_type_fqdn,
+                root_module_name, domain_items_by_fqdn, domain_relations
+            )
         else:
             inspect_class_type(
                 definition_type, definition_type_fqdn,
@@ -50,4 +56,4 @@ def inspect_module(
 ):
     # processes only the definitions declared or imported within the given root module
     for definition_type in filter_domain_definitions(domain_item_module, root_module_name):
-        inspect_type(definition_type, root_module_name, domain_items_by_fqdn, domain_relations)
+        inspect_domain_definition(definition_type, root_module_name, domain_items_by_fqdn, domain_relations)

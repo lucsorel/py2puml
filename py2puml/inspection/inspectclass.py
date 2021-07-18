@@ -1,10 +1,14 @@
+
 from typing import Type, List, Dict
+
 from re import compile
+from dataclasses import dataclass
 
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
 from py2puml.domain.umlrelation import UmlRelation, RelType
-from py2puml.utils import inspect_type
+from py2puml.parsing.parseclassconstructor import parse_class_constructor
+from py2puml.utils import inspect_domain_definition
 
 CONCRETE_TYPE_PATTERN = compile("^<(?:class|enum) '([\\.|\\w]+)'>$")
 
@@ -27,21 +31,21 @@ def handle_inheritance_relation(
                 UmlRelation(base_type_fqdn, class_fqdn, RelType.INHERITANCE)
             )
 
-def inspect_class_type(
+def inspect_static_attributes(
     class_type: Type,
     class_type_fqdn: str,
     root_module_name: str,
     domain_items_by_fqdn: Dict[str, UmlItem],
     domain_relations: List[UmlRelation]
-):
-    definition_attrs = []
+) -> List[UmlAttribute]:
+    definition_attrs: List[UmlAttribute] = []
     uml_class = UmlClass(
         name=class_type.__name__,
         fqdn=class_type_fqdn,
         attributes=definition_attrs
     )
     domain_items_by_fqdn[class_type_fqdn] = uml_class
-    # inspect_type(class_type)
+    # inspect_domain_definition(class_type)
     type_annotations = getattr(class_type, '__annotations__', None)
     if type_annotations is not None:
         for attr_name, attr_class in type_annotations.items():
@@ -74,7 +78,42 @@ def inspect_class_type(
                     attr_type = f"{composition_rel}[{', '.join(component_names)}]"
                 else:
                     attr_type = attr_raw_type
-            uml_attr = UmlAttribute(attr_name, attr_type)
+            uml_attr = UmlAttribute(attr_name, attr_type, True)
             definition_attrs.append(uml_attr)
+
+    return definition_attrs
+
+def inspect_class_type(
+    class_type: Type,
+    class_type_fqdn: str,
+    root_module_name: str,
+    domain_items_by_fqdn: Dict[str, UmlItem],
+    domain_relations: List[UmlRelation]
+):
+    attributes = inspect_static_attributes(
+        class_type, class_type_fqdn, root_module_name,
+        domain_items_by_fqdn, domain_relations
+    )
+    instance_attributes, compositions = parse_class_constructor(class_type, class_type_fqdn, root_module_name)
+    attributes.extend(instance_attributes)
+    domain_relations.extend(compositions.values())
+
+    handle_inheritance_relation(class_type, class_type_fqdn, root_module_name, domain_relations)
+
+def inspect_dataclass_type(
+    class_type: Type[dataclass],
+    class_type_fqdn: str,
+    root_module_name: str,
+    domain_items_by_fqdn: Dict[str, UmlItem],
+    domain_relations: List[UmlRelation]
+):
+    for attribute in inspect_static_attributes(
+        class_type,
+        class_type_fqdn,
+        root_module_name,
+        domain_items_by_fqdn,
+        domain_relations
+    ):
+        attribute.static = False
 
     handle_inheritance_relation(class_type, class_type_fqdn, root_module_name, domain_relations)
