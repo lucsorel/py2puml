@@ -9,32 +9,51 @@
   <h1>Python to PlantUML</h1>
 </div>
 
-Generate Plantuml diagrams to document your python code
+Generate PlantUML class diagrams to document the business domain of your Python code.
 
 # How it works
 
+Using code [inspection](https://docs.python.org/3/library/inspect.html) (also called *reflexion* in other programming languages) and abstract tree parsing, `py2puml` produces a class diagram of your business code:
+* using the [PlantUML syntax](https://plantuml.com/en/class-diagram)
+* focuses on the business domain of your application
+* focuses on data structures: static and instance attributes, composition and inheritance relationships
+
 ## Features
 
-From a given path corresponding to a folder containing python code, `py2puml` loads each file as a module and generate a class diagram with the [PlantUML](https://plantuml.com/en/class-diagram) using:
+From a given path corresponding to a folder containing Python code, `py2puml` loads each file as a module and generates a class diagram of its defined datastructures with the [PlantUML](https://plantuml.com/en/class-diagram) using:
 
-* inspection to detect the classes to document (see the [inspect](https://docs.python.org/3/library/inspect.html) module)
-* annotations (the python type hinting syntax) to detect the attributes and their types (see the [typing](https://docs.python.org/3/library/typing.html) module)
-* fields for classes derived from namedtuples
-* composition and inheritance relationships are drawn only between the domain classes (this is designed on purpose, for documentation sake)
+* **[inspection](https://docs.python.org/3/library/inspect.html)** and [type annotations](https://docs.python.org/3/library/typing.html) to detect:
+  * static class attributes and [dataclass](https://docs.python.org/3/library/dataclasses.html) fields
+  * fields of [namedtuples](https://docs.python.org/3/library/collections.html#collections.namedtuple)
+  * members of [enumerations](https://docs.python.org/3/library/enum.html)
+  * composition and inheritance relationships (between your domain classes only, for documentation sake)
+
+* parsing [abstract syntax trees](https://docs.python.org/3/library/ast.html#ast.NodeVisitor) to detect the instance attributes defined in `__init__` constructors
+
+`py2puml` outputs diagrams in PlantUML syntax, which can be saved in text files along your python code and versioned with them.
+To generate image files, use the PlantUML runtime, a docker image of the runtime (see [think/plantuml](https://hub.docker.com/r/think/plantuml)) or of a server (see the CLI documentation below)
 
 ## Current limitations
 
-* type hinting is optional when writing Python code and discarded when it is executed, as mentionned in the [typing official documentation](https://docs.python.org/3/library/typing.html). The quality of the diagram output by `py2puml` depends on the reliability with which the type annotations were written
+* regarding **inspection**
 
-> The Python runtime does not enforce function and variable type annotations. They can be used by third party tools such as type checkers, IDEs, linters, etc.
+  * type hinting is optional when writing Python code and discarded when it is executed, as mentionned in the [typing official documentation](https://docs.python.org/3/library/typing.html). The quality of the diagram output by `py2puml` depends on the reliability with which the type annotations were written
 
-* complex type hints with more than one level of genericity are not properly handled for the moment: `List[MyClass]` or `Dict[str, MyClass]` are handled properly, `Dict[str, List[MyClass]]` is not. If your domain classes (also called business objects or DTOs) have attributes with complex type hints, it may be a code smell indicating that you should write a class which would better represent the business logic. But I may improve this part of the library as well 😀
+  > The Python runtime does not enforce function and variable type annotations. They can be used by third party tools such as type checkers, IDEs, linters, etc.
 
-* `py2puml` outputs diagrams in PlantUML syntax, which can be saved in text files along your python code and versioned with them. To generate image files, use the PlantUML runtime or a docker image (see [think/plantuml](https://hub.docker.com/r/think/plantuml))
+  * complex type hints with more than one level of genericity are not properly handled for the moment: `List[MyClass]` or `Dict[str, MyClass]` are handled properly, `Dict[str, List[MyClass]]` is not.
+  If your domain classes (also called business objects or DTOs) have attributes with complex type hints, it may be a code smell indicating that you should write a class which would better represent the business logic.
+  But I may improve this part of the library as well 😀
 
-* `py2puml` uses features of python 3 (generators for example) and thus won't work with python 2 runtimes. It relies on native python modules and uses no 3rd-party library, except [pytest](https://docs.pytest.org/en/latest/) as a development dependency for running the unit-tests
+* regarding the detection of instance attributes with **AST parsing**:
+  * only constructors are visited, attributes assigned in other functions won't be documented
+  * attribute types are inferred from type annotations:
+    * of the attribute itself
+    * of the variable assigned to the attribute: a signature parameter or a locale variable
+    * to avoid side-effects, no code is executed nor interpreted
 
-If you like tools around PlantUML, you may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project: A webpack loader which converts PlantUML files into images during the webpack processing (useful to [include PlantUML diagrams in your slides](https://github.com/lucsorel/markdown-image-loader/blob/master/README.md#web-based-slideshows) with RevealJS or RemarkJS).
+If you like tools around PlantUML, you may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project:
+a webpack loader which converts PlantUML files into images during the webpack processing (useful to [include PlantUML diagrams in your slides](https://github.com/lucsorel/markdown-image-loader/blob/master/README.md#web-based-slideshows) with RevealJS or RemarkJS).
 
 # Install
 
@@ -64,12 +83,13 @@ pipenv install py2puml
 
 Once `py2puml` is installed at the system level, an eponymous command is available in your environment shell.
 
-For example, to create the diagram of the classes used by `py2puml`, one can use:
+For example, to create the diagram of the classes used by `py2puml`, run:
+
 ```sh
 py2puml py2puml/domain py2puml.domain
 ```
 
-This will output the following PlantUML script:
+This outputs the following PlantUML script:
 
 ```plantuml
 @startuml
@@ -109,7 +129,7 @@ py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
-Using PlantUML, this script renders this diagram:
+Using PlantUML, this script renders [this diagram](http://www.plantuml.com/plantuml/png/ZPB1QuCm5CRl-IjoBjJ3Zj93YmWJLXtEdSOOKT-6a4INF0VIzd_VCxPsu51FURwOt_VbVTbR50PR9LaXXRMywHuQ-lBAMebAUrIwllUgv07HL7cBm4-CSoqK-DoYeHgxPgo9XrNXyxok9RiiKuE-S4HnurkVFrKMt_vgli-mAWJLeo9Q9zu-lqljwXa0w5PvHr0vcCdv7o5RM0KW1o6jZg0Sx7QH0TrVeV_nd_C694sjrbuACkkQOS91SdnENg8iIcAVR_XfcEo5TgBuCKoZx107eSztvt5hwd2gG2xJQ-rKRDsQ0ZxkOw8uXVa275ltXA_kI6OnqCrsk-ejiOKuTsS2BQcnXKJ8p7pggrpCYx2LCoSlAnu0suCkgVyB):
 
 ![py2puml UML Diagram](http://www.plantuml.com/plantuml/png/ZPB1QuCm5CRl-IjoBjJ3Zj93YmWJLXtEdSOOKT-6a4INF0VIzd_VCxPsu51FURwOt_VbVTbR50PR9LaXXRMywHuQ-lBAMebAUrIwllUgv07HL7cBm4-CSoqK-DoYeHgxPgo9XrNXyxok9RiiKuE-S4HnurkVFrKMt_vgli-mAWJLeo9Q9zu-lqljwXa0w5PvHr0vcCdv7o5RM0KW1o6jZg0Sx7QH0TrVeV_nd_C694sjrbuACkkQOS91SdnENg8iIcAVR_XfcEo5TgBuCKoZx107eSztvt5hwd2gG2xJQ-rKRDsQ0ZxkOw8uXVa275ltXA_kI6OnqCrsk-ejiOKuTsS2BQcnXKJ8p7pggrpCYx2LCoSlAnu0suCkgVyB)
 
@@ -129,14 +149,13 @@ Pipe the result of the CLI with a PlantUML server for instantaneous documentatio
 
 ```sh
 # runs a local PlantUML server from a docker container:
-docker run -d -p 1234:8080 --name plantumlserver plantuml/plantuml-server:jetty 
+docker run -d --rm -p 1234:8080 --name plantumlserver plantuml/plantuml-server:jetty 
 
 py2puml py2puml/domain py2puml.domain | curl -X POST --data-binary @- http://localhost:1234/svg/ --output - | display
 
-# stops the container when you don't need it anymore, restarts it later, removes it
+# stops the container when you don't need it anymore, restarts it later
 docker stop plantumlserver
 docker start plantumlserver
-docker rm plantumlserver
 ```
 
 ## Python API
@@ -155,6 +174,7 @@ print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
 with open('py2puml/domain.puml', 'w') as puml_file:
     puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
 ```
+
 * running it (`python3 -m py2puml.example`) will output the previous PlantUML diagram in the terminal and write it in a file.
 
 
