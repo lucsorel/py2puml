@@ -57,6 +57,12 @@ class AssignedVariablesCollector(NodeVisitor):
         if isinstance(node.value, Name) and node.value.id == self.class_self_id:
             self.self_attributes.append(Variable(node.attr, self.annotation))
 
+    def visit_Subscript(self, node: Subscript):
+        '''
+        Assigns a value to a subscript of an existing variable: must be skipped
+        '''
+        pass
+
     def generic_visit(self, node):
         NodeVisitor.generic_visit(self, node)
 
@@ -136,7 +142,11 @@ class ConstructorVisitor(NodeVisitor):
                 short_type, full_namespaced_definitions = self.derive_type_annotation_details(
                     assigned_variable.type_expr
                 )
-                self.uml_attributes.append(UmlAttribute(assigned_variable.id, short_type, False))
+                self.uml_attributes.append(
+                    UmlAttribute(
+                        variables_collector.self_attributes[0].id, short_type, False
+                    )
+                )
                 self.extend_relations(full_namespaced_definitions)
 
             else:

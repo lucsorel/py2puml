@@ -14,6 +14,13 @@ class Point:
     PI: float = 3.14159
     origin = Coordinates(0, 0)
 
+    @staticmethod
+    def from_values(x: int, y: str, u: float, z: List[int]) -> 'Point':
+        return Point(x, y, u, z)
+
+    def get_coordinates(self):
+        return self.x, self.y
+
     def __init__(self, x: int, y: str, u: float, z: List[int]):
         self.coordinates: Coordinates = Coordinates(x, float(y))
         self.day_unit: withenum.TimeUnit = withenum.TimeUnit.DAYS
@@ -28,10 +35,10 @@ class Point:
         self.z = z
         # this assignment should be ignored
         self.z[2]: int = x
-        # u param is overridden here (and re-typed), self.w should be float
+        # u param is overridden here (and re-typed), self.w must be float
         u: int = 0
         self.w = u
         # tuple definition of self.u & self.v (type annotations are not possible)
         self.u, self.v = (1, y)
-        # annotated assignment
+        # annotated assignment with compound type
         self.dates: List[datetime.date] = []
