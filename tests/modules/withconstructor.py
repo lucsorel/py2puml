@@ -21,7 +21,7 @@ class Point:
     def get_coordinates(self):
         return self.x, self.y
 
-    def __init__(self, x: int, y: str, u: float, z: List[int]):
+    def __init__(self, x: int, y: str, unit: str, u: float, z: List[int]):
         self.coordinates: Coordinates = Coordinates(x, float(y))
         self.day_unit: withenum.TimeUnit = withenum.TimeUnit.DAYS
         self.hour_unit: modules.withenum.TimeUnit = modules.withenum.TimeUnit.HOURS
@@ -30,6 +30,8 @@ class Point:
         if x is not None and y is not None:
             self.x = x
             self.y = y
+        # multiple assignments
+        self.x_unit = self.y_unit = z_unit = unit
         # type of self.z should be undefined, z has been overridden without type annotation
         z, (r, t) = str(x) + y, ('r', 't')
         self.z = z

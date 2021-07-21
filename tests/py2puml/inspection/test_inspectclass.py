@@ -34,13 +34,15 @@ def test_inspect_module_should_find_static_and_instance_attributes():
     point_umlitem: UmlClass = domain_items_by_fqdn['tests.modules.withconstructor.Point']
     point_expected_attributes = {
         'PI': ('float', True),
-        # 'origin': (None, True),
+        # 'origin': (None, True), # not annotated class variable -> not handled for now
         'coordinates': ('Coordinates', False),
         'day_unit': ('TimeUnit', False),
         'hour_unit': ('TimeUnit', False),
-        'time_resolution': ('Tuple[str,TimeUnit]', False),
+        'time_resolution': ('Tuple[str, TimeUnit]', False),
         'x': ('int', False),
         'y': ('str', False),
+        'x_unit': ('str', False),
+        'y_unit': ('str', False),
         'z': (None, False),
         'w': ('int', False),
         'u': (None, False),
