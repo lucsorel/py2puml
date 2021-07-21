@@ -57,6 +57,6 @@ def test_cli_help(help_command: List[str]):
     help_text = run(command,
         stdout=PIPE, stderr=PIPE,
         text=True, check=True
-    ).stdout
+    ).stdout.replace('\n', ' ')
 
     assert __description__ in help_text

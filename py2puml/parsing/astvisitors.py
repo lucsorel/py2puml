@@ -35,9 +35,12 @@ class SignatureVariablesCollector(NodeVisitor):
         else:
             self.variables.append(variable)
 
-class AssignedVariablesCollector(NodeVisitor):
-    def __init__(self, class_self_id: str, annotation: expr, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class RecursiveVisitor(NodeVisitor):
+    def generic_visit(self, node):
+        NodeVisitor.generic_visit(self, node)
+
+class AssignedVariablesCollector(RecursiveVisitor):
+    def __init__(self, class_self_id: str, annotation: expr):
         self.class_self_id = class_self_id
         self.annotation = annotation
         self.variables: List[Variable] = []
@@ -63,10 +66,7 @@ class AssignedVariablesCollector(NodeVisitor):
         '''
         pass
 
-    def generic_visit(self, node):
-        NodeVisitor.generic_visit(self, node)
-
-class ConstructorVisitor(NodeVisitor):
+class ConstructorVisitor(RecursiveVisitor):
     '''Identifies the assignments done to self in the body of a constructor method'''
     def __init__(self, constructor_source: str, class_name: str, root_fqdn: str, module_resolver: ModuleResolver, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -97,9 +97,6 @@ class ConstructorVisitor(NodeVisitor):
             for variable in self.variables_namespace[::-1]
             if variable.id == variable_id
         ), None)
-
-    def generic_visit(self, node):
-        NodeVisitor.generic_visit(self, node)
 
     def visit_FunctionDef(self, node: FunctionDef):
         # retrieves constructor arguments ('self' reference and typed arguments)
