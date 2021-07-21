@@ -1,5 +1,5 @@
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from ast import (
     NodeVisitor, arg, expr,
@@ -191,13 +191,15 @@ class ConstructorVisitor(NodeVisitor):
                 # characters like '[', ']', ','
                 if compound_type_part in SPLITTING_CHARACTERS:
                     compound_short_type_parts.append(compound_type_part)
+                    if compound_type_part == ',':
+                        compound_short_type_parts.append(' ')
                 # replaces each type definition by its short class name
                 else:
                     full_namespaced_type, short_type = self.module_resolver.resolve_full_namespace_type(
                         compound_type_part
                     )
                     if short_type is None:
-                        print('shortype is none for', compound_type_part, 'in', compound_type_parts)
+                        raise ValueError(f'Could not resolve type {compound_type_part} in module {self.module_resolver.module.__name__}: it needs to be imported explicitely.')
                     else:
                         compound_short_type_parts.append(short_type)
                     associated_types.append(full_namespaced_type)

@@ -40,7 +40,6 @@ class ModuleResolver(object):
         namespaces = partial_dotted_path.split('.')
         leaf_type: Type = reduce(
             search_in_module_or_builtins,
-            # lambda searched_module, namespace: None if searched_module is None else getattr(searched_module, namespace, None),
             namespaces,
             self.module
         )
