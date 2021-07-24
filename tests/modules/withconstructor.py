@@ -23,6 +23,7 @@ class Point:
 
     def __init__(self, x: int, y: str, unit: str, u: float, z: List[int]):
         self.coordinates: Coordinates = Coordinates(x, float(y))
+        # al the different imports of TimeUnit must be handled and result in the same 'short type' to display
         self.day_unit: withenum.TimeUnit = withenum.TimeUnit.DAYS
         self.hour_unit: modules.withenum.TimeUnit = modules.withenum.TimeUnit.HOURS
         self.time_resolution: Tuple[str, withenum.TimeUnit] = 'minute', TimeUnit.MINUTE

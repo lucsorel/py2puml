@@ -196,7 +196,7 @@ poetry run python -m pytest -v --cov=py2puml --cov-report term-missing
 
 # Changelog
 
-* `0.5.0`: handle instance attributes in class constructors
+* `0.5.0`: handle instance attributes in class constructors, add code coverage of unit tests
 * `0.4.0`: add a simple CLI
 * `0.3.1`: inspect sub-folders recursively
 * `0.3.0`: handle classes derived from namedtuples (attribute types are `Any`)

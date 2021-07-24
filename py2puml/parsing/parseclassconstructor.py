@@ -20,12 +20,12 @@ def parse_class_constructor(
     if constructor is None or not hasattr(constructor, '__code__'):
         return [], {}
 
-    constructor_source: str = getsource(constructor.__code__)
-    constructor_ast: AST = parse(dedent(constructor_source))
+    constructor_source: str = dedent(getsource(constructor.__code__))
+    constructor_ast: AST = parse(constructor_source)
 
     module_resolver = ModuleResolver(import_module(class_type.__module__))
 
-    visitor = ConstructorVisitor(dedent(constructor_source), class_type.__name__, root_module_name, module_resolver)
+    visitor = ConstructorVisitor(constructor_source, class_type.__name__, root_module_name, module_resolver)
     visitor.visit(constructor_ast)
 
     return visitor.uml_attributes, visitor.uml_relations_by_target_fqdn

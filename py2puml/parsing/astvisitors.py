@@ -35,14 +35,12 @@ class SignatureVariablesCollector(NodeVisitor):
         else:
             self.variables.append(variable)
 
-class RecursiveVisitor(NodeVisitor):
-    def generic_visit(self, node):
-        NodeVisitor.generic_visit(self, node)
 
-class AssignedVariablesCollector(RecursiveVisitor):
+class AssignedVariablesCollector(NodeVisitor):
+    '''Parses the target of an assignment statement to detect whether the value is assigned to a variable or an instance attribute'''
     def __init__(self, class_self_id: str, annotation: expr):
-        self.class_self_id = class_self_id
-        self.annotation = annotation
+        self.class_self_id: str = class_self_id
+        self.annotation: expr = annotation
         self.variables: List[Variable] = []
         self.self_attributes: List[Variable] = []
 
@@ -66,8 +64,9 @@ class AssignedVariablesCollector(RecursiveVisitor):
         '''
         pass
 
-class ConstructorVisitor(RecursiveVisitor):
-    '''Identifies the assignments done to self in the body of a constructor method'''
+
+class ConstructorVisitor(NodeVisitor):
+    '''Identifies the attributes (and infer their type) assigned to self in the body of a constructor method'''
     def __init__(self, constructor_source: str, class_name: str, root_fqdn: str, module_resolver: ModuleResolver, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.constructor_source = constructor_source
@@ -97,6 +96,9 @@ class ConstructorVisitor(RecursiveVisitor):
             for variable in self.variables_namespace[::-1]
             if variable.id == variable_id
         ), None)
+
+    def generic_visit(self, node):
+        NodeVisitor.generic_visit(self, node)
 
     def visit_FunctionDef(self, node: FunctionDef):
         # retrieves constructor arguments ('self' reference and typed arguments)
@@ -152,6 +154,7 @@ class ConstructorVisitor(RecursiveVisitor):
                     self.uml_attributes.append(UmlAttribute(variable.id, short_type, False))
                     self.extend_relations(full_namespaced_definitions)
 
+            # other assignments were done in new variables that can shadow existing ones
             self.variables_namespace.extend(variables_collector.variables)
 
 
@@ -178,7 +181,6 @@ class ConstructorVisitor(RecursiveVisitor):
             return short_type, [full_namespaced_type]
         # compound type (List[...], Tuple[Dict[str, float], module.DomainType], etc.)
         elif isinstance(annotation, Subscript):
-            # compound_type: str = get_source_segment(self.constructor_source, annotation)
             compound_type_parts: List[str] = CompoundTypeSplitter(
                 get_source_segment(self.constructor_source, annotation)
             ).get_parts()
