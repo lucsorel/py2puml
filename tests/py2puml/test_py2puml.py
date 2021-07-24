@@ -14,7 +14,7 @@ def test_py2puml_model_on_py2uml_domain():
     with open(domain_diagram_file_path, 'r') as expected_puml_file:
         puml_content = list(py2puml.py2puml('py2puml/domain', 'py2puml.domain'))
         for line_index, (actual_line, expected_line) in enumerate(zip(puml_content, expected_puml_file)):
-            assert actual_line == expected_line, f'updated and versionned content {domain_diagram_file_name} in line {line_index} has changed'
+            assert actual_line == expected_line, f'updated and versionned content {domain_diagram_file_path} in line {line_index} has changed'
         
         assert line_index + 1 == len(puml_content), f'actual and expected diagrams have {line_index + 1} lines'
 
