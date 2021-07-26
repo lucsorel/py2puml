@@ -19,7 +19,7 @@ def test_inspect_domain_definition_single_class_without_composition():
     inspect_domain_definition(Contact, 'tests.modules.withbasictypes', domain_items_by_fqdn, domain_relations)
 
     umlitems_by_fqdn = list(domain_items_by_fqdn.items())
-    assert len(umlitems_by_fqdn) == 1, 'one class was inspected'
+    assert len(umlitems_by_fqdn) == 1, 'one class must be inspected'
 
     umlclass: UmlClass
     fqdn, umlclass = umlitems_by_fqdn[0]
@@ -33,14 +33,14 @@ def test_inspect_domain_definition_single_class_without_composition():
     assert_attribute(attributes[2], 'weight', 'float', False)
     assert_attribute(attributes[3], 'can_twist_tongue', 'bool', False)
 
-    assert len(domain_relations) == 0, 'class has no component'
+    assert len(domain_relations) == 0, 'no component must be detected in this class'
 
 def test_inspect_domain_definition_single_class_with_composition():
     domain_items_by_fqdn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
     inspect_domain_definition(Worker, 'tests.modules.withcomposition', domain_items_by_fqdn, domain_relations)
 
-    assert len(domain_items_by_fqdn) == 1, 'one class was inspected'
+    assert len(domain_items_by_fqdn) == 1, 'one class must be inspected'
 
     assert len(domain_relations) == 1, 'class has 1 domain component'
     assert_relation(
@@ -62,7 +62,7 @@ def test_parse_inheritance_within_module():
     assert child_glowing_fish.name == 'GlowingFish'
     assert child_glowing_fish.fqdn == 'tests.modules.withinheritancewithinmodule.GlowingFish'
 
-    assert len(domain_relations) == 2, '2 inheritance relations were inspected'
+    assert len(domain_relations) == 2, '2 inheritance relations must be inspected'
     parent_fish, parent_light = domain_relations
 
     assert_relation(

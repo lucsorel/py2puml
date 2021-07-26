@@ -4,6 +4,7 @@ from tests.modules import withenum
 from tests import modules
 from tests.modules.withenum import TimeUnit
 import datetime
+from math import pi
 
 class Coordinates:
     def __init__(self, x: float, y: float):
@@ -11,7 +12,7 @@ class Coordinates:
         self.y = y
 
 class Point:
-    PI: float = 3.14159
+    PI: float = pi
     origin = Coordinates(0, 0)
 
     @staticmethod

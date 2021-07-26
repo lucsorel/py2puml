@@ -32,7 +32,7 @@ def test_SignatureVariablesCollector_collect_arguments():
     collector.visit(constructor_ast)
 
     assert collector.class_self_id == 'me'
-    assert len(collector.variables) == 6, 'detected all the arguments'
+    assert len(collector.variables) == 6, 'all the arguments must be detected'
     assert_Variable(collector.variables[0], 'an_int', 'int', constructor_source)
     assert_Variable(collector.variables[1], 'an_untyped', None, constructor_source)
     assert_Variable(collector.variables[2], 'a_compound_type', 'Tuple[float, Dict[str, List[bool]]]', constructor_source)

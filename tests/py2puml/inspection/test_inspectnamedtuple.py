@@ -14,16 +14,16 @@ def test_parse_namedtupled_class():
     inspect_domain_definition(Circle, 'tests.modules.withnamedtuple', domain_items_by_fqdn, domain_relations)
 
     umlitems_by_fqdn = list(domain_items_by_fqdn.items())
-    assert len(umlitems_by_fqdn) == 1, 'one namedtupled class has been parsed'
+    assert len(umlitems_by_fqdn) == 1, 'one namedtuple must be inspected'
     namedtupled_class: UmlClass
     fqdn, namedtupled_class = umlitems_by_fqdn[0]
     assert fqdn == 'tests.modules.withnamedtuple.Circle'
     assert namedtupled_class.fqdn == fqdn
     assert namedtupled_class.name == 'Circle'
     attributes = namedtupled_class.attributes
-    assert len(attributes) == 3, 'namedtupled class has 3 attributes'
+    assert len(attributes) == 3, '3 attributes must be detected in the namedtupled class'
     assert_attribute(attributes[0], 'x', 'Any', False)
     assert_attribute(attributes[1], 'y', 'Any', False)
     assert_attribute(attributes[2], 'radius', 'Any', False)
 
-    assert len(domain_relations) == 0, 'parsing enum adds no relation'
+    assert len(domain_relations) == 0, 'inspecting namedtuple must add no relation'

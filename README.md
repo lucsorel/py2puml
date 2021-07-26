@@ -13,14 +13,13 @@ Generate PlantUML class diagrams to document the business domain of your Python 
 
 # How it works
 
-Using code [inspection](https://docs.python.org/3/library/inspect.html) (also called *reflexion* in other programming languages) and abstract tree parsing, `py2puml` produces a class diagram of your business code:
-* using the [PlantUML syntax](https://plantuml.com/en/class-diagram)
-* focuses on the business domain of your application
-* focuses on data structures: static and instance attributes, composition and inheritance relationships
+`py2puml` produces a class diagram [PlantUML script](https://plantuml.com/en/class-diagram) representing classes properties (static and instance attributes) and their relations (composition and inheritance relationships).
+
+`py2puml` internally uses code [inspection](https://docs.python.org/3/library/inspect.html) (also called *reflexion* in other programming languages) and [abstract tree parsing](https://docs.python.org/3/library/ast.html) to retrieve relevant information.
 
 ## Features
 
-From a given path corresponding to a folder containing Python code, `py2puml` loads each file as a module and generates a class diagram of its defined datastructures with the [PlantUML](https://plantuml.com/en/class-diagram) using:
+From a given path corresponding to a folder containing Python code, `py2puml` processes each file as a module and generates a [PlantUML script](https://plantuml.com/en/class-diagram) of its classe-like definitions using:
 
 * **[inspection](https://docs.python.org/3/library/inspect.html)** and [type annotations](https://docs.python.org/3/library/typing.html) to detect:
   * static class attributes and [dataclass](https://docs.python.org/3/library/dataclasses.html) fields
@@ -32,25 +31,6 @@ From a given path corresponding to a folder containing Python code, `py2puml` lo
 
 `py2puml` outputs diagrams in PlantUML syntax, which can be saved in text files along your python code and versioned with them.
 To generate image files, use the PlantUML runtime, a docker image of the runtime (see [think/plantuml](https://hub.docker.com/r/think/plantuml)) or of a server (see the CLI documentation below)
-
-## Current limitations
-
-* regarding **inspection**
-
-  * type hinting is optional when writing Python code and discarded when it is executed, as mentionned in the [typing official documentation](https://docs.python.org/3/library/typing.html). The quality of the diagram output by `py2puml` depends on the reliability with which the type annotations were written
-
-  > The Python runtime does not enforce function and variable type annotations. They can be used by third party tools such as type checkers, IDEs, linters, etc.
-
-  * complex type hints with more than one level of genericity are not properly handled for the moment: `List[MyClass]` or `Dict[str, MyClass]` are handled properly, `Dict[str, List[MyClass]]` is not.
-  If your domain classes (also called business objects or DTOs) have attributes with complex type hints, it may be a code smell indicating that you should write a class which would better represent the business logic.
-  But I may improve this part of the library as well 😀
-
-* regarding the detection of instance attributes with **AST parsing**:
-  * only constructors are visited, attributes assigned in other functions won't be documented
-  * attribute types are inferred from type annotations:
-    * of the attribute itself
-    * of the variable assigned to the attribute: a signature parameter or a locale variable
-    * to avoid side-effects, no code is executed nor interpreted
 
 If you like tools around PlantUML, you may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project:
 a webpack loader which converts PlantUML files into images during the webpack processing (useful to [include PlantUML diagrams in your slides](https://github.com/lucsorel/markdown-image-loader/blob/master/README.md#web-based-slideshows) with RevealJS or RemarkJS).
@@ -215,6 +195,24 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 
 Pull-requests are welcome and will be processed on a best-effort basis.
 
+# Current limitations
+
+* regarding **inspection**
+
+  * type hinting is optional when writing Python code and discarded when it is executed, as mentionned in the [typing official documentation](https://docs.python.org/3/library/typing.html). The quality of the diagram output by `py2puml` depends on the reliability with which the type annotations were written
+
+  > The Python runtime does not enforce function and variable type annotations. They can be used by third party tools such as type checkers, IDEs, linters, etc.
+
+  * complex type hints with more than one level of genericity are not properly handled for the moment: `List[MyClass]` or `Dict[str, MyClass]` are handled properly, `Dict[str, List[MyClass]]` is not.
+  If your domain classes (also called business objects or DTOs) have attributes with complex type hints, it may be a code smell indicating that you should write a class which would better represent the business logic.
+  But I may improve this part of the library as well 😀
+
+* regarding the detection of instance attributes with **AST parsing**:
+  * only constructors are visited, attributes assigned in other functions won't be documented
+  * attribute types are inferred from type annotations:
+    * of the attribute itself
+    * of the variable assigned to the attribute: a signature parameter or a locale variable
+    * to avoid side-effects, no code is executed nor interpreted
 
 # Alternatives
 

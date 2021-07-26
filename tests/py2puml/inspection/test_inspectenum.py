@@ -18,7 +18,7 @@ def test_inspect_enum_type():
     inspect_domain_definition(TimeUnit, 'tests.modules.withenum', domain_items_by_fqdn, domain_relations)
 
     umlitems_by_fqdn = list(domain_items_by_fqdn.items())
-    assert len(umlitems_by_fqdn) == 1, 'one enum has been parsed'
+    assert len(umlitems_by_fqdn) == 1, 'one enum must be inspected'
     umlenum: UmlEnum
     fqdn, umlenum = umlitems_by_fqdn[0]
     assert fqdn == 'tests.modules.withenum.TimeUnit'
@@ -30,4 +30,4 @@ def test_inspect_enum_type():
     assert_member(members[1], 'HOURS', 'h')
     assert_member(members[2], 'MINUTE', 'm')
 
-    assert len(domain_relations) == 0, 'parsing enum adds no relation'
+    assert len(domain_relations) == 0, 'inspecting enum must add no relation'

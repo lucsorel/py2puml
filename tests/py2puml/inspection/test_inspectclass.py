@@ -21,11 +21,11 @@ def test_inspect_module_should_find_static_and_instance_attributes():
         domain_items_by_fqdn, domain_relations
     )
 
-    assert len(domain_items_by_fqdn) == 2, 'two classes were inspected'
+    assert len(domain_items_by_fqdn) == 2, 'two classes must be inspected'
 
     # Coordinates UmlClass
     coordinates_umlitem: UmlClass = domain_items_by_fqdn['tests.modules.withconstructor.Coordinates']
-    assert len(coordinates_umlitem.attributes) == 2, '2 attributes of Coordinates were inspected'
+    assert len(coordinates_umlitem.attributes) == 2, '2 attributes of Coordinates must be inspected'
     x_attribute, y_attribute = coordinates_umlitem.attributes
     assert_attribute(x_attribute, 'x', 'float', False)
     assert_attribute(y_attribute, 'y', 'float', False)
@@ -56,7 +56,7 @@ def test_inspect_module_should_find_static_and_instance_attributes():
             for attribute in point_umlitem.attributes
             if attribute.name == attribute_name
         ), None)
-        assert point_attribute is not None, f'attribute {attribute_name} has been detected'
+        assert point_attribute is not None, f'attribute {attribute_name} must be detected'
         assert_attribute(point_attribute, attribute_name, atrribute_type, attribute_staticity)
 
     # Coordinates is a component of Point
