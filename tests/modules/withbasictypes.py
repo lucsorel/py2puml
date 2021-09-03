@@ -1,4 +1,8 @@
 
+from dataclasses import dataclass
+
+
+@dataclass
 class Contact(object):
     full_name: str
     age: int

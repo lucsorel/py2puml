@@ -1,0 +1,35 @@
+@startuml
+class py2puml.domain.umlclass.UmlAttribute {
+  name: str
+  type: str
+  static: bool
+}
+class py2puml.domain.umlclass.UmlClass {
+  attributes: List[UmlAttribute]
+}
+class py2puml.domain.umlitem.UmlItem {
+  name: str
+  fqn: str
+}
+class py2puml.domain.umlenum.Member {
+  name: str
+  value: str
+}
+class py2puml.domain.umlenum.UmlEnum {
+  members: List[Member]
+}
+enum py2puml.domain.umlrelation.RelType {
+  COMPOSITION: * {static}
+  INHERITANCE: <| {static}
+}
+class py2puml.domain.umlrelation.UmlRelation {
+  source_fqn: str
+  target_fqn: str
+  type: RelType
+}
+py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
+py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlclass.UmlClass
+py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
+py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlenum.UmlEnum
+py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
+@enduml

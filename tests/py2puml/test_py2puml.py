@@ -1,45 +1,22 @@
 
+from pathlib import Path
+
+from py2puml.py2puml import py2puml
+
+CURRENT_DIR = Path(__file__).parent
 from py2puml import py2puml
 
 
 def test_py2puml_model_on_py2uml_domain():
-    expected = """@startuml
-class py2puml.domain.umlclass.UmlAttribute {
-  name: str
-  type: str
-}
-class py2puml.domain.umlclass.UmlClass {
-  attributes: List[UmlAttribute]
-}
-class py2puml.domain.umlitem.UmlItem {
-  name: str
-  fqdn: str
-}
-class py2puml.domain.umlenum.Member {
-  name: str
-  value: str
-}
-class py2puml.domain.umlenum.UmlEnum {
-  members: List[Member]
-}
-enum py2puml.domain.umlrelation.RelType {
-  COMPOSITION: *
-  INHERITANCE: <|
-}
-class py2puml.domain.umlrelation.UmlRelation {
-  source_fqdn: str
-  target_fqdn: str
-  type: RelType
-}
-py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
-py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlclass.UmlClass
-py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
-py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlenum.UmlEnum
-py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
-@enduml
-"""
-    puml_content = py2puml.py2puml('py2puml/domain', 'py2puml.domain')
-    assert ''.join(puml_content) == expected
+    domain_diagram_file_path = CURRENT_DIR.parent.parent / 'py2puml' / 'py2puml.domain.puml'
+
+    # reads the existing class diagram (update it with `python -m py2puml.example`)
+    with open(domain_diagram_file_path, 'r') as expected_puml_file:
+        puml_content = list(py2puml.py2puml('py2puml/domain', 'py2puml.domain'))
+        for line_index, (actual_line, expected_line) in enumerate(zip(puml_content, expected_puml_file)):
+            assert actual_line == expected_line, f'updated and versionned content {domain_diagram_file_path} in line {line_index} has changed'
+        
+        assert line_index + 1 == len(puml_content), f'actual and expected diagrams have {line_index + 1} lines'
 
 
 def test_py2puml_with_subdomain():
