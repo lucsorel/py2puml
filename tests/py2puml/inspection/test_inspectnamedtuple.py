@@ -9,16 +9,16 @@ from tests.modules.withnamedtuple import Circle
 from tests.asserts.attribute import assert_attribute
 
 def test_parse_namedtupled_class():
-    domain_items_by_fqdn: Dict[str, UmlItem] = {}
+    domain_items_by_fqn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
-    inspect_domain_definition(Circle, 'tests.modules.withnamedtuple', domain_items_by_fqdn, domain_relations)
+    inspect_domain_definition(Circle, 'tests.modules.withnamedtuple', domain_items_by_fqn, domain_relations)
 
-    umlitems_by_fqdn = list(domain_items_by_fqdn.items())
-    assert len(umlitems_by_fqdn) == 1, 'one namedtuple must be inspected'
+    umlitems_by_fqn = list(domain_items_by_fqn.items())
+    assert len(umlitems_by_fqn) == 1, 'one namedtuple must be inspected'
     namedtupled_class: UmlClass
-    fqdn, namedtupled_class = umlitems_by_fqdn[0]
-    assert fqdn == 'tests.modules.withnamedtuple.Circle'
-    assert namedtupled_class.fqdn == fqdn
+    fqn, namedtupled_class = umlitems_by_fqn[0]
+    assert fqn == 'tests.modules.withnamedtuple.Circle'
+    assert namedtupled_class.fqn == fqn
     assert namedtupled_class.name == 'Circle'
     attributes = namedtupled_class.attributes
     assert len(attributes) == 3, '3 attributes must be detected in the namedtupled class'

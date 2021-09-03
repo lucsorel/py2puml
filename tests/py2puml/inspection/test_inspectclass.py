@@ -13,25 +13,25 @@ from tests.asserts.relation import assert_relation
 
 
 def test_inspect_module_should_find_static_and_instance_attributes():
-    domain_items_by_fqdn: Dict[str, UmlItem] = {}
+    domain_items_by_fqn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
     inspect_module(
         import_module('tests.modules.withconstructor'),
         'tests.modules.withconstructor',
-        domain_items_by_fqdn, domain_relations
+        domain_items_by_fqn, domain_relations
     )
 
-    assert len(domain_items_by_fqdn) == 2, 'two classes must be inspected'
+    assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
 
     # Coordinates UmlClass
-    coordinates_umlitem: UmlClass = domain_items_by_fqdn['tests.modules.withconstructor.Coordinates']
+    coordinates_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withconstructor.Coordinates']
     assert len(coordinates_umlitem.attributes) == 2, '2 attributes of Coordinates must be inspected'
     x_attribute, y_attribute = coordinates_umlitem.attributes
     assert_attribute(x_attribute, 'x', 'float', False)
     assert_attribute(y_attribute, 'y', 'float', False)
 
     # Point UmlClass
-    point_umlitem: UmlClass = domain_items_by_fqdn['tests.modules.withconstructor.Point']
+    point_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withconstructor.Point']
     point_expected_attributes = {
         'PI': ('float', True),
         # 'origin': (None, True), # not annotated class variable -> not handled for now

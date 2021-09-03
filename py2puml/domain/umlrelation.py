@@ -8,6 +8,6 @@ class RelType(Enum):
 
 @dataclass
 class UmlRelation(object):
-    source_fqdn: str
-    target_fqdn: str
+    source_fqn: str
+    target_fqn: str
     type: RelType

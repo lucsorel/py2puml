@@ -67,26 +67,23 @@ class AssignedVariablesCollector(NodeVisitor):
 
 class ConstructorVisitor(NodeVisitor):
     '''Identifies the attributes (and infer their type) assigned to self in the body of a constructor method'''
-    def __init__(self, constructor_source: str, class_name: str, root_fqdn: str, module_resolver: ModuleResolver, *args, **kwargs):
+    def __init__(self, constructor_source: str, class_name: str, root_fqn: str, module_resolver: ModuleResolver, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.constructor_source = constructor_source
-        self.class_fqdn: str = f'{module_resolver.module.__name__}.{class_name}'
-        self.root_fqdn = root_fqdn
+        self.class_fqn: str = f'{module_resolver.module.__name__}.{class_name}'
+        self.root_fqn = root_fqn
         self.module_resolver = module_resolver
-        self.class_self_id: str = None
+        self.class_self_id: str
         self.variables_namespace: List[Variable] = []
         self.uml_attributes: List[UmlAttribute] = []
-        self.uml_relations_by_target_fqdn: Dict[str, UmlRelation] = {}
+        self.uml_relations_by_target_fqn: Dict[str, UmlRelation] = {}
 
-    def extend_relations(self, target_fqdns: List[str]):
-        self.uml_relations_by_target_fqdn.update({
-            target_fqdn: UmlRelation(self.class_fqdn, target_fqdn, RelType.COMPOSITION)
-            for target_fqdn in target_fqdns
-            if target_fqdn.startswith(self.root_fqdn) and target_fqdn not in self.uml_relations_by_target_fqdn
+    def extend_relations(self, target_fqns: List[str]):
+        self.uml_relations_by_target_fqn.update({
+            target_fqn: UmlRelation(self.class_fqn, target_fqn, RelType.COMPOSITION)
+            for target_fqn in target_fqns
+            if target_fqn.startswith(self.root_fqn) and target_fqn not in self.uml_relations_by_target_fqn
         })
-
-    def is_in_variables_namespace(self, variable_id: str) -> bool:
-        return self.get_from_namespace(variable_id) != None
 
     def get_from_namespace(self, variable_id: str) -> Variable:
         return next((
@@ -117,7 +114,7 @@ class ConstructorVisitor(NodeVisitor):
         short_type, full_namespaced_definitions = self.derive_type_annotation_details(node.annotation)
         # if any, there is at most one self-assignment
         for variable in variables_collector.self_attributes:
-            self.uml_attributes.append(UmlAttribute(variable.id, short_type, False))
+            self.uml_attributes.append(UmlAttribute(variable.id, short_type, static=False))
             self.extend_relations(full_namespaced_definitions)
 
         # if any, there is at most one typed variable added to the scope
@@ -134,24 +131,23 @@ class ConstructorVisitor(NodeVisitor):
                 len(variables_collector.self_attributes) == 1
             ) and (
                 isinstance(node.value, Name)
-            ) and (
-                self.is_in_variables_namespace(node.value.id)
             ):
                 assigned_variable = self.get_from_namespace(node.value.id)
-                short_type, full_namespaced_definitions = self.derive_type_annotation_details(
-                    assigned_variable.type_expr
-                )
-                self.uml_attributes.append(
-                    UmlAttribute(
-                        variables_collector.self_attributes[0].id, short_type, False
+                if assigned_variable is not None:
+                    short_type, full_namespaced_definitions = self.derive_type_annotation_details(
+                        assigned_variable.type_expr
                     )
-                )
-                self.extend_relations(full_namespaced_definitions)
+                    self.uml_attributes.append(
+                        UmlAttribute(
+                            variables_collector.self_attributes[0].id, short_type, False
+                        )
+                    )
+                    self.extend_relations(full_namespaced_definitions)
 
             else:
                 for variable in variables_collector.self_attributes:
                     short_type, full_namespaced_definitions = self.derive_type_annotation_details(variable.type_expr)
-                    self.uml_attributes.append(UmlAttribute(variable.id, short_type, False))
+                    self.uml_attributes.append(UmlAttribute(variable.id, short_type, static=False))
                     self.extend_relations(full_namespaced_definitions)
 
             # other assignments were done in new variables that can shadow existing ones

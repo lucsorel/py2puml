@@ -9,7 +9,7 @@ class py2puml.domain.umlclass.UmlClass {
 }
 class py2puml.domain.umlitem.UmlItem {
   name: str
-  fqdn: str
+  fqn: str
 }
 class py2puml.domain.umlenum.Member {
   name: str
@@ -23,8 +23,8 @@ enum py2puml.domain.umlrelation.RelType {
   INHERITANCE: <| {static}
 }
 class py2puml.domain.umlrelation.UmlRelation {
-  source_fqdn: str
-  target_fqdn: str
+  source_fqn: str
+  target_fqn: str
   type: RelType
 }
 py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute

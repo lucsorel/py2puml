@@ -9,7 +9,7 @@
   <h1>Python to PlantUML</h1>
 </div>
 
-Generate PlantUML class diagrams to document the business domain of your Python code.
+Generate PlantUML class diagrams to document your Python application.
 
 # How it works
 
@@ -29,10 +29,13 @@ From a given path corresponding to a folder containing Python code, `py2puml` pr
 
 * parsing [abstract syntax trees](https://docs.python.org/3/library/ast.html#ast.NodeVisitor) to detect the instance attributes defined in `__init__` constructors
 
-`py2puml` outputs diagrams in PlantUML syntax, which can be saved in text files along your python code and versioned with them.
+`py2puml` outputs diagrams in PlantUML syntax, which can be:
+* versioned along your code with a unit-test ensuring its consistency (see the [test_py2puml.py's test_py2puml_model_on_py2uml_domain](tests/py2puml/test_py2puml.py) example)
+* generated and hosted along other code documentation (better option: generated documentation should not be versioned with the codebase)
+
 To generate image files, use the PlantUML runtime, a docker image of the runtime (see [think/plantuml](https://hub.docker.com/r/think/plantuml)) or of a server (see the CLI documentation below)
 
-If you like tools around PlantUML, you may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project:
+If you like tools related with PlantUML, you may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project:
 a webpack loader which converts PlantUML files into images during the webpack processing (useful to [include PlantUML diagrams in your slides](https://github.com/lucsorel/markdown-image-loader/blob/master/README.md#web-based-slideshows) with RevealJS or RemarkJS).
 
 # Install
@@ -83,7 +86,7 @@ class py2puml.domain.umlclass.UmlClass {
 }
 class py2puml.domain.umlitem.UmlItem {
   name: str
-  fqdn: str
+  fqn: str
 }
 class py2puml.domain.umlenum.Member {
   name: str
@@ -97,8 +100,8 @@ enum py2puml.domain.umlrelation.RelType {
   INHERITANCE: <| {static}
 }
 class py2puml.domain.umlrelation.UmlRelation {
-  source_fqdn: str
-  target_fqdn: str
+  source_fqn: str
+  target_fqn: str
   type: RelType
 }
 py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
@@ -109,9 +112,9 @@ py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
-Using PlantUML, this script renders [this diagram](http://www.plantuml.com/plantuml/png/ZPB1QuCm5CRl-IjoBjJ3Zj93YmWJLXtEdSOOKT-6a4INF0VIzd_VCxPsu51FURwOt_VbVTbR50PR9LaXXRMywHuQ-lBAMebAUrIwllUgv07HL7cBm4-CSoqK-DoYeHgxPgo9XrNXyxok9RiiKuE-S4HnurkVFrKMt_vgli-mAWJLeo9Q9zu-lqljwXa0w5PvHr0vcCdv7o5RM0KW1o6jZg0Sx7QH0TrVeV_nd_C694sjrbuACkkQOS91SdnENg8iIcAVR_XfcEo5TgBuCKoZx107eSztvt5hwd2gG2xJQ-rKRDsQ0ZxkOw8uXVa275ltXA_kI6OnqCrsk-ejiOKuTsS2BQcnXKJ8p7pggrpCYx2LCoSlAnu0suCkgVyB):
+Using PlantUML, this script renders this diagram:
 
-![py2puml UML Diagram](http://www.plantuml.com/plantuml/png/ZPB1QuCm5CRl-IjoBjJ3Zj93YmWJLXtEdSOOKT-6a4INF0VIzd_VCxPsu51FURwOt_VbVTbR50PR9LaXXRMywHuQ-lBAMebAUrIwllUgv07HL7cBm4-CSoqK-DoYeHgxPgo9XrNXyxok9RiiKuE-S4HnurkVFrKMt_vgli-mAWJLeo9Q9zu-lqljwXa0w5PvHr0vcCdv7o5RM0KW1o6jZg0Sx7QH0TrVeV_nd_C694sjrbuACkkQOS91SdnENg8iIcAVR_XfcEo5TgBuCKoZx107eSztvt5hwd2gG2xJQ-rKRDsQ0ZxkOw8uXVa275ltXA_kI6OnqCrsk-ejiOKuTsS2BQcnXKJ8p7pggrpCYx2LCoSlAnu0suCkgVyB)
+![py2puml UML Diagram](http://www.plantuml.com/plantuml/png/ZPB1Qy8m5CRl-IlUMR277Oi7HOGLfXrTTnfZfFLj59AqIru7elxlUuqQ1ewcftmcvlTzUL-NZgIbNYjHA-aST8U7Zdyb-rRBnYGi_NxogjMAo3PLJmX70M2anXGSMTPqw89c7ZLr2bNRAd6EKzU3y4HvuxiKdXf7RtyztqTO3Q4UK1clTza-lusN8_VHz3hPegxGtbt_aQh7IG0EiE7L4xI7tTvnGGyl6FxuptsBYeVMcgH0LV8iFMETRv_pbwpCybqACpXU1dlcasptk2coShLRRr9OdC9HI3ZYm2cBg_OkhkrjZHzXIW0axHTIs0drNhEnIRJDsNm-wKCIaIuN9mR5t4Ia3muptlca5ECcOjh4VPPu_MA9Pi_xlm00)
 
 For a full overview of the CLI, run:
 
@@ -168,10 +171,10 @@ poetry run python -m pytest -v
 python3 -m pytest -v
 ```
 
-Code coverage (with missed statements):
+Code coverage (with missed [branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
 
 ```sh
-poetry run python -m pytest -v --cov=py2puml --cov-report term-missing
+poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 90
 ```
 
 # Changelog

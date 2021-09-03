@@ -28,32 +28,32 @@ def filter_domain_definitions(module: ModuleType, root_module_name: str) -> Iter
 def inspect_domain_definition(
     definition_type: Type,
     root_module_name: str,
-    domain_items_by_fqdn: Dict[str, UmlItem],
+    domain_items_by_fqn: Dict[str, UmlItem],
     domain_relations: List[UmlRelation]
 ):
-    definition_type_fqdn = f'{definition_type.__module__}.{definition_type.__name__}'
-    if definition_type_fqdn not in domain_items_by_fqdn:
+    definition_type_fqn = f'{definition_type.__module__}.{definition_type.__name__}'
+    if definition_type_fqn not in domain_items_by_fqn:
         if issubclass(definition_type, Enum):
-            inspect_enum_type(definition_type, definition_type_fqdn, domain_items_by_fqdn)
+            inspect_enum_type(definition_type, definition_type_fqn, domain_items_by_fqn)
         elif getattr(definition_type, '_fields', None) is not None:
-            inspect_namedtuple_type(definition_type, definition_type_fqdn, domain_items_by_fqdn)
+            inspect_namedtuple_type(definition_type, definition_type_fqn, domain_items_by_fqn)
         elif is_dataclass(definition_type):
             inspect_dataclass_type(
-                definition_type, definition_type_fqdn,
-                root_module_name, domain_items_by_fqdn, domain_relations
+                definition_type, definition_type_fqn,
+                root_module_name, domain_items_by_fqn, domain_relations
             )
         else:
             inspect_class_type(
-                definition_type, definition_type_fqdn,
-                root_module_name, domain_items_by_fqdn, domain_relations
+                definition_type, definition_type_fqn,
+                root_module_name, domain_items_by_fqn, domain_relations
             )
 
 def inspect_module(
     domain_item_module: ModuleType,
     root_module_name: str,
-    domain_items_by_fqdn: Dict[str, UmlItem],
+    domain_items_by_fqn: Dict[str, UmlItem],
     domain_relations: List[UmlRelation]
 ):
     # processes only the definitions declared or imported within the given root module
     for definition_type in filter_domain_definitions(domain_item_module, root_module_name):
-        inspect_domain_definition(definition_type, root_module_name, domain_items_by_fqdn, domain_relations)
+        inspect_domain_definition(definition_type, root_module_name, domain_items_by_fqn, domain_relations)

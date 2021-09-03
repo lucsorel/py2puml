@@ -10,7 +10,7 @@ from py2puml.exportpuml import to_puml_content
 
 
 def py2puml(domain_path: str, domain_module: str) -> Iterable[str]:
-    domain_items_by_fqdn: Dict[str, UmlItem] = {}
+    domain_items_by_fqn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
     for _, name, is_pkg in walk_packages([domain_path], f'{domain_module}.'):
         if not is_pkg:
@@ -18,7 +18,7 @@ def py2puml(domain_path: str, domain_module: str) -> Iterable[str]:
             inspect_module(
                 domain_item_module,
                 domain_module,
-                domain_items_by_fqdn,
+                domain_items_by_fqn,
                 domain_relations
             )
-    return to_puml_content(domain_items_by_fqdn.values(), domain_relations)
+    return to_puml_content(domain_items_by_fqn.values(), domain_relations)
