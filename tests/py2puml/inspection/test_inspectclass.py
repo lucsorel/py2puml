@@ -27,8 +27,8 @@ def test_inspect_module_should_find_static_and_instance_attributes():
     coordinates_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withconstructor.Coordinates']
     assert len(coordinates_umlitem.attributes) == 2, '2 attributes of Coordinates must be inspected'
     x_attribute, y_attribute = coordinates_umlitem.attributes
-    assert_attribute(x_attribute, 'x', 'float', False)
-    assert_attribute(y_attribute, 'y', 'float', False)
+    assert_attribute(x_attribute, 'x', 'float', expected_staticity=False)
+    assert_attribute(y_attribute, 'y', 'float', expected_staticity=False)
 
     # Point UmlClass
     point_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withconstructor.Point']
@@ -57,7 +57,7 @@ def test_inspect_module_should_find_static_and_instance_attributes():
             if attribute.name == attribute_name
         ), None)
         assert point_attribute is not None, f'attribute {attribute_name} must be detected'
-        assert_attribute(point_attribute, attribute_name, atrribute_type, attribute_staticity)
+        assert_attribute(point_attribute, attribute_name, atrribute_type, expected_staticity=attribute_staticity)
 
     # Coordinates is a component of Point
     assert len(domain_relations) == 1, '1 composition'
@@ -67,3 +67,39 @@ def test_inspect_module_should_find_static_and_instance_attributes():
         'tests.modules.withconstructor.Coordinates',
         RelType.COMPOSITION
     )
+
+def test_inspect_module_parse_class_constructor_should_not_process_inherited_constructor():
+    domain_items_by_fqn: Dict[str, UmlItem] = {}
+    domain_relations: List[UmlRelation] = []
+    # inspects the two sub-modules
+    inspect_module(
+        import_module('tests.modules.withinheritedconstructor.point'),
+        'tests.modules.withinheritedconstructor.point',
+        domain_items_by_fqn, domain_relations
+    )
+    inspect_module(
+        import_module('tests.modules.withinheritedconstructor.metricorigin'),
+        'tests.modules.withinheritedconstructor.metricorigin',
+        domain_items_by_fqn, domain_relations
+    )
+
+    assert len(domain_items_by_fqn) == 3, 'three classes must be inspected'
+
+    # Point UmlClass
+    point_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withinheritedconstructor.point.Point']
+    assert len(point_umlitem.attributes) == 2, '2 attributes of Point must be inspected'
+    x_attribute, y_attribute = point_umlitem.attributes
+    assert_attribute(x_attribute, 'x', 'float', expected_staticity=False)
+    assert_attribute(y_attribute, 'y', 'float', expected_staticity=False)
+
+    # Origin UmlClass
+    origin_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withinheritedconstructor.point.Origin']
+    assert len(origin_umlitem.attributes) == 1, '1 attribute of Origin must be inspected'
+    is_origin_attribute = origin_umlitem.attributes[0]
+    assert_attribute(is_origin_attribute, 'is_origin', 'bool', expected_staticity=True)
+
+    # MetricOrigin UmlClass
+    metric_origin_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withinheritedconstructor.metricorigin.MetricOrigin']
+    assert len(metric_origin_umlitem.attributes) == 1, '1 attribute of MetricOrigin must be inspected'
+    unit_attribute = metric_origin_umlitem.attributes[0]
+    assert_attribute(unit_attribute, 'unit', 'str', expected_staticity=True)

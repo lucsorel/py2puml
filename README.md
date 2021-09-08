@@ -179,6 +179,7 @@ poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-miss
 
 # Changelog
 
+* `0.5.1`: prevent from parsing inherited constructors
 * `0.5.0`: handle instance attributes in class constructors, add code coverage of unit tests
 * `0.4.0`: add a simple CLI
 * `0.3.1`: inspect sub-folders recursively

@@ -17,7 +17,17 @@ def parse_class_constructor(
     root_module_name: str
 ) -> Tuple[List[UmlAttribute], Dict[str, UmlRelation]]:
     constructor = getattr(class_type, '__init__', None)
-    if constructor is None or not hasattr(constructor, '__code__'):
+    # conditions to meet in order to parse the AST of a constructor 
+    if (
+        # the constructor must be defined
+        constructor is None
+    ) or (
+        # the constructor's source code must be available
+        not hasattr(constructor, '__code__')
+    ) or (
+        # the constructor must belong to the parsed class (not its parent's one)
+        constructor.__qualname__ != f'{class_type.__name__}.__init__'
+    ):
         return [], {}
 
     constructor_source: str = dedent(getsource(constructor.__code__))
