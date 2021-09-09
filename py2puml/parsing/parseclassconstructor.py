@@ -26,7 +26,7 @@ def parse_class_constructor(
         not hasattr(constructor, '__code__')
     ) or (
         # the constructor must belong to the parsed class (not its parent's one)
-        constructor.__qualname__ != f'{class_type.__name__}.__init__'
+        not constructor.__qualname__.endswith(f'{class_type.__name__}.__init__')
     ):
         return [], {}
 
