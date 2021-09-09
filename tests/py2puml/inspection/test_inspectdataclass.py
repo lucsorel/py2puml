@@ -28,12 +28,13 @@ def test_inspect_domain_definition_single_class_without_composition():
     assert umlclass.name == 'Contact'
     attributes = umlclass.attributes
     assert len(attributes) == 4, 'class has 4 attributes'
-    assert_attribute(attributes[0], 'full_name', 'str', False)
-    assert_attribute(attributes[1], 'age', 'int', False)
-    assert_attribute(attributes[2], 'weight', 'float', False)
-    assert_attribute(attributes[3], 'can_twist_tongue', 'bool', False)
+    assert_attribute(attributes[0], 'full_name', 'str', expected_staticity=False)
+    assert_attribute(attributes[1], 'age', 'int', expected_staticity=False)
+    assert_attribute(attributes[2], 'weight', 'float', expected_staticity=False)
+    assert_attribute(attributes[3], 'can_twist_tongue', 'bool', expected_staticity=False)
 
     assert len(domain_relations) == 0, 'no component must be detected in this class'
+
 
 def test_inspect_domain_definition_single_class_with_composition():
     domain_items_by_fqn: Dict[str, UmlItem] = {}
@@ -61,6 +62,9 @@ def test_parse_inheritance_within_module():
     child_glowing_fish: UmlClass = umlitems_by_fqn[0]
     assert child_glowing_fish.name == 'GlowingFish'
     assert child_glowing_fish.fqn == 'tests.modules.withinheritancewithinmodule.GlowingFish'
+    assert len(child_glowing_fish.attributes) == 2
+    assert_attribute(child_glowing_fish.attributes[0], 'glow_for_hunting', 'bool', expected_staticity=False)
+    assert_attribute(child_glowing_fish.attributes[1], 'glow_for_mating', 'bool', expected_staticity=False)
 
     assert len(domain_relations) == 2, '2 inheritance relations must be inspected'
     parent_fish, parent_light = domain_relations
