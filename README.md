@@ -16,6 +16,7 @@ Generate PlantUML class diagrams to document your Python application.
 `py2puml` produces a class diagram [PlantUML script](https://plantuml.com/en/class-diagram) representing classes properties (static and instance attributes) and their relations (composition and inheritance relationships).
 
 `py2puml` internally uses code [inspection](https://docs.python.org/3/library/inspect.html) (also called *reflexion* in other programming languages) and [abstract tree parsing](https://docs.python.org/3/library/ast.html) to retrieve relevant information.
+Some parsing features are available only since Python 3.8 (like [ast.get_source_segment](https://docs.python.org/3/library/ast.html#ast.get_source_segment)).
 
 ## Features
 
@@ -179,6 +180,7 @@ poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-miss
 
 # Changelog
 
+* `0.5.2`: specify in pyproject.toml that py2puml requires python 3.8+ (`ast.get_source_segment` was introduced in 3.8)
 * `0.5.1`: prevent from parsing inherited constructors
 * `0.5.0`: handle instance attributes in class constructors, add code coverage of unit tests
 * `0.4.0`: add a simple CLI
