@@ -26,7 +26,8 @@ From a given path corresponding to a folder containing Python code, `py2puml` pr
   * static class attributes and [dataclass](https://docs.python.org/3/library/dataclasses.html) fields
   * fields of [namedtuples](https://docs.python.org/3/library/collections.html#collections.namedtuple)
   * members of [enumerations](https://docs.python.org/3/library/enum.html)
-  * composition and inheritance relationships (between your domain classes only, for documentation sake)
+  * composition and inheritance relationships (between your domain classes only, for documentation sake).
+The detection of composition relationships relies on type annotations only, assigned values or expressions are never evaluated to prevent unwanted side-effects
 
 * parsing [abstract syntax trees](https://docs.python.org/3/library/ast.html#ast.NodeVisitor) to detect the instance attributes defined in `__init__` constructors
 
@@ -180,6 +181,7 @@ poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-miss
 
 # Changelog
 
+* `0.5.3`: handle constructors decorated by wrapping decorators (decorators making uses of `functools.wrap`)
 * `0.5.2`: specify in pyproject.toml that py2puml requires python 3.8+ (`ast.get_source_segment` was introduced in 3.8)
 * `0.5.1`: prevent from parsing inherited constructors
 * `0.5.0`: handle instance attributes in class constructors, add code coverage of unit tests
@@ -200,6 +202,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 * [Julien Jerphanion](https://github.com/jjerphan)
 
 Pull-requests are welcome and will be processed on a best-effort basis.
+Follow the [contributing guide](CONTRIBUTING.md).
 
 # Current limitations
 

@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple, Type
 
 from ast import parse, AST
 from importlib import import_module
-from inspect import getsource
+from inspect import getsource, unwrap
 from textwrap import dedent
 
 from py2puml.domain.umlclass import UmlAttribute
@@ -29,6 +29,9 @@ def parse_class_constructor(
         not constructor.__qualname__.endswith(f'{class_type.__name__}.__init__')
     ):
         return [], {}
+
+    # gets the original constructor, if wrapped by a decorator
+    constructor = unwrap(constructor)
 
     constructor_source: str = dedent(getsource(constructor.__code__))
     constructor_ast: AST = parse(constructor_source)

@@ -82,7 +82,9 @@ class ConstructorVisitor(NodeVisitor):
         self.uml_relations_by_target_fqn.update({
             target_fqn: UmlRelation(self.class_fqn, target_fqn, RelType.COMPOSITION)
             for target_fqn in target_fqns
-            if target_fqn.startswith(self.root_fqn) and target_fqn not in self.uml_relations_by_target_fqn
+            if target_fqn.startswith(self.root_fqn) and (
+                target_fqn not in self.uml_relations_by_target_fqn
+            )
         })
 
     def get_from_namespace(self, variable_id: str) -> Variable:
