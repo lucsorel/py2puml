@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py2puml"
-version = "0.5.3"
+version = "0.5.4"
 description = "Generate PlantUML class diagrams to document your Python application."
 keywords = ["class diagram", "PlantUML", "documentation", "inspection", "AST"]
 readme = "README.md"
@@ -8,6 +8,9 @@ repository = "https://github.com/lucsorel/py2puml"
 authors = ["Luc Sorel-Giffo"]
 maintainers = ["Luc Sorel-Giffo"]
 license = "MIT"
+include = [
+    "CONTRIBUTING.md"
+]
 
 [tool.poetry.scripts]
 py2puml = 'py2puml.cli:run'

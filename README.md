@@ -181,6 +181,7 @@ poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-miss
 
 # Changelog
 
+* `0.5.4`: fixed the packaging so that the contribution guide is included in the published package
 * `0.5.3`: handle constructors decorated by wrapping decorators (decorators making uses of `functools.wrap`)
 * `0.5.2`: specify in pyproject.toml that py2puml requires python 3.8+ (`ast.get_source_segment` was introduced in 3.8)
 * `0.5.1`: prevent from parsing inherited constructors
