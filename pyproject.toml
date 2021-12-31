@@ -16,6 +16,7 @@ py2puml = 'py2puml.cli:run'
 python = "^3.8"
 
 [tool.poetry.dev-dependencies]
+pylint = "2.12.2"
 pytest = "6.2.2"
 pytest-cov = "2.12.1"
 

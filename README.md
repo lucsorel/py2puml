@@ -202,6 +202,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 * [Julien Jerphanion](https://github.com/jjerphan)
 
 Pull-requests are welcome and will be processed on a best-effort basis.
+Follow the [contributing guide](CONTRIBUTING.md).
 
 # Current limitations
 
