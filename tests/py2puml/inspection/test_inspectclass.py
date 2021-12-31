@@ -1,6 +1,8 @@
 
+from typing import Dict, List
 from importlib import import_module
 
+from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
 from py2puml.domain.umlrelation import UmlRelation, RelType
 from py2puml.inspection.inspectmodule import inspect_module
@@ -103,3 +105,25 @@ def test_inspect_module_parse_class_constructor_should_not_process_inherited_con
     assert len(metric_origin_umlitem.attributes) == 1, '1 attribute of MetricOrigin must be inspected'
     unit_attribute = metric_origin_umlitem.attributes[0]
     assert_attribute(unit_attribute, 'unit', 'str', expected_staticity=True)
+
+def test_inspect_module_should_unwrap_decorated_constructor():
+    domain_items_by_fqn: Dict[str, UmlItem] = {}
+    domain_relations: List[UmlRelation] = []
+    inspect_module(
+        import_module('tests.modules.withwrappedconstructor'),
+        'tests.modules.withwrappedconstructor',
+        domain_items_by_fqn, domain_relations
+    )
+
+    assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
+
+    # Point UmlClass
+    point_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withwrappedconstructor.Point']
+    assert len(point_umlitem.attributes) == 2, '2 attributes of Point must be inspected'
+    x_attribute, y_attribute = point_umlitem.attributes
+    assert_attribute(x_attribute, 'x', 'float', expected_staticity=False)
+    assert_attribute(y_attribute, 'y', 'float', expected_staticity=False)
+
+    # PointDecoratedWithoutWrapping UmlClass
+    point_without_wrapping_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withwrappedconstructor.PointDecoratedWithoutWrapping']
+    assert len(point_without_wrapping_umlitem.attributes) == 0, 'the attributes of the original constructor could not be found, the constructor was not wrapped by the decorator'
