@@ -20,7 +20,7 @@ python = "^3.8"
 
 [tool.poetry.dev-dependencies]
 pylint = "2.12.2"
-pytest = "6.2.2"
+pytest = "6.2.5"
 pytest-cov = "2.12.1"
 
 [tool.pytest.ini_options]
