@@ -8,7 +8,6 @@ from py2puml.domain.umlrelation import UmlRelation, RelType
 
 from tests.asserts.attribute import assert_attribute
 from tests.asserts.relation import assert_relation
-from tests.modules.withabstract import ClassTemplate
 from tests.modules.withbasictypes import Contact
 from tests.modules.withcomposition import Worker
 from tests.modules.withinheritancewithinmodule import GlowingFish
@@ -27,7 +26,6 @@ def test_inspect_domain_definition_single_class_without_composition():
     assert fqn == 'tests.modules.withbasictypes.Contact'
     assert umlclass.fqn == fqn
     assert umlclass.name == 'Contact'
-    assert umlclass.item_type == 'class'
     attributes = umlclass.attributes
     assert len(attributes) == 4, 'class has 4 attributes'
     assert_attribute(attributes[0], 'full_name', 'str', expected_staticity=False)
