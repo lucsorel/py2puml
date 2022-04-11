@@ -6,6 +6,7 @@ class py2puml.domain.umlclass.UmlAttribute {
 }
 class py2puml.domain.umlclass.UmlClass {
   attributes: List[UmlAttribute]
+  abstract: bool
 }
 class py2puml.domain.umlitem.UmlItem {
   name: str
@@ -33,3 +34,4 @@ py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
 py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlenum.UmlEnum
 py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
+

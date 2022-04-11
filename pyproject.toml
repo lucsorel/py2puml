@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py2puml"
-version = "0.5.4"
+version = "0.6.0"
 description = "Generate PlantUML class diagrams to document your Python application."
 keywords = ["class diagram", "PlantUML", "documentation", "inspection", "AST"]
 readme = "README.md"
