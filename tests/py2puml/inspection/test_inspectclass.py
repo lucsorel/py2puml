@@ -91,7 +91,6 @@ def test_inspect_module_should_find_abstract_class():
     assert domain_relations[0].source_fqn == 'tests.modules.withabstract.ClassTemplate'
     assert domain_relations[0].target_fqn == 'tests.modules.withabstract.ConcreteClass'
 
-
 def test_inspect_module_parse_class_constructor_should_not_process_inherited_constructor():
     domain_items_by_fqn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []
