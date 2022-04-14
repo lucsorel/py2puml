@@ -44,7 +44,7 @@ def inspect_static_attributes(
         name=class_type.__name__,
         fqn=class_type_fqn,
         attributes=definition_attrs,
-        abstract=isabstract(class_type)
+        is_abstract=isabstract(class_type)
     )
     domain_items_by_fqn[class_type_fqn] = uml_class
     # inspect_domain_definition(class_type)

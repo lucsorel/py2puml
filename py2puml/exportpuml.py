@@ -28,7 +28,7 @@ def to_puml_content(uml_items: List[UmlItem], uml_relations: List[UmlRelation]) 
             yield PUML_ITEM_END
         elif isinstance(uml_item, UmlClass):
             uml_class: UmlClass = uml_item
-            yield PUML_ITEM_START_TPL.format(item_type=uml_item.item_type, item_fqn=uml_class.fqn)
+            yield PUML_ITEM_START_TPL.format(item_type='abstract class' if uml_item.is_abstract else 'class', item_fqn=uml_class.fqn)
             for uml_attr in uml_class.attributes:
                 yield PUML_ATTR_TPL.format(attr_name=uml_attr.name, attr_type=uml_attr.type, staticity=FEATURE_STATIC if uml_attr.static else FEATURE_INSTANCE)
             yield PUML_ITEM_END

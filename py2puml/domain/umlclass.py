@@ -12,8 +12,4 @@ class UmlAttribute(object):
 @dataclass
 class UmlClass(UmlItem):
     attributes: List[UmlAttribute]
-    abstract: bool = False
-
-    @property
-    def item_type(self) -> str:
-        return 'abstract class' if self.abstract else 'class'
+    is_abstract: bool = False
