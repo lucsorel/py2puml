@@ -1,5 +1,4 @@
 
-from inspect import isabstract, signature
 import inspect
 from typing import Type, List, Dict
 
@@ -102,7 +101,7 @@ def handle_class_type(
         fqn=class_type_fqn,
         attributes=definition_attrs,
         methods=definition_methods,
-        is_abstract=isabstract(class_type)
+        is_abstract=inspect.isabstract(class_type)
     )
     domain_items_by_fqn[class_type_fqn] = uml_class
     return uml_class
