@@ -23,6 +23,42 @@ Corresponding unit tests must be added or adapted according to what was discusse
 
 All text files are expected to be encoded in UTF-8.
 
+## Contributions and version update
+
+Add yourself at the bottom of the [contributions section of the README.md](README.md#contributions) file:
+
+```text
+# Contributions
+
+* [Luc Sorel-Giffo](https://github.com/lucsorel)
+* ...
+* [Your Full Name](https://github.com/yourgithubname)
+```
+
+Discuss the new version number in the pull request and add a changelog line at the top of the [Changelog section of the README.md](README.md#changelog) file:
+
+```text
+# Changelog
+
+* `major.minor.patch`: the feature you added
+* ...
+```
+
+The version number is carried by the [pyproject.toml](pyproject.toml) file, which is not installed along the production code.
+Some manual changes thus need to be made to update it in the CLI; please, update the version number:
+
+- in the [version attribute of the pyproject.toml](pyproject.toml#L3) file
+
+```toml
+[tool.poetry]
+name = "py2puml"
+version = "major.minor.patch"
+```
+
+- in the [cli.py module](py2puml/cli.py#L12) (the string value associated to the `version` parameter)
+- in the [test__init__.py](tests/py2puml/test__init__.py#L5) file
+
+
 # Code practices
 
 It takes time to write comprehensive guidelines.
