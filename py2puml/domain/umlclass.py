@@ -1,6 +1,5 @@
-from inspect import signature
 from typing import List
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from py2puml.domain.umlitem import UmlItem
 

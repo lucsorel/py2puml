@@ -127,14 +127,12 @@ def inspect_class_type(
     domain_relations: List[UmlRelation]
 ):
     uml_class = handle_class_type(class_type, class_type_fqn, domain_items_by_fqn)
-    attributes = inspect_static_attributes(
+    inspect_static_attributes(
         class_type_fqn, uml_class.attributes, class_type, root_module_name, domain_relations
     )
-    inspect_methods(
-        uml_class.methods, class_type
-    )
+    inspect_methods(uml_class.methods, class_type)
     instance_attributes, compositions = parse_class_constructor(class_type, class_type_fqn, root_module_name)
-    attributes.extend(instance_attributes)
+    uml_class.attributes.extend(instance_attributes)
     domain_relations.extend(compositions.values())
 
     handle_inheritance_relation(class_type, class_type_fqn, root_module_name, domain_relations)
@@ -147,13 +145,11 @@ def inspect_dataclass_type(
     domain_relations: List[UmlRelation]
 ):
     uml_class = handle_class_type(class_type, class_type_fqn, domain_items_by_fqn)
-    attributes = inspect_static_attributes(
+    inspect_static_attributes(
         class_type_fqn, uml_class.attributes, class_type, root_module_name, domain_relations
     )
-    inspect_methods(
-        uml_class.methods, class_type
-    )
-    for attribute in attributes:
+    inspect_methods(uml_class.methods, class_type)
+    for attribute in uml_class.attributes:
         attribute.static = False
 
     handle_inheritance_relation(class_type, class_type_fqn, root_module_name, domain_relations)
