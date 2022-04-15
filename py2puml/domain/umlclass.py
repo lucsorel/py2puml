@@ -12,3 +12,4 @@ class UmlAttribute(object):
 @dataclass
 class UmlClass(UmlItem):
     attributes: List[UmlAttribute]
+    is_abstract: bool = False

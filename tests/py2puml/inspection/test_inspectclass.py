@@ -70,6 +70,27 @@ def test_inspect_module_should_find_static_and_instance_attributes():
         RelType.COMPOSITION
     )
 
+def test_inspect_module_should_find_abstract_class():
+    domain_items_by_fqn: Dict[str, UmlItem] = {}
+    domain_relations: List[UmlRelation] = []
+    inspect_module(
+        import_module('tests.modules.withabstract'),
+        'tests.modules.withabstract',
+        domain_items_by_fqn, domain_relations
+    )
+
+    assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
+
+    class_template_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withabstract.ClassTemplate']
+    assert class_template_umlitem.is_abstract
+
+    concrete_class_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withabstract.ConcreteClass']
+    assert not concrete_class_umlitem.is_abstract
+
+    assert len(domain_relations) == 1, 'one inheritance relationship between the two must be inspected'
+    assert domain_relations[0].source_fqn == 'tests.modules.withabstract.ClassTemplate'
+    assert domain_relations[0].target_fqn == 'tests.modules.withabstract.ConcreteClass'
+
 def test_inspect_module_parse_class_constructor_should_not_process_inherited_constructor():
     domain_items_by_fqn: Dict[str, UmlItem] = {}
     domain_relations: List[UmlRelation] = []

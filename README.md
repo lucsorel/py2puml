@@ -134,7 +134,7 @@ Pipe the result of the CLI with a PlantUML server for instantaneous documentatio
 
 ```sh
 # runs a local PlantUML server from a docker container:
-docker run -d --rm -p 1234:8080 --name plantumlserver plantuml/plantuml-server:jetty 
+docker run -d --rm -p 1234:8080 --name plantumlserver plantuml/plantuml-server:jetty
 
 py2puml py2puml/domain py2puml.domain | curl -X POST --data-binary @- http://localhost:1234/svg/ --output - | display
 
@@ -181,6 +181,7 @@ poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-miss
 
 # Changelog
 
+* `0.6.0`: handle abstract classes
 * `0.5.4`: fixed the packaging so that the contribution guide is included in the published package
 * `0.5.3`: handle constructors decorated by wrapping decorators (decorators making uses of `functools.wrap`)
 * `0.5.2`: specify in pyproject.toml that py2puml requires python 3.8+ (`ast.get_source_segment` was introduced in 3.8)
@@ -201,6 +202,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 * [Luc Sorel-Giffo](https://github.com/lucsorel)
 * [Doyou Jung](https://github.com/doyou89)
 * [Julien Jerphanion](https://github.com/jjerphan)
+* [Luis Fernando Villanueva Pérez](https://github.com/jonykalavera)
 
 Pull-requests are welcome and will be processed on a best-effort basis.
 Follow the [contributing guide](CONTRIBUTING.md).

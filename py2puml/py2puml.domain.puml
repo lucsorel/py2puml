@@ -6,6 +6,7 @@ class py2puml.domain.umlclass.UmlAttribute {
 }
 class py2puml.domain.umlclass.UmlClass {
   attributes: List[UmlAttribute]
+  is_abstract: bool
 }
 class py2puml.domain.umlitem.UmlItem {
   name: str
