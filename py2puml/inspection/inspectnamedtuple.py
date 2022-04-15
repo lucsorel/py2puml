@@ -16,5 +16,6 @@ def inspect_namedtuple_type(
         attributes=[
             UmlAttribute(tuple_field, 'Any', False)
             for tuple_field in namedtuple_type._fields
-        ]
+        ],
+        methods=[],
     )

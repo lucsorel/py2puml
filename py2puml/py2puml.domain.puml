@@ -18,11 +18,16 @@ class py2puml.domain.umlclass.UmlAttribute {
 }
 class py2puml.domain.umlclass.UmlClass {
   attributes: List[UmlAttribute]
+  methods: List[UmlMethod]
   is_abstract: bool
 }
 class py2puml.domain.umlitem.UmlItem {
   name: str
   fqn: str
+}
+class py2puml.domain.umlclass.UmlMethod {
+  name: str
+  signature: str
 }
 class py2puml.domain.umlenum.Member {
   name: str
@@ -42,6 +47,7 @@ class py2puml.domain.umlrelation.UmlRelation {
 }
 py2puml.domain.package.Package *-- py2puml.domain.package.Package
 py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
+py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlMethod
 py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlclass.UmlClass
 py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
 py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlenum.UmlEnum
