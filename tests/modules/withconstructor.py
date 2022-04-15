@@ -2,14 +2,16 @@ import datetime
 from math import pi
 from typing import List, Tuple
 
-from tests.modules import withenum
 from tests import modules
+from tests.modules import withenum
 from tests.modules.withenum import TimeUnit
+
 
 class Coordinates:
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
+
 
 class Point:
     PI: float = pi
