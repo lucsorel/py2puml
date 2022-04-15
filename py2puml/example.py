@@ -6,5 +6,5 @@ print(''.join(
 ))
 
 # writes the PlantUML content in a file
-with open('py2puml/py2puml.domain.puml', 'w') as puml_file:
+with open('py2puml/py2puml.domain.puml', 'w', encoding='utf8') as puml_file:
     puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
