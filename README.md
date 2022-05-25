@@ -231,6 +231,7 @@ Follow the [contributing guide](CONTRIBUTING.md).
 
 If `py2puml` does not meet your needs (suggestions and pull-requests are **welcome**), you can have a look at these projects which follow other approaches (AST, linting, modeling):
 
+* [pyreverse](https://pylint.pycqa.org/en/latest/additional_commands/index.html#pyreverse), which includes a PlantUML printer [since version 2.10.0](https://pylint.pycqa.org/en/latest/whatsnew/changelog.html?highlight=plantuml#what-s-new-in-pylint-2-10-0)
 * [cb109/pyplantuml](https://github.com/cb109/pyplantuml)
 * [deadbok/py-puml-tools](https://github.com/deadbok/py-puml-tools)
 * [caballero/genUML](https://github.com/jose-caballero/genUML)
