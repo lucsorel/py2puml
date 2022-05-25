@@ -147,20 +147,21 @@ docker start plantumlserver
 
 For example, to create the diagram of the classes used by `py2puml`:
 
-* import the py2puml function in your script (see [py2puml/example.py](py2puml/example.py)):
+* import the `py2puml` function in your script (see [py2puml/example.py](py2puml/example.py)):
 
 ```python
 from py2puml.py2puml import py2puml
 
-# outputs the PlantUML content in the terminal
-print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
+if __name__ == '__main__':
+  # outputs the PlantUML content in the terminal
+  print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
 
-# writes the PlantUML content in a file
-with open('py2puml/domain.puml', 'w') as puml_file:
-    puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
+  # writes the PlantUML content in a file
+  with open('py2puml/domain.puml', 'w') as puml_file:
+      puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
 ```
 
-* running it (`python3 -m py2puml.example`) will output the previous PlantUML diagram in the terminal and write it in a file.
+* running it (`python3 -m py2puml.example`) outputs the previous PlantUML diagram in the terminal and writes it in a file.
 
 
 # Tests
