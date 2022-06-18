@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Animal(object):
+class Animal:
     has_notochord: bool
 
 @dataclass
@@ -10,7 +10,7 @@ class Fish(Animal):
     fins_number: int
 
 @dataclass
-class Light(object):
+class Light:
     luminosity_max: float
 
 @dataclass

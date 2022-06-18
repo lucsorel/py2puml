@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from py2puml.domain.umlitem import UmlItem
 
 @dataclass
-class Member(object):
+class Member:
     name: str
     value: str
 

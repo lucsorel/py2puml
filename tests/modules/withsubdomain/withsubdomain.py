@@ -5,6 +5,6 @@ from dataclasses import dataclass
 from tests.modules.withsubdomain.subdomain.insubdomain import Engine, horsepower_to_kilowatt
 
 @dataclass
-class Car(object):
+class Car:
     name: str
     engine: Engine

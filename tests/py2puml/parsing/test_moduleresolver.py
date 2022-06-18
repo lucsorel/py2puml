@@ -1,7 +1,7 @@
 
 from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
 
-class MockedInstance(object):
+class MockedInstance:
     '''
     Creates an object instance from a dictionary
     so that access paths like dict['key1']['key2']['key3'] can be replaced by instance.key1.key2.key3

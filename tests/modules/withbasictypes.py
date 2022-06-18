@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Contact(object):
+class Contact:
     full_name: str
     age: int
     weight: float
