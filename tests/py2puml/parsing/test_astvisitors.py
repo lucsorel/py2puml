@@ -7,8 +7,11 @@ from textwrap import dedent
 
 from pytest import mark
 
-from py2puml.parsing.astvisitors import AssignedVariablesCollector, SignatureVariablesCollector, Variable
+from py2puml.parsing.astvisitors import AssignedVariablesCollector, SignatureVariablesCollector, Variable, shorten_compound_type_annotation
+from py2puml.parsing.moduleresolver import ModuleResolver
+
 from tests.asserts.variable import assert_Variable
+from tests.py2puml.parsing.mockedinstance import MockedInstance
 
 
 class ParseMyConstructorArguments:
@@ -92,7 +95,7 @@ def test_AssignedVariablesCollector_single_assignment_separate_variable_from_ins
         assert_Variable(variable, variable_id, variable_type_str, assignment_code)
 
 @mark.parametrize(
-    'class_self_id,assignment_code,self_attributes_and_variables_by_target', [
+    ['class_self_id', 'assignment_code', 'self_attributes_and_variables_by_target'], [
         (
             'self', 'x = y = 0', [
                 ([], ['x']),
@@ -139,3 +142,22 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
         for variable, variable_id in zip(assignment_collector.variables, variable_ids):
             assert variable.id == variable_id
             assert variable.type_expr == None, 'Python does not allow type annotation in multiple assignment'
+
+@mark.parametrize(['full_annotation', 'short_annotation', 'module_dict'], [
+    ('Dict[id.Identifier,typing.List[domain.Person]]', 'Dict[Identifier,List[Person]]', {
+        '__name__': 'fakemodule',
+        'Dict': Dict,
+        'List': List,
+        'id': {
+            'Identifier': 'Identifier'
+        },
+        'domain': {
+            'Person': 'Person'
+        }
+    })
+])
+def test_shorten_compound_type_annotation(full_annotation: str, short_annotation, module_dict: dict):
+    module_resolver = ModuleResolver(MockedInstance(module_dict))
+    shortened_annotation, full_namespaced_definitions = shorten_compound_type_annotation(full_annotation, module_resolver)
+    assert shortened_annotation == short_annotation
+    # raise NotImplementedError()

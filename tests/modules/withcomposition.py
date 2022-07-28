@@ -12,9 +12,11 @@ class Address:
 @dataclass
 class Worker:
     name: str
-    # forward refs are skipped for now
+    # forward refs are accounted for
     colleagues: List['Worker']
-    address: Address
+    boss: 'Worker'
+    home_address: Address
+    work_address: Address
 
 @dataclass
 class Firm:

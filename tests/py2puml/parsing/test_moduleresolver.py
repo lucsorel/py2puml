@@ -1,19 +1,7 @@
-
 from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
 
-class MockedInstance:
-    '''
-    Creates an object instance from a dictionary
-    so that access paths like dict['key1']['key2']['key3'] can be replaced by instance.key1.key2.key3
-    '''
-    def __init__(self, inner_attributes_as_dict: dict):
-        self.update_instance_dict(self, inner_attributes_as_dict)
+from tests.py2puml.parsing.mockedinstance import MockedInstance
 
-    def update_instance_dict(self, instance, attributes_dict: dict):
-        instance.__dict__.update(attributes_dict)
-        for instance_attribute, value in attributes_dict.items():
-            if isinstance(value, dict):
-                setattr(instance, instance_attribute, MockedInstance(value))
 
 def assert_NamespacedType(namespaced_type: NamespacedType, full_namespace_type: str, short_type: str):
     assert namespaced_type.full_namespace == full_namespace_type

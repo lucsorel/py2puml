@@ -77,19 +77,7 @@ py2puml py2puml/domain py2puml.domain
 This outputs the following PlantUML script:
 
 ```plantuml
-@startuml py2puml.domain
-namespace py2puml.domain {
-  namespace package {}
-  namespace umlclass {}
-  namespace umlitem {}
-  namespace umlenum {}
-  namespace umlrelation {}
-}
-class py2puml.domain.package.Package {
-  name: str
-  children: List[Package]
-  items_number: int
-}
+@startuml
 class py2puml.domain.umlclass.UmlAttribute {
   name: str
   type: str
@@ -97,7 +85,6 @@ class py2puml.domain.umlclass.UmlAttribute {
 }
 class py2puml.domain.umlclass.UmlClass {
   attributes: List[UmlAttribute]
-  is_abstract: bool
 }
 class py2puml.domain.umlitem.UmlItem {
   name: str
@@ -119,7 +106,6 @@ class py2puml.domain.umlrelation.UmlRelation {
   target_fqn: str
   type: RelType
 }
-py2puml.domain.package.Package *-- py2puml.domain.package.Package
 py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
 py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlclass.UmlClass
 py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
@@ -128,9 +114,9 @@ py2puml.domain.umlrelation.UmlRelation *-- py2puml.domain.umlrelation.RelType
 @enduml
 ```
 
-Using PlantUML, this script renders this diagram (FIXME: update this diagram):
+Using PlantUML, this script renders this diagram:
 
-![py2puml UML Diagram](https://www.plantuml.com/plantuml/png/ZP9FQ_904CRl-HHp5ipXFGOFYWXleFx1sbCHsSIf3Triqjr9GTJltjarBjOOajCECzdd-Uqy6HiIcgfSGddyL_8PxejSP2fG8aTJYXGV1d0A0Ew68lqI1uJJvK-Rlq-bCEP9FoFCdxHHLS_Q6gMWh51sT0cSvWDGM2E4g-lf0ICmfBbEFpEvrwWYUCaClM-vPHdCZXqJr15aYjgqR-y8tt8v8T9PKb7JWOwbhmqnRnf1KXIoZ-hK5avHtFHDJNhlwQZDJYJi8bBgrBSljF8ndmtUZs_bolRxBevmZdP1ZUi_GbROIu01PdmwXTo9tTvsbTwoWFsmUTy77wvHRdY_JcEwdA-Mh_4cNYuY6C3fkkmBJ-B5_zawtamMqra4exCVDGcR3aovhcldOefAfxZpMm8WeGz8lkCZhzdOf3FXmN3Ow-SAEh8SdLceooteoCF3j6NUcwBT9EYvSMRf4NymHhNd_Yy0)
+![py2puml UML Diagram](http://www.plantuml.com/plantuml/png/ZPB1Qy8m5CRl-IlUMR277Oi7HOGLfXrTTnfZfFLj59AqIru7elxlUuqQ1ewcftmcvlTzUL-NZgIbNYjHA-aST8U7Zdyb-rRBnYGi_NxogjMAo3PLJmX70M2anXGSMTPqw89c7ZLr2bNRAd6EKzU3y4HvuxiKdXf7RtyztqTO3Q4UK1clTza-lusN8_VHz3hPegxGtbt_aQh7IG0EiE7L4xI7tTvnGGyl6FxuptsBYeVMcgH0LV8iFMETRv_pbwpCybqACpXU1dlcasptk2coShLRRr9OdC9HI3ZYm2cBg_OkhkrjZHzXIW0axHTIs0drNhEnIRJDsNm-wKCIaIuN9mR5t4Ia3muptlca5ECcOjh4VPPu_MA9Pi_xlm00)
 
 For a full overview of the CLI, run:
 
@@ -188,7 +174,7 @@ poetry run python -m pytest -v
 python3 -m pytest -v
 ```
 
-Code coverage (with [missed branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
+Code coverage (with missed [branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
 
 ```sh
 poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 90
@@ -196,8 +182,6 @@ poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-miss
 
 # Changelog
 
-* `0.7.0`: improved the generated PlantUML documentation (added the namespace structure of the code base, homogenized type  between inspection and parsing), improved relationships management (handle forward references, deduplicate relationships)
-* `0.6.1`: handle class names with digits
 * `0.6.0`: handle abstract classes
 * `0.5.4`: fixed the packaging so that the contribution guide is included in the published package
 * `0.5.3`: handle constructors decorated by wrapping decorators (decorators making uses of `functools.wrap`)

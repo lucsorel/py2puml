@@ -197,7 +197,6 @@ poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-miss
 # Changelog
 
 * `0.7.0`: improved the generated PlantUML documentation (added the namespace structure of the code base, homogenized type  between inspection and parsing), improved relationships management (handle forward references, deduplicate relationships)
-* `0.6.1`: handle class names with digits
 * `0.6.0`: handle abstract classes
 * `0.5.4`: fixed the packaging so that the contribution guide is included in the published package
 * `0.5.3`: handle constructors decorated by wrapping decorators (decorators making uses of `functools.wrap`)
