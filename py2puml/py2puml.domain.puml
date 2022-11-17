@@ -1,4 +1,7 @@
 @startuml
+class py2puml.domain.myminiclass.MyMiniClass {
+  name: str
+}
 class py2puml.domain.umlclass.UmlAttribute {
   name: str
   type: str
