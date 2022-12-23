@@ -1,9 +1,9 @@
-
+from inspect import isclass
+from collections import namedtuple
+from functools import reduce
 from typing import Type, Tuple, Iterable, List
 from types import ModuleType
-from collections import namedtuple
 
-from functools import reduce
 
 NamespacedType = namedtuple('NamespacedType', ['full_namespace', 'type_name'])
 
@@ -21,8 +21,7 @@ def search_in_module_or_builtins(searched_module: ModuleType, namespace: str):
     # searches the namespace in the builtins otherwise
     if hasattr(searched_module, '__builtins__'):
         return searched_module.__builtins__.get(namespace, None)
-    else:
-        return None
+
 
 def search_in_builtins(namespaces: List[str], module: ModuleType):
     leaf_type: Type = reduce(
@@ -57,11 +56,10 @@ class ModuleResolver:
         if partial_dotted_path is None:
             return EMPTY_NAMESPACED_TYPE
 
-        from inspect import isclass
         def string_repr(module_attribute) -> str:
             return f'{module_attribute.__module__}.{module_attribute.__name__}' if isclass(module_attribute) else f'{module_attribute}'
 
-        # alternate search
+        # searches the class in the module imports
         namespaced_types_iter: Iterable[NamespacedType] = (
             NamespacedType(string_repr(getattr(self.module, module_var)), module_var)
             for module_var in vars(self.module)
@@ -72,6 +70,7 @@ class ModuleResolver:
             if namespaced_type.full_namespace == partial_dotted_path
         ), None)
 
+        # searches the class in the builtins
         if found_namespaced_type is None:
             found_namespaced_type = search_in_builtins(partial_dotted_path.split('.'), self.module)
         # print(

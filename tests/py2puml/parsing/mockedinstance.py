@@ -1,3 +1,7 @@
+from json import dumps, JSONEncoder
+from typing import _GenericAlias
+
+
 class MockedInstance:
     '''
     Creates an object instance from a dictionary
@@ -11,3 +15,15 @@ class MockedInstance:
         for instance_attribute, value in attributes_dict.items():
             if isinstance(value, dict):
                 setattr(instance, instance_attribute, MockedInstance(value))
+    
+    def __repr__(self):
+        return dumps(self.__dict__, cls=MockedInstanceEncoder)
+
+
+class MockedInstanceEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, MockedInstance):
+            return obj.__dict__
+        elif isinstance(obj, _GenericAlias):
+            return obj._name
+        return JSONEncoder.default(self, obj)

@@ -143,21 +143,48 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
             assert variable.id == variable_id
             assert variable.type_expr == None, 'Python does not allow type annotation in multiple assignment'
 
-@mark.parametrize(['full_annotation', 'short_annotation', 'module_dict'], [
-    ('Dict[id.Identifier,typing.List[domain.Person]]', 'Dict[Identifier,List[Person]]', {
-        '__name__': 'fakemodule',
-        'Dict': Dict,
-        'List': List,
-        'id': {
-            'Identifier': 'Identifier'
-        },
-        'domain': {
-            'Person': 'Person'
+@mark.parametrize(['full_annotation', 'short_annotation', 'namespaced_definitions', 'module_dict'], [
+    (
+        # domain.people was imported, people.Person is used
+        'people.Person',
+        'Person',
+        ['domain.people.Person'],
+        {
+            '__name__': 'testmodule',
+            'people': {
+                'Person': {
+                    '__module__': 'domain.people',
+                    '__name__': 'Person'
+                }
+            }
         }
-    })
+    ),
+    (
+        # combination of compound types
+        'Dict[id.Identifier,typing.List[domain.Person]]',
+        'Dict[Identifier, List[Person]]',
+        ['typing.Dict', 'id.Identifier', 'typing.List', 'domain.Person'],
+        {
+            '__name__': 'testmodule',
+            'Dict': Dict,
+            'List': List,
+            'id': {
+                'Identifier': {
+                    '__module__': 'id',
+                    '__name__': 'Identifier',
+                }
+            },
+            'domain': {
+                'Person': {
+                    '__module__': 'domain',
+                    '__name__': 'Person',
+                }
+            }
+        }
+    )
 ])
-def test_shorten_compound_type_annotation(full_annotation: str, short_annotation, module_dict: dict):
+def test_shorten_compound_type_annotation(full_annotation: str, short_annotation, namespaced_definitions: List[str], module_dict: dict):
     module_resolver = ModuleResolver(MockedInstance(module_dict))
     shortened_annotation, full_namespaced_definitions = shorten_compound_type_annotation(full_annotation, module_resolver)
     assert shortened_annotation == short_annotation
-    # raise NotImplementedError()
+    assert full_namespaced_definitions == namespaced_definitions
