@@ -167,12 +167,12 @@ For example, to create the diagram of the classes used by `py2puml`:
 from py2puml.py2puml import py2puml
 
 if __name__ == '__main__':
-  # outputs the PlantUML content in the terminal
-  print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
+    # outputs the PlantUML content in the terminal
+    print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
 
-  # writes the PlantUML content in a file
-  with open('py2puml/domain.puml', 'w') as puml_file:
-      puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
+    # writes the PlantUML content in a file
+    with open('py2puml/domain.puml', 'w') as puml_file:
+        puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
 ```
 
 * running it (`python3 -m py2puml.example`) outputs the previous PlantUML diagram in the terminal and writes it in a file.
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
 ```sh
 # directly with poetry
-poetry run python -m pytest -v
+poetry run pytest -v
 
 # in a virtual environment
 python3 -m pytest -v
@@ -191,7 +191,7 @@ python3 -m pytest -v
 Code coverage (with [missed branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
 
 ```sh
-poetry run python -m pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 90
+poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 90
 ```
 
 # Changelog
