@@ -34,6 +34,7 @@ def test_CompoundTypeSplitter_from_invalid_types(type_annotation: str):
     ('_ast.Name', ('_ast.Name',)),
     ('Tuple[str, withenum.TimeUnit]', ('Tuple', '[', 'str', ',', 'withenum.TimeUnit', ']')),
     ('List[datetime.date]', ('List', '[', 'datetime.date', ']')),
+    ('List[IPv6]', ('List', '[', 'IPv6', ']')),
     ('modules.withenum.TimeUnit', ('modules.withenum.TimeUnit',)),
     ('Dict[str, Dict[str,builtins.float]]', ('Dict', '[', 'str', ',', 'Dict', '[', 'str', ',', 'builtins.float', ']', ']')),
 ])

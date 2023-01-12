@@ -1,6 +1,8 @@
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from importlib import import_module
+
+from pytest import fixture
 
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
@@ -14,9 +16,17 @@ from tests.asserts.attribute import assert_attribute
 from tests.asserts.relation import assert_relation
 
 
-def test_inspect_module_should_find_static_and_instance_attributes():
-    domain_items_by_fqn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
+@fixture(scope='function')
+def domain_items_by_fqn() -> Dict[str, UmlItem]:
+    return {}
+
+@fixture(scope='function')
+def domain_relations() -> List[UmlRelation]:
+    return []
+
+def test_inspect_module_should_find_static_and_instance_attributes(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
     inspect_module(
         import_module('tests.modules.withconstructor'),
         'tests.modules.withconstructor',
@@ -70,9 +80,9 @@ def test_inspect_module_should_find_static_and_instance_attributes():
         RelType.COMPOSITION
     )
 
-def test_inspect_module_should_find_abstract_class():
-    domain_items_by_fqn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
+def test_inspect_module_should_find_abstract_class(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
     inspect_module(
         import_module('tests.modules.withabstract'),
         'tests.modules.withabstract',
@@ -91,9 +101,9 @@ def test_inspect_module_should_find_abstract_class():
     assert domain_relations[0].source_fqn == 'tests.modules.withabstract.ClassTemplate'
     assert domain_relations[0].target_fqn == 'tests.modules.withabstract.ConcreteClass'
 
-def test_inspect_module_parse_class_constructor_should_not_process_inherited_constructor():
-    domain_items_by_fqn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
+def test_inspect_module_parse_class_constructor_should_not_process_inherited_constructor(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
     # inspects the two sub-modules
     inspect_module(
         import_module('tests.modules.withinheritedconstructor.point'),
@@ -127,9 +137,9 @@ def test_inspect_module_parse_class_constructor_should_not_process_inherited_con
     unit_attribute = metric_origin_umlitem.attributes[0]
     assert_attribute(unit_attribute, 'unit', 'str', expected_staticity=True)
 
-def test_inspect_module_should_unwrap_decorated_constructor():
-    domain_items_by_fqn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
+def test_inspect_module_should_unwrap_decorated_constructor(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
     inspect_module(
         import_module('tests.modules.withwrappedconstructor'),
         'tests.modules.withwrappedconstructor',
@@ -148,3 +158,26 @@ def test_inspect_module_should_unwrap_decorated_constructor():
     # PointDecoratedWithoutWrapping UmlClass
     point_without_wrapping_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withwrappedconstructor.PointDecoratedWithoutWrapping']
     assert len(point_without_wrapping_umlitem.attributes) == 0, 'the attributes of the original constructor could not be found, the constructor was not wrapped by the decorator'
+
+def test_inspect_module_should_handle_compound_types_with_numbers_in_their_name(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
+    fqdn = 'tests.modules.withcompoundtypewithdigits'
+    inspect_module(
+        import_module(fqdn), fqdn,
+        domain_items_by_fqn, domain_relations
+    )
+
+    assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
+
+    # IPv6 UmlClass
+    ipv6_umlitem: UmlClass = domain_items_by_fqn[f'{fqdn}.IPv6']
+    assert len(ipv6_umlitem.attributes) == 1, '1 attributes of IPv6 must be inspected'
+    address_attribute = ipv6_umlitem.attributes[0]
+    assert_attribute(address_attribute, 'address', 'str', expected_staticity=False)
+
+    # Multicast UmlClass
+    multicast_umlitem: UmlClass = domain_items_by_fqn[f'{fqdn}.Multicast']
+    assert len(multicast_umlitem.attributes) == 1, '1 attributes of Multicast must be inspected'
+    address_attribute = multicast_umlitem.attributes[0]
+    assert_attribute(address_attribute, 'addresses', 'List[IPv6]', expected_staticity=False)

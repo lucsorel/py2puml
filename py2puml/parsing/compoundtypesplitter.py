@@ -2,7 +2,7 @@
 from re import compile, Pattern
 from typing import List, Tuple
 
-IS_COMPOUND_TYPE: Pattern = compile('^[a-z|A-Z|\\[|\\]|\\.|,|\\s|_]+$')
+IS_COMPOUND_TYPE: Pattern = compile('^[a-z|A-Z|0-9|\\[|\\]|\\.|,|\\s|_]+$')
 SPLITTING_CHARACTERS = ('[', ']', ',')
 
 class CompoundTypeSplitter(object):
