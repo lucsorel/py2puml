@@ -9,7 +9,15 @@ class UmlAttribute(object):
     type: str
     static: bool
 
+
+@dataclass
+class UmlMethod(object):
+    name: str
+    signature: str
+
+
 @dataclass
 class UmlClass(UmlItem):
     attributes: List[UmlAttribute]
+    methods: List[UmlMethod]
     is_abstract: bool = False
