@@ -1,11 +1,18 @@
 from inspect import isclass
-from collections import namedtuple
 from functools import reduce
-from typing import Type, Tuple, Iterable, List
+from typing import Type, Iterable, List, NamedTuple
 from types import ModuleType
 
 
-NamespacedType = namedtuple('NamespacedType', ['full_namespace', 'type_name'])
+class NamespacedType(NamedTuple):
+    '''
+    Information of a value type:
+    - the module-prefixed type name
+    - the short type name
+    '''
+    full_namespace: str
+    type_name: str
+
 
 EMPTY_NAMESPACED_TYPE = NamespacedType(None, None)
 
@@ -23,7 +30,7 @@ def search_in_module_or_builtins(searched_module: ModuleType, namespace: str):
         return searched_module.__builtins__.get(namespace, None)
 
 
-def search_in_builtins(namespaces: List[str], module: ModuleType):
+def search_in_module(namespaces: List[str], module: ModuleType):
     leaf_type: Type = reduce(
         search_in_module_or_builtins,
         namespaces,
@@ -41,6 +48,18 @@ def search_in_builtins(namespaces: List[str], module: ModuleType):
 
 
 class ModuleResolver:
+    '''
+    Given a module and a partially namespaced type name, returns a tuple of information about the type:
+    - the full-namespaced type name, to draw relationships between types without ambiguity
+    - the short type name, for display purposes
+
+    Different approaches are combined to derive the type information:
+    - when the partially namespaced type is found during AST parsing (class constructors)
+    - when the partially namespaced type is found during class inspection (dataclasses, class static variables, named tuples, enums)
+
+    The two approaches are a bit entangled for now, they could be separated a bit more for performance sake.
+    '''
+
     def __init__(self, module: ModuleType):
         self.module = module
 
@@ -72,12 +91,7 @@ class ModuleResolver:
 
         # searches the class in the builtins
         if found_namespaced_type is None:
-            found_namespaced_type = search_in_builtins(partial_dotted_path.split('.'), self.module)
-        # print(
-        #     partial_dotted_path,
-        #     f'{found_namespaced_type=}',
-        #     [(string_repr(getattr(self.module, module_var)), module_var) for module_var in vars(self.module) if module_var != '__builtins__']
-        # )
+            found_namespaced_type = search_in_module(partial_dotted_path.split('.'), self.module)
 
         return found_namespaced_type
 
