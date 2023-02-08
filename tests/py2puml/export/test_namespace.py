@@ -4,7 +4,9 @@ from pytest import mark
 
 from py2puml.domain.package import Package
 from py2puml.domain.umlitem import UmlItem
+from py2puml.domain.umlrelation import UmlRelation
 from py2puml.export.namespace import build_packages_structure, get_or_create_module_package, visit_package
+from py2puml.inspection.inspectpackage import inspect_package
 
 
 @mark.parametrize(['root_package', 'module_qualified_name'], [
@@ -68,7 +70,6 @@ NO_CHILDREN_PACKAGES = []
 SAMPLE_ROOT_PACKAGE = Package(None, [
     Package('py2puml',[
         Package('domain', [
-
             Package('package', NO_CHILDREN_PACKAGES, 1),
             Package('umlclass', NO_CHILDREN_PACKAGES, 1)
         ]),
@@ -107,3 +108,16 @@ def test_visit_package(
         visit_package(package_to_visit, parent_namespace_names, indentation_level)
     ):
         assert expected_namespace_line == namespace_line
+
+
+def test_build_packages_structure_visit_package_from_tree_package():
+    domain_items_by_fqn: Dict[str, UmlItem] = {}
+    domain_relations: List[UmlRelation] = []
+    domain_path = 'tests/modules/withnestednamespace'
+    domain_module = 'tests.modules.withnestednamespace'
+    inspect_package(domain_path, domain_module, domain_items_by_fqn, domain_relations)
+    package = build_packages_structure(domain_items_by_fqn.values())
+
+    with open(f'{domain_path}/plantuml_namespace.txt', encoding='utf8') as tree_namespace_file:
+        for line_index, (namespace_line, expected_namespace_line) in enumerate(zip(visit_package(package, tuple(), 0), tree_namespace_file)):
+            assert namespace_line == expected_namespace_line, f'{line_index}: namespace content'

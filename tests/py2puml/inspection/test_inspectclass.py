@@ -8,9 +8,6 @@ from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
 from py2puml.domain.umlrelation import UmlRelation, RelType
 from py2puml.inspection.inspectmodule import inspect_module
-from py2puml.parsing.astvisitors import ConstructorVisitor
-from py2puml.parsing.moduleresolver import ModuleResolver
-from py2puml.parsing.parseclassconstructor import parse_class_constructor
 
 from tests.asserts.attribute import assert_attribute
 from tests.asserts.relation import assert_relation
