@@ -110,9 +110,9 @@ def test_visit_package(
         assert expected_namespace_line == namespace_line
 
 
-def test_build_packages_structure_visit_package_from_tree_package():
-    domain_items_by_fqn: Dict[str, UmlItem] = {}
-    domain_relations: List[UmlRelation] = []
+def test_build_packages_structure_visit_package_from_tree_package(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
     domain_path = 'tests/modules/withnestednamespace'
     domain_module = 'tests.modules.withnestednamespace'
     inspect_package(domain_path, domain_module, domain_items_by_fqn, domain_relations)

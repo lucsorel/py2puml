@@ -1,8 +1,5 @@
-
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from importlib import import_module
-
-from pytest import fixture
 
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
@@ -12,14 +9,6 @@ from py2puml.inspection.inspectmodule import inspect_module
 from tests.asserts.attribute import assert_attribute
 from tests.asserts.relation import assert_relation
 
-
-@fixture(scope='function')
-def domain_items_by_fqn() -> Dict[str, UmlItem]:
-    return {}
-
-@fixture(scope='function')
-def domain_relations() -> List[UmlRelation]:
-    return []
 
 def test_inspect_module_should_find_static_and_instance_attributes(
     domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
