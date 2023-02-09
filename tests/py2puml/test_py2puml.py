@@ -1,7 +1,6 @@
 from io import StringIO
 from pathlib import Path
 
-from py2puml.py2puml import py2puml
 from py2puml.asserts import assert_py2puml_is_file_content, assert_py2puml_is_stringio
 
 
