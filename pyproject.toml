@@ -18,10 +18,10 @@ py2puml = 'py2puml.cli:run'
 [tool.poetry.dependencies]
 python = "^3.8"
 
-[tool.poetry.dev-dependencies]
-pylint = "2.12.2"
-pytest = "6.2.5"
-pytest-cov = "2.12.1"
+[tool.poetry.group.dev.dependencies]
+pylint = "^2.16.1"
+pytest = "^7.2.1"
+pytest-cov = "^4.0.0"
 
 [tool.pytest.ini_options]
 minversion = "6.2"
