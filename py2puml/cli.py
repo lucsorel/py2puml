@@ -9,7 +9,7 @@ from py2puml.py2puml import py2puml
 def run():
     argparser = ArgumentParser(description='Generate PlantUML class diagrams to document your Python application.')
 
-    argparser.add_argument('-v', '--version', action='version', version='py2puml 0.7.0')
+    argparser.add_argument('-v', '--version', action='version', version='py2puml 0.7.1')
     argparser.add_argument('path', metavar='path', type=str, help='the filepath to the domain')
     argparser.add_argument('module', metavar='module', type=str, help='the module name of the domain', default=None)
 

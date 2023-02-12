@@ -1,7 +1,7 @@
+from subprocess import run, PIPE
 from typing import List
 
 from pytest import mark
-from subprocess import run, PIPE
 
 from py2puml.py2puml import py2puml
 from tests import __version__, __description__
