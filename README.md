@@ -197,6 +197,7 @@ poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-
 
 # Changelog
 
+* `0.7.1`: removed obsolete part of documentation: deeply compound types are now well handled (by version `0.7.0`)
 * `0.7.0`: improved the generated PlantUML documentation (added the namespace structure of the code base, homogenized type  between inspection and parsing), improved relationships management (handle forward references, deduplicate relationships)
 * `0.6.1`: handle class names with digits
 * `0.6.0`: handle abstract classes
@@ -232,10 +233,6 @@ Follow the [contributing guide](CONTRIBUTING.md).
   * type hinting is optional when writing Python code and discarded when it is executed, as mentionned in the [typing official documentation](https://docs.python.org/3/library/typing.html). The quality of the diagram output by `py2puml` depends on the reliability with which the type annotations were written
 
   > The Python runtime does not enforce function and variable type annotations. They can be used by third party tools such as type checkers, IDEs, linters, etc.
-
-  * complex type hints with more than one level of genericity are not properly handled for the moment: `List[MyClass]` or `Dict[str, MyClass]` are handled properly, `Dict[str, List[MyClass]]` is not.
-  If your domain classes (also called business objects or DTOs) have attributes with complex type hints, it may be a code smell indicating that you should write a class which would better represent the business logic.
-  But I may improve this part of the library as well 😀
 
 * regarding the detection of instance attributes with **AST parsing**:
   * only constructors are visited, attributes assigned in other functions won't be documented
