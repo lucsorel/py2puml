@@ -7,7 +7,7 @@ class RelType(Enum):
     INHERITANCE = '<|'
 
 @dataclass
-class UmlRelation(object):
+class UmlRelation:
     source_fqn: str
     target_fqn: str
     type: RelType

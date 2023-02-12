@@ -1,10 +1,10 @@
+import datetime
+from math import pi
 from typing import List, Tuple
 
 from tests.modules import withenum
 from tests import modules
 from tests.modules.withenum import TimeUnit
-import datetime
-from math import pi
 
 class Coordinates:
     def __init__(self, x: float, y: float):

@@ -1,0 +1,9 @@
+namespace tests.modules.withnestednamespace {
+  namespace nomoduleroot.modulechild.leaf {}
+  namespace tree {}
+  namespace branches.branch {}
+  namespace withonlyonesubpackage.underground {
+    namespace roots.roots {}
+  }
+  namespace trunks.trunk {}
+}

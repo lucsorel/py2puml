@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from py2puml.domain.umlitem import UmlItem
 
 @dataclass
-class UmlAttribute(object):
+class UmlAttribute:
     name: str
     type: str
     static: bool

@@ -1,6 +1,3 @@
-
-from typing import List, Tuple
-
 from functools import wraps
 
 def count_signature_args(func):
@@ -31,7 +28,7 @@ class Point:
         self.x = x
         self.y = y
 
-Point(2.5, y=3.2)
+# Point(2.5, y=3.2)
 
 def signature_improper_decorator(func):
     def not_wrapping_decorator(*args, **kwargs):
@@ -49,4 +46,4 @@ class PointDecoratedWithoutWrapping:
         self.x = x
         self.y = y
 
-PointDecoratedWithoutWrapping(2.5, y=3.2)
+# PointDecoratedWithoutWrapping(2.5, y=3.2)

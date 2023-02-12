@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 from ast import (
     NodeVisitor, arg, expr,
     FunctionDef, Assign, AnnAssign,
-    Attribute, Name, Tuple as AstTuple, Subscript, get_source_segment
+    Attribute, Name, Subscript, get_source_segment
 )
 from collections import namedtuple
 
@@ -12,6 +12,7 @@ from py2puml.domain.umlclass import UmlAttribute
 from py2puml.domain.umlrelation import UmlRelation, RelType
 from py2puml.parsing.compoundtypesplitter import CompoundTypeSplitter, SPLITTING_CHARACTERS
 from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
+
 
 Variable = namedtuple('Variable', ['id', 'type_expr'])
 
@@ -66,7 +67,9 @@ class AssignedVariablesCollector(NodeVisitor):
 
 
 class ConstructorVisitor(NodeVisitor):
-    '''Identifies the attributes (and infer their type) assigned to self in the body of a constructor method'''
+    '''
+    Identifies the attributes (and infer their type) assigned to self in the body of a constructor method
+    '''
     def __init__(self, constructor_source: str, class_name: str, root_fqn: str, module_resolver: ModuleResolver, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.constructor_source = constructor_source
@@ -179,28 +182,39 @@ class ConstructorVisitor(NodeVisitor):
             return short_type, [full_namespaced_type]
         # compound type (List[...], Tuple[Dict[str, float], module.DomainType], etc.)
         elif isinstance(annotation, Subscript):
-            compound_type_parts: List[str] = CompoundTypeSplitter(
-                get_source_segment(self.constructor_source, annotation)
-            ).get_parts()
-            compound_short_type_parts: List[str] = []
-            associated_types: List[str] = []
-            for compound_type_part in compound_type_parts:
-                # characters like '[', ']', ','
-                if compound_type_part in SPLITTING_CHARACTERS:
-                    compound_short_type_parts.append(compound_type_part)
-                    if compound_type_part == ',':
-                        compound_short_type_parts.append(' ')
-                # replaces each type definition by its short class name
-                else:
-                    full_namespaced_type, short_type = self.module_resolver.resolve_full_namespace_type(
-                        compound_type_part
-                    )
-                    if short_type is None:
-                        raise ValueError(f'Could not resolve type {compound_type_part} in module {self.module_resolver.module.__name__}: it needs to be imported explicitely.')
-                    else:
-                        compound_short_type_parts.append(short_type)
-                    associated_types.append(full_namespaced_type)
-
-            return ''.join(compound_short_type_parts), associated_types
+            return shorten_compound_type_annotation(
+                get_source_segment(self.constructor_source, annotation),
+                self.module_resolver
+            )
 
         return None, []
+
+def shorten_compound_type_annotation(type_annotation: str, module_resolver: ModuleResolver) -> Tuple[str, List[str]]:
+    '''
+    In the string representation of a compound type annotation, the elementary types can be prefixed by their packages or sub-packages.
+    Like in 'Dict[datetime.datetime,typing.List[Worker]]'. This function returns a tuple of 2 values:
+    - a string representation with shortened types for display purposes in the PlantUML documentation: 'Dict[datetime, List[Worker]]'
+      (note: a space is inserted after each coma for readability sake)
+    - a list of the fully-qualified types involved in the annotation: ['typing.Dict', 'datetime.datetime', 'typing.List', 'mymodule.Worker']
+    '''
+    compound_type_parts: List[str] = CompoundTypeSplitter(type_annotation, module_resolver.module.__name__).get_parts()
+    compound_short_type_parts: List[str] = []
+    associated_types: List[str] = []
+    for compound_type_part in compound_type_parts:
+        # characters like '[', ']', ','
+        if compound_type_part in SPLITTING_CHARACTERS:
+            compound_short_type_parts.append(compound_type_part)
+            if compound_type_part == ',':
+                compound_short_type_parts.append(' ')
+        # replaces each type definition by its short class name
+        else:
+            full_namespaced_type, short_type = module_resolver.resolve_full_namespace_type(
+                compound_type_part
+            )
+            if short_type is None:
+                raise ValueError(f'Could not resolve type {compound_type_part} in module {module_resolver.module}: it needs to be imported explicitely.')
+            else:
+                compound_short_type_parts.append(short_type)
+            associated_types.append(full_namespaced_type)
+
+    return ''.join(compound_short_type_parts), associated_types

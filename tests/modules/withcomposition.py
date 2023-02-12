@@ -4,19 +4,21 @@ from typing import List
 
 
 @dataclass
-class Address(object):
+class Address:
     street: str
     zipcode: str
     city: str
 
 @dataclass
-class Worker(object):
+class Worker:
     name: str
-    # forward refs are skipped for now
+    # forward refs are accounted for
     colleagues: List['Worker']
-    address: Address
+    boss: 'Worker'
+    home_address: Address
+    work_address: Address
 
 @dataclass
-class Firm(object):
+class Firm:
     name: str
     employees: List[Worker]

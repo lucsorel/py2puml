@@ -1,6 +1,6 @@
 from typing import Type
 
-def inspect_domain_definition(type_to_inspect: Type):
+def investigate_domain_definition(type_to_inspect: Type):
     '''
     Utilitary function which inspects the annotations of the given type
     '''

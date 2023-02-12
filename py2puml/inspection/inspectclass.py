@@ -1,23 +1,20 @@
-
+from dataclasses import dataclass
+from importlib import import_module
 from inspect import isabstract
+from re import compile as re_compile
 from typing import Type, List, Dict
 
-from re import compile
-from dataclasses import dataclass
 
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute
 from py2puml.domain.umlrelation import UmlRelation, RelType
+from py2puml.parsing.astvisitors import shorten_compound_type_annotation
 from py2puml.parsing.parseclassconstructor import parse_class_constructor
-from py2puml.utils import inspect_domain_definition
+from py2puml.parsing.moduleresolver import ModuleResolver
+# from py2puml.utils import investigate_domain_definition
 
-CONCRETE_TYPE_PATTERN = compile("^<(?:class|enum) '([\\.|\\w]+)'>$")
 
-def get_type_name(type: Type, root_module_name: str):
-    if type.__module__.startswith(root_module_name):
-        return type.__name__
-    else:
-        return f'{type.__module__}.{type.__name__}'
+CONCRETE_TYPE_PATTERN = re_compile("^<(?:class|enum) '([\\.|\\w]+)'>$")
 
 def handle_inheritance_relation(
     class_type: Type,
@@ -39,6 +36,12 @@ def inspect_static_attributes(
     domain_items_by_fqn: Dict[str, UmlItem],
     domain_relations: List[UmlRelation]
 ) -> List[UmlAttribute]:
+    '''
+    Adds the definitions:
+    - of the inspected type
+    - of its static attributes from the class annotations (type and relation)
+    '''
+    # defines the class being inspected
     definition_attrs: List[UmlAttribute] = []
     uml_class = UmlClass(
         name=class_type.__name__,
@@ -47,41 +50,42 @@ def inspect_static_attributes(
         is_abstract=isabstract(class_type)
     )
     domain_items_by_fqn[class_type_fqn] = uml_class
-    # inspect_domain_definition(class_type)
+    # investigate_domain_definition(class_type)
+
     type_annotations = getattr(class_type, '__annotations__', None)
     if type_annotations is not None:
+        # stores only once the compositions towards the same class
+        relations_by_target_fqdn: Dict[str: UmlRelation] = {}
+        # utility which outputs the fully-qualified name of the attribute types
+        module_resolver = ModuleResolver(import_module(class_type.__module__))
+
+        # builds the definitions of the class attrbutes and their relationships by iterating over the type annotations 
         for attr_name, attr_class in type_annotations.items():
             attr_raw_type = str(attr_class)
             concrete_type_match = CONCRETE_TYPE_PATTERN.search(attr_raw_type)
+            # basic type
             if concrete_type_match:
                 concrete_type = concrete_type_match.group(1)
+                # appends a composition relationship if the attribute is a class from the inspected domain
                 if attr_class.__module__.startswith(root_module_name):
                     attr_type = attr_class.__name__
-                    domain_relations.append(
-                        UmlRelation(uml_class.fqn, f'{attr_class.__module__}.{attr_class.__name__}', RelType.COMPOSITION)
-                    )
+                    attr_fqn = f'{attr_class.__module__}.{attr_class.__name__}'
+                    relations_by_target_fqdn[attr_fqn] = UmlRelation(uml_class.fqn, attr_fqn, RelType.COMPOSITION)
                 else:
                     attr_type = concrete_type
+            # compound type (tuples, lists, dictionaries, etc.)
             else:
-                composition_rel = getattr(attr_class, '_name', None)
-                component_classes = getattr(attr_class, '__args__', None)
-                if composition_rel and component_classes:
-                    component_names = [
-                        get_type_name(component_class, root_module_name)
-                        for component_class in component_classes
-                        # filters out forward refs
-                        if getattr(component_class, '__name__', None) is not None
-                    ]
-                    domain_relations.extend([
-                        UmlRelation(uml_class.fqn, f'{component_class.__module__}.{component_class.__name__}', RelType.COMPOSITION)
-                        for component_class in component_classes
-                        if component_class.__module__.startswith(root_module_name)
-                    ])
-                    attr_type = f"{composition_rel}[{', '.join(component_names)}]"
-                else:
-                    attr_type = attr_raw_type
+                attr_type, full_namespaced_definitions = shorten_compound_type_annotation(attr_raw_type, module_resolver)
+                relations_by_target_fqdn.update({
+                    attr_fqn: UmlRelation(uml_class.fqn, attr_fqn, RelType.COMPOSITION)
+                    for attr_fqn in full_namespaced_definitions
+                    if attr_fqn.startswith(root_module_name)
+                })
+
             uml_attr = UmlAttribute(attr_name, attr_type, static=True)
             definition_attrs.append(uml_attr)
+
+        domain_relations.extend(relations_by_target_fqdn.values())
 
     return definition_attrs
 
