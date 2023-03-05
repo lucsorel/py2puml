@@ -20,7 +20,7 @@ Some parsing features are available only since Python 3.8 (like [ast.get_source_
 
 ## Features
 
-From a given path corresponding to a folder containing Python code, `py2puml` processes each file as a module and generates a [PlantUML script](https://plantuml.com/en/class-diagram) of its classe-like definitions using:
+From a given path corresponding to a folder containing Python code, `py2puml` processes each Python module and generates a [PlantUML script](https://plantuml.com/en/class-diagram) from the definitions of various data structures using:
 
 * **[inspection](https://docs.python.org/3/library/inspect.html)** and [type annotations](https://docs.python.org/3/library/typing.html) to detect:
   * static class attributes and [dataclass](https://docs.python.org/3/library/dataclasses.html) fields
@@ -29,7 +29,7 @@ From a given path corresponding to a folder containing Python code, `py2puml` pr
   * composition and inheritance relationships (between your domain classes only, for documentation sake).
 The detection of composition relationships relies on type annotations only, assigned values or expressions are never evaluated to prevent unwanted side-effects
 
-* parsing [abstract syntax trees](https://docs.python.org/3/library/ast.html#ast.NodeVisitor) to detect the instance attributes defined in `__init__` constructors
+* parsing **[abstract syntax trees](https://docs.python.org/3/library/ast.html#ast.NodeVisitor)** to detect the instance attributes defined in `__init__` constructors
 
 `py2puml` outputs diagrams in PlantUML syntax, which can be:
 * versioned along your code with a unit-test ensuring its consistency (see the [test_py2puml.py's test_py2puml_model_on_py2uml_domain](tests/py2puml/test_py2puml.py) example)
@@ -192,11 +192,12 @@ python3 -m pytest -v
 Code coverage (with [missed branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
 
 ```sh
-poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 90
+poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 92
 ```
 
 # Changelog
 
+* `0.7.2`: added the current working directory to the import path to make py2puml work in any directory or in native virtual environment (not handled by poetry)
 * `0.7.1`: removed obsolete part of documentation: deeply compound types are now well handled (by version `0.7.0`)
 * `0.7.0`: improved the generated PlantUML documentation (added the namespace structure of the code base, homogenized type  between inspection and parsing), improved relationships management (handle forward references, deduplicate relationships)
 * `0.6.1`: handle class names with digits
