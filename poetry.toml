@@ -1,6 +1,7 @@
 [virtualenvs]
 create = true
 in-project = true
+prefer-active-python = true
 
 [repositories]
 [repositories.testpypi]
