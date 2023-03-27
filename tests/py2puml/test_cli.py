@@ -1,10 +1,14 @@
+from io import StringIO
 from subprocess import run, PIPE
 from typing import List
 
 from pytest import mark
 
+from py2puml.asserts import assert_multilines
 from py2puml.py2puml import py2puml
-from tests import __version__, __description__
+
+from tests import __version__, __description__, TESTS_PATH
+
 
 @mark.parametrize(
     'entrypoint', [
@@ -22,6 +26,23 @@ def test_cli_consistency_with_the_default_configuration(entrypoint: List[str]):
     puml_content = py2puml('py2puml/domain', 'py2puml.domain')
 
     assert ''.join(puml_content).strip() == cli_stdout.strip()
+
+
+def test_cli_on_specific_working_directory():
+    command = ['py2puml', 'withrootnotincwd', 'withrootnotincwd']
+    cli_process = run(command,
+        stdout=PIPE, stderr=PIPE,
+        text=True, check=True,
+        cwd='tests/modules'
+    )
+
+    with open(TESTS_PATH / 'puml_files' / 'withrootnotincwd.puml', 'r', encoding='utf8') as expected_puml_file:
+        assert_multilines(
+            # removes the last return carriage added by the stdout
+            [line for line in StringIO(cli_process.stdout)][:-1],
+            expected_puml_file
+        )
+
 
 @mark.parametrize(
     'version_command', [
