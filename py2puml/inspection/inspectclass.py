@@ -29,10 +29,10 @@ def handle_inheritance_relation(
             )
 
 def inspect_static_attributes(
-    class_type_fqn: str,
-    definition_attrs: List[UmlAttribute],
     class_type: Type,
+    class_type_fqn: str,
     root_module_name: str,
+    domain_items_by_fqn: Dict[str, UmlItem],
     domain_relations: List[UmlRelation]
 ) -> List[UmlAttribute]:
     '''
@@ -46,7 +46,8 @@ def inspect_static_attributes(
         name=class_type.__name__,
         fqn=class_type_fqn,
         attributes=definition_attrs,
-        is_abstract=isabstract(class_type)
+        is_abstract=isabstract(class_type),
+        methods=[]
     )
     domain_items_by_fqn[class_type_fqn] = uml_class
     # investigate_domain_definition(class_type)
@@ -91,33 +92,16 @@ def inspect_static_attributes(
 def inspect_methods(
     definition_methods, class_type,
 ):
-    no_dunder = lambda x: not (x[0].startswith('__') or x[0].endswith('__'))
+    no_dunder = lambda method_name: not (method_name[0].startswith('__') or method_name[0].endswith('__'))
     methods = filter(no_dunder, getmembers(class_type, callable))
     for name, method in methods:
-        signature = signature(method)
+        method_signature = signature(method)
         uml_method = UmlMethod(
             name=name,
-            signature=str(signature),
+            signature=str(method_signature),
         )
         definition_methods.append(uml_method)
 
-
-def handle_class_type(
-    class_type: Type,
-    class_type_fqn: str,
-    domain_items_by_fqn: Dict[str, UmlItem],
-) -> UmlClass:
-    definition_attrs: List[UmlAttribute] = []
-    definition_methods: List[UmlMethod] = []
-    uml_class = UmlClass(
-        name=class_type.__name__,
-        fqn=class_type_fqn,
-        attributes=definition_attrs,
-        methods=definition_methods,
-        is_abstract=isabstract(class_type)
-    )
-    domain_items_by_fqn[class_type_fqn] = uml_class
-    return uml_class
 
 def inspect_class_type(
     class_type: Type,
@@ -126,14 +110,15 @@ def inspect_class_type(
     domain_items_by_fqn: Dict[str, UmlItem],
     domain_relations: List[UmlRelation]
 ):
-    uml_class = handle_class_type(class_type, class_type_fqn, domain_items_by_fqn)
-    inspect_static_attributes(
-        class_type_fqn, uml_class.attributes, class_type, root_module_name, domain_relations
+    attributes = inspect_static_attributes(
+        class_type, class_type_fqn, root_module_name,
+        domain_items_by_fqn, domain_relations
     )
-    inspect_methods(uml_class.methods, class_type)
     instance_attributes, compositions = parse_class_constructor(class_type, class_type_fqn, root_module_name)
-    uml_class.attributes.extend(instance_attributes)
+    attributes.extend(instance_attributes)
     domain_relations.extend(compositions.values())
+    
+    inspect_methods(domain_items_by_fqn[class_type_fqn].methods, class_type)
 
     handle_inheritance_relation(class_type, class_type_fqn, root_module_name, domain_relations)
 
@@ -144,12 +129,13 @@ def inspect_dataclass_type(
     domain_items_by_fqn: Dict[str, UmlItem],
     domain_relations: List[UmlRelation]
 ):
-    uml_class = handle_class_type(class_type, class_type_fqn, domain_items_by_fqn)
-    inspect_static_attributes(
-        class_type_fqn, uml_class.attributes, class_type, root_module_name, domain_relations
-    )
-    inspect_methods(uml_class.methods, class_type)
-    for attribute in uml_class.attributes:
+    for attribute in inspect_static_attributes(
+        class_type,
+        class_type_fqn,
+        root_module_name,
+        domain_items_by_fqn,
+        domain_relations
+    ):
         attribute.static = False
 
     handle_inheritance_relation(class_type, class_type_fqn, root_module_name, domain_relations)

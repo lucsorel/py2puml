@@ -19,5 +19,6 @@ class UmlMethod(object):
 @dataclass
 class UmlClass(UmlItem):
     attributes: List[UmlAttribute]
+    # TODO move to UmlItem?
     methods: List[UmlMethod]
     is_abstract: bool = False

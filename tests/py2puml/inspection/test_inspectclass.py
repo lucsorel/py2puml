@@ -8,6 +8,7 @@ from py2puml.inspection.inspectmodule import inspect_module
 
 from tests.asserts.attribute import assert_attribute
 from tests.asserts.relation import assert_relation
+from tests.asserts.method import assert_method
 
 
 def test_inspect_module_should_find_static_and_instance_attributes(
@@ -167,3 +168,35 @@ def test_inspect_module_should_handle_compound_types_with_numbers_in_their_name(
     assert len(multicast_umlitem.attributes) == 1, '1 attributes of Multicast must be inspected'
     address_attribute = multicast_umlitem.attributes[0]
     assert_attribute(address_attribute, 'addresses', 'List[IPv6]', expected_staticity=False)
+
+def test_inspect_module_should_find_methods(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
+    '''
+    Test that methods are detected including static methods
+
+    This test case assumes that the methods will be sorted by type as follow:
+        1a - instance methods (special methods aka "dunder")
+        1b - all other instance methods
+        2 - static methods
+    '''
+
+    inspect_module(
+        import_module('tests.modules.withmethods.withmethods'),
+        'tests.modules.withmethods.withmethods',
+        domain_items_by_fqn, domain_relations
+    )
+
+    # Coordinates UmlClass
+    coordinates_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withmethods.withmethods.Coordinates']
+    assert len(coordinates_umlitem.methods) == 0
+
+    # Point UmlClass
+    point_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withmethods.withmethods.Point']
+    assert len(point_umlitem.methods) == 2
+
+    # FIXME dunder methods are filtered out for now
+    # assert point_umlitem.methods[0].name == '__init__'  # 1a - Instance method (special)
+    assert point_umlitem.methods[0].name == 'from_values'  # 2 - Static method
+    assert point_umlitem.methods[1].name == 'get_coordinates'  # 1b - Instance method (regular)
+    # FIXME: use 'assert_method' once UmlMethod restructured
