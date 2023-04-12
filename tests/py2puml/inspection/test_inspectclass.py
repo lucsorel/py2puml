@@ -200,3 +200,29 @@ def test_inspect_module_should_find_methods(
     assert point_umlitem.methods[0].name == 'from_values'  # 2 - Static method
     assert point_umlitem.methods[1].name == 'get_coordinates'  # 1b - Instance method (regular)
     # FIXME: use 'assert_method' once UmlMethod restructured
+
+
+def test_inspect_module_inherited_methods(
+    domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
+):
+    '''
+    Test that inherited methods are not included in subclasses
+    '''
+
+    inspect_module(
+        import_module('tests.modules.withmethods.withinheritedmethods'),
+        'tests.modules.withmethods.withinheritedmethods',
+        domain_items_by_fqn, domain_relations
+    )
+
+    # ThreeDimensionalCoordinates UmlClass
+    coordinates_3d_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withmethods.withinheritedmethods.ThreeDimensionalPoint']
+
+    # FIXME inherited methods should not be mentionned
+    assert len(coordinates_3d_umlitem.methods) == 4
+
+    assert coordinates_3d_umlitem.methods[0].name == 'check_positive'
+    assert coordinates_3d_umlitem.methods[1].name == 'from_values' # inherited method
+    assert coordinates_3d_umlitem.methods[2].name == 'get_coordinates' # inherited method
+    assert coordinates_3d_umlitem.methods[3].name == 'move'
+    # FIXME: use 'assert_method' once UmlMethod restructured

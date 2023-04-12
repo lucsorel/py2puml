@@ -20,7 +20,7 @@ def assert_py2puml_is_stringio(domain_path: str, domain_module: str, expected_co
 def assert_multilines(actual_multilines: List[str], expected_multilines: Iterable[str]):
     line_index = 0
     for line_index, (actual_line, expected_line) in enumerate(zip(actual_multilines, expected_multilines)):
-        # print(actual_line)
+        # print(actual_line[:-1])
         assert actual_line == expected_line, f'actual and expected contents have changed at line {line_index + 1}: {actual_line=}, {expected_line=}'
     
     assert line_index + 1 == len(actual_multilines), f'actual and expected diagrams have {line_index + 1} lines'
