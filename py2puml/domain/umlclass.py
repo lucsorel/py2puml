@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from py2puml.domain.umlitem import UmlItem
 
+
 @dataclass
 class UmlAttribute:
     name: str
@@ -11,7 +12,7 @@ class UmlAttribute:
 
 
 @dataclass
-class UmlMethod(object):
+class UmlMethod:
     name: str
     signature: str
 
