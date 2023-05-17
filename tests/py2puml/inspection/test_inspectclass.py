@@ -172,14 +172,9 @@ def test_inspect_module_should_handle_compound_types_with_numbers_in_their_name(
 def test_inspect_module_should_find_methods(
     domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
 ):
-    '''
+    """
     Test that methods are detected including static methods
-
-    This test case assumes that the methods will be sorted by type as follow:
-        1a - instance methods (special methods aka "dunder")
-        1b - all other instance methods
-        2 - static methods
-    '''
+    """
 
     inspect_module(
         import_module('tests.modules.withmethods.withmethods'),
@@ -189,16 +184,16 @@ def test_inspect_module_should_find_methods(
 
     # Coordinates UmlClass
     coordinates_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withmethods.withmethods.Coordinates']
-    assert len(coordinates_umlitem.methods) == 0
+    assert len(coordinates_umlitem.methods) == 1
 
     # Point UmlClass
     point_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withmethods.withmethods.Point']
-    assert len(point_umlitem.methods) == 2
+    assert len(point_umlitem.methods) == 4
 
-    # FIXME dunder methods are filtered out for now
-    # assert point_umlitem.methods[0].name == '__init__'  # 1a - Instance method (special)
-    assert point_umlitem.methods[0].name == 'from_values'  # 2 - Static method
-    assert point_umlitem.methods[1].name == 'get_coordinates'  # 1b - Instance method (regular)
+    assert point_umlitem.methods[0].name == 'from_values'
+    assert point_umlitem.methods[1].name == 'get_coordinates'
+    assert point_umlitem.methods[2].name == '__init__'
+    assert point_umlitem.methods[3].name == 'do_something'
     # FIXME: use 'assert_method' once UmlMethod restructured
 
 
@@ -219,10 +214,9 @@ def test_inspect_module_inherited_methods(
     coordinates_3d_umlitem: UmlClass = domain_items_by_fqn['tests.modules.withmethods.withinheritedmethods.ThreeDimensionalPoint']
 
     # FIXME inherited methods should not be mentionned
-    assert len(coordinates_3d_umlitem.methods) == 4
+    assert len(coordinates_3d_umlitem.methods) == 3
 
-    assert coordinates_3d_umlitem.methods[0].name == 'check_positive'
-    assert coordinates_3d_umlitem.methods[1].name == 'from_values' # inherited method
-    assert coordinates_3d_umlitem.methods[2].name == 'get_coordinates' # inherited method
-    assert coordinates_3d_umlitem.methods[3].name == 'move'
+    assert coordinates_3d_umlitem.methods[2].name == 'check_positive'
+    assert coordinates_3d_umlitem.methods[0].name == '__init__'
+    assert coordinates_3d_umlitem.methods[1].name == 'move'
     # FIXME: use 'assert_method' once UmlMethod restructured

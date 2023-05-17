@@ -1,19 +1,19 @@
 from importlib import import_module
-from inspect import isabstract, getmembers, signature
+from inspect import isabstract, getsource
 from re import compile as re_compile
 from typing import Type, List, Dict
-
+from ast import parse, AST
 
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlclass import UmlClass, UmlAttribute, UmlMethod
 from py2puml.domain.umlrelation import UmlRelation, RelType
-from py2puml.parsing.astvisitors import shorten_compound_type_annotation
+from py2puml.parsing.astvisitors import shorten_compound_type_annotation, ClassVisitor
 from py2puml.parsing.parseclassconstructor import parse_class_constructor
 from py2puml.parsing.moduleresolver import ModuleResolver
-# from py2puml.utils import investigate_domain_definition
 
 
 CONCRETE_TYPE_PATTERN = re_compile("^<(?:class|enum) '([\\.|\\w]+)'>$")
+
 
 def handle_inheritance_relation(
     class_type: Type,
@@ -27,6 +27,7 @@ def handle_inheritance_relation(
             domain_relations.append(
                 UmlRelation(base_type_fqn, class_fqn, RelType.INHERITANCE)
             )
+
 
 def inspect_static_attributes(
     class_type: Type,
@@ -59,7 +60,7 @@ def inspect_static_attributes(
         # utility which outputs the fully-qualified name of the attribute types
         module_resolver = ModuleResolver(import_module(class_type.__module__))
 
-        # builds the definitions of the class attrbutes and their relationships by iterating over the type annotations 
+        # builds the definitions of the class attrbutes and their relationships by iterating over the type annotations
         for attr_name, attr_class in type_annotations.items():
             attr_raw_type = str(attr_class)
             concrete_type_match = CONCRETE_TYPE_PATTERN.search(attr_raw_type)
@@ -89,18 +90,16 @@ def inspect_static_attributes(
 
     return definition_attrs
 
-def inspect_methods(
-    definition_methods, class_type,
-):
-    no_dunder = lambda method_name: not (method_name[0].startswith('__') or method_name[0].endswith('__'))
-    methods = filter(no_dunder, getmembers(class_type, callable))
-    for name, method in methods:
-        method_signature = signature(method)
-        uml_method = UmlMethod(
-            name=name,
-            signature=str(method_signature),
-        )
-        definition_methods.append(uml_method)
+
+def inspect_methods(definition_methods: List, class_type: Type, root_module_name: str):
+    """ This function parses a class using AST to identify methods. """
+    print(f'inspecting {class_type.__name__} from {class_type.__module__}')
+    class_source: str = getsource(class_type)
+    class_ast: AST = parse(class_source)
+    visitor = ClassVisitor(class_type, root_module_name)
+    visitor.visit(class_ast)
+    for method in visitor.uml_methods:
+        definition_methods.append(method)
 
 
 def inspect_class_type(
@@ -117,10 +116,11 @@ def inspect_class_type(
     instance_attributes, compositions = parse_class_constructor(class_type, class_type_fqn, root_module_name)
     attributes.extend(instance_attributes)
     domain_relations.extend(compositions.values())
-    
-    inspect_methods(domain_items_by_fqn[class_type_fqn].methods, class_type)
+
+    inspect_methods(domain_items_by_fqn[class_type_fqn].methods, class_type, root_module_name)
 
     handle_inheritance_relation(class_type, class_type_fqn, root_module_name, domain_relations)
+
 
 def inspect_dataclass_type(
     class_type: Type,

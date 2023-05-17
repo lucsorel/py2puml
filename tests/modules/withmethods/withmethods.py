@@ -1,10 +1,10 @@
+from __future__ import annotations
 from typing import List, Tuple
 from math import pi
 
 from tests.modules import withenum
 from tests import modules
 from tests.modules.withenum import TimeUnit
-
 
 class Coordinates:
     def __init__(self, x: float, y: float) -> None:
@@ -30,3 +30,6 @@ class Point:
         self.time_resolution: Tuple[str, withenum.TimeUnit] = 'minute', TimeUnit.MINUTE
         self.x = x
         self.y = y
+
+    def do_something(self, posarg_nohint, posarg_hint: str, posarg_default=3) -> int:
+        return 44

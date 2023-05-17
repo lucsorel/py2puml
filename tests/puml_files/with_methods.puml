@@ -11,20 +11,20 @@ class tests.modules.withmethods.withmethods.Point {
   time_resolution: Tuple[str, TimeUnit]
   x: int
   y: str
-  {static} Point from_values(x: int, y: str)
+  {static} Point from_values(int x, str y)
   Tuple[float, str] get_coordinates(self)
-  __init__(self, x: int, y: str)
+  __init__(self, int x, str y)
 }
 class tests.modules.withmethods.withinheritedmethods.ThreeDimensionalPoint {
   z: float
-  __init__(self, x: int, y: str, z: float)
-  move(self, offset: int)
+  __init__(self, int x, str y, float z)
+  move(self, int offset)
   bool check_positive(self)
 }
 class tests.modules.withmethods.withmethods.Coordinates {
   x: float
   y: float
-  __init__(self, x: float, y: float)
+  __init__(self, float x, float y)
 }
 tests.modules.withmethods.withmethods.Point *-- tests.modules.withmethods.withmethods.Coordinates
 tests.modules.withmethods.withmethods.Point <|-- tests.modules.withmethods.withinheritedmethods.ThreeDimensionalPoint

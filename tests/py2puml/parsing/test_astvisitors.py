@@ -12,6 +12,7 @@ from py2puml.parsing.moduleresolver import ModuleResolver
 
 from tests.asserts.variable import assert_Variable
 from tests.py2puml.parsing.mockedinstance import MockedInstance
+from tests.modules.withmethods import withmethods
 
 
 class ParseMyConstructorArguments:
@@ -31,7 +32,7 @@ def test_SignatureVariablesCollector_collect_arguments():
     constructor_source: str = dedent(getsource(ParseMyConstructorArguments.__init__.__code__))
     constructor_ast: AST = parse(constructor_source)
 
-    collector = SignatureVariablesCollector(constructor_source)
+    collector = SignatureVariablesCollector()
     collector.visit(constructor_ast)
 
     assert collector.class_self_id == 'me'
