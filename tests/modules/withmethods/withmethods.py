@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Tuple
+from typing import Tuple
 from math import pi
 
 from tests.modules import withenum
@@ -17,7 +17,7 @@ class Point:
     origin = Coordinates(0, 0)
 
     @staticmethod
-    def from_values(x: int, y: str) -> 'Point':
+    def from_values(x: int, y: str) -> Point:
         return Point(x, y)
 
     def get_coordinates(self) -> Tuple[float, str]:

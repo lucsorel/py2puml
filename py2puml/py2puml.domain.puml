@@ -27,7 +27,10 @@ class py2puml.domain.umlitem.UmlItem {
 }
 class py2puml.domain.umlclass.UmlMethod {
   name: str
-  signature: str
+  arguments: Dict
+  is_static: bool
+  is_class: bool
+  return_type: str
 }
 class py2puml.domain.umlenum.Member {
   name: str

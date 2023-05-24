@@ -1,19 +1,16 @@
 
 from typing import Dict, List, Tuple, Type
-from inspect import getsource, unwrap
 from ast import (
     NodeVisitor, arg, expr,
     FunctionDef, Assign, AnnAssign,
     Attribute, Name, Subscript, get_source_segment
 )
 from collections import namedtuple
-from textwrap import dedent
-from importlib import import_module
 
 from py2puml.domain.umlclass import UmlAttribute, UmlMethod
 from py2puml.domain.umlrelation import UmlRelation, RelType
 from py2puml.parsing.compoundtypesplitter import CompoundTypeSplitter, SPLITTING_CHARACTERS
-from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
+from py2puml.parsing.moduleresolver import ModuleResolver
 
 Variable = namedtuple('Variable', ['id', 'type_expr'])
 
@@ -35,8 +32,7 @@ class SignatureVariablesCollector(NodeVisitor):
         if self.class_self_id is None and not self.skip_self:
             self.class_self_id = variable.id
         # other arguments are constructor parameters
-        else:
-            self.variables.append(variable)
+        self.variables.append(variable)
 
 
 class AssignedVariablesCollector(NodeVisitor):
@@ -80,6 +76,21 @@ class ClassVisitor(NodeVisitor):
         self.uml_methods.append(method_visitor.uml_method)
 
 
+class ReturnTypeVisitor(NodeVisitor):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def visit_Name(self, node):
+        return node.id
+
+    def visit_Constant(self, node):
+        return node.value
+
+    def visit_Subscript(self, node):
+        return node.value.id
+
+
 class MethodVisitor(NodeVisitor):
     """
     Node visitor subclass used to walk the abstract syntax tree of a method class and identify method arguments.
@@ -90,11 +101,7 @@ class MethodVisitor(NodeVisitor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.variables_namespace: List[Variable] = []
-        self.class_self_id: str
         self.uml_method: UmlMethod
-
-    def generic_visit(self, node):
-        NodeVisitor.generic_visit(self, node)
 
     def visit_FunctionDef(self, node: FunctionDef):
         decorators = [decorator.id for decorator in node.decorator_list]
@@ -104,19 +111,22 @@ class MethodVisitor(NodeVisitor):
         variables_collector.visit(node)
         self.variables_namespace = variables_collector.variables
 
-        if node.name == '__init__':
-            self.class_self_id: str = variables_collector.class_self_id
-            self.generic_visit(node)    #Only visit child nodes for constructor
-
         self.uml_method = UmlMethod(name=node.name, is_static=is_static, is_class=is_class)
+
         for argument in variables_collector.variables:
+            if argument.id == variables_collector.class_self_id:
+                self.uml_method.arguments[argument.id] = None
             if argument.type_expr:
                 if hasattr(argument.type_expr, 'id'):
                     self.uml_method.arguments[argument.id] = argument.type_expr.id
                 else:
-                    self.uml_method.arguments[argument.id] = f'SUBscript {argument.type_expr.value.id}'
+                    self.uml_method.arguments[argument.id] = f'Subscript {argument.type_expr.value.id}' #FIXME
             else:
                 self.uml_method.arguments[argument.id] = None
+
+        if node.returns is not None:
+            return_visitor = ReturnTypeVisitor()
+            self.uml_method.return_type = return_visitor.visit(node.returns)
 
 
 class ConstructorVisitor(NodeVisitor):

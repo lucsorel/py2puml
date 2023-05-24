@@ -14,6 +14,7 @@ class tests.modules.withmethods.withmethods.Point {
   {static} Point from_values(int x, str y)
   Tuple[float, str] get_coordinates(self)
   __init__(self, int x, str y)
+  int do_something(self, posarg_nohint, str posarg_hint, posarg_default)
 }
 class tests.modules.withmethods.withinheritedmethods.ThreeDimensionalPoint {
   z: float

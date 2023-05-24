@@ -10,6 +10,7 @@ class UmlAttribute:
     type: str
     static: bool
 
+
 @dataclass
 class UmlMethod:
     name: str
@@ -18,10 +19,19 @@ class UmlMethod:
     is_class: bool = False
     return_type: str = None
 
+    def represent_as_puml(self):
+        items = []
+        if self.is_static:
+            items.append('{static}')
+        if self.return_type:
+            items.append(self.return_type)
+        items.append(f'{self.name}({self.signature})')
+        return ' '.join(items)
+
     @property
     def signature(self):
         if self.arguments:
-            return ', '.join([f'{arg_type} {arg_name}' for arg_name, arg_type in self.arguments.items()])
+            return ', '.join([f'{arg_type} {arg_name}' if arg_type else f'{arg_name}' for arg_name, arg_type in self.arguments.items()])
         return ''
 
 
