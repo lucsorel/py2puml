@@ -6,6 +6,7 @@ from tests.modules import withenum
 from tests import modules
 from tests.modules.withenum import TimeUnit
 
+
 class Coordinates:
     def __init__(self, x: float, y: float) -> None:
         self.x = x
@@ -23,7 +24,7 @@ class Point:
     def get_coordinates(self) -> Tuple[float, str]:
         return self.x, self.y
 
-    def __init__(self, x: int, y: str) -> None:
+    def __init__(self, x: int, y: Tuple[bool]) -> None:
         self.coordinates: Coordinates = Coordinates(x, float(y))
         self.day_unit: withenum.TimeUnit = withenum.TimeUnit.DAYS
         self.hour_unit: modules.withenum.TimeUnit = modules.withenum.TimeUnit.HOURS

@@ -10,10 +10,10 @@ class tests.modules.withmethods.withmethods.Point {
   hour_unit: TimeUnit
   time_resolution: Tuple[str, TimeUnit]
   x: int
-  y: str
+  y: Tuple[bool]
   {static} Point from_values(int x, str y)
   Tuple[float, str] get_coordinates(self)
-  __init__(self, int x, str y)
+  __init__(self, int x, Tuple[bool] y)
   int do_something(self, posarg_nohint, str posarg_hint, posarg_default)
 }
 class tests.modules.withmethods.withinheritedmethods.ThreeDimensionalPoint {
