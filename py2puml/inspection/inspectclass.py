@@ -54,14 +54,21 @@ def inspect_static_attributes(
     # investigate_domain_definition(class_type)
 
     type_annotations = getattr(class_type, '__annotations__', None)
+    parent_class_type = getattr(class_type, '__bases__', None)[0]
+    parent_type_annotations = getattr(parent_class_type, '__annotations__', None)
+
     if type_annotations is not None:
         # stores only once the compositions towards the same class
         relations_by_target_fqdn: Dict[str: UmlRelation] = {}
         # utility which outputs the fully-qualified name of the attribute types
         module_resolver = ModuleResolver(import_module(class_type.__module__))
 
-        # builds the definitions of the class attrbutes and their relationships by iterating over the type annotations
+        # builds the definitions of the class attributes and their relationships by iterating over the type annotations
         for attr_name, attr_class in type_annotations.items():
+            # Skip class attributes accidentally inherited from parent class
+            if parent_type_annotations and attr_name in parent_type_annotations.keys():
+                continue
+
             attr_raw_type = str(attr_class)
             concrete_type_match = CONCRETE_TYPE_PATTERN.search(attr_raw_type)
             # basic type
