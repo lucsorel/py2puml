@@ -1,6 +1,5 @@
-
-from typing import Dict, List, Tuple
-
+import ast
+from typing import Dict, List, Tuple, Type
 from ast import (
     NodeVisitor, arg, expr,
     FunctionDef, Assign, AnnAssign,
@@ -8,33 +7,38 @@ from ast import (
 )
 from collections import namedtuple
 
-from py2puml.domain.umlclass import UmlAttribute
+from py2puml.domain.umlclass import UmlAttribute, UmlMethod
 from py2puml.domain.umlrelation import UmlRelation, RelType
 from py2puml.parsing.compoundtypesplitter import CompoundTypeSplitter, SPLITTING_CHARACTERS
-from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
+from py2puml.parsing.moduleresolver import ModuleResolver
+
+Argument = namedtuple('Argument', ['id', 'type_expr'])
 
 
-Variable = namedtuple('Variable', ['id', 'type_expr'])
-
-class SignatureVariablesCollector(NodeVisitor):
-    '''
-    Collects the variables and their type annotations from the signature of a constructor method
-    '''
-    def __init__(self, constructor_source: str, *args, **kwargs):
+class SignatureArgumentsCollector(NodeVisitor):
+    """
+    Collects the arguments name and type annotations from the signature of a method
+    """
+    def __init__(self, skip_self=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.constructor_source = constructor_source
+        self.skip_self = skip_self
         self.class_self_id: str = None
-        self.variables: List[Variable] = []
+        self.arguments: List[Argument] = []
+        self.datatypes = {}
 
     def visit_arg(self, node: arg):
-        variable = Variable(node.arg, node.annotation)
-
-        # first constructor variable is the name for the 'self' reference
-        if self.class_self_id is None:
-            self.class_self_id = variable.id
-        # other arguments are constructor parameters
+        argument = Argument(node.arg, node.annotation)
+        if node.annotation:
+            type_visitor = TypeVisitor()
+            datatype = type_visitor.visit(node.annotation)
         else:
-            self.variables.append(variable)
+            datatype = None
+        self.datatypes[node.arg] = datatype
+        # first constructor argument is the name for the 'self' reference
+        if self.class_self_id is None and not self.skip_self:
+            self.class_self_id = argument.id
+        # other arguments are constructor parameters
+        self.arguments.append(argument)
 
 
 class AssignedVariablesCollector(NodeVisitor):
@@ -42,28 +46,110 @@ class AssignedVariablesCollector(NodeVisitor):
     def __init__(self, class_self_id: str, annotation: expr):
         self.class_self_id: str = class_self_id
         self.annotation: expr = annotation
-        self.variables: List[Variable] = []
-        self.self_attributes: List[Variable] = []
+        self.variables: List[Argument] = []
+        self.self_attributes: List[Argument] = []
 
     def visit_Name(self, node: Name):
         '''
         Detects declarations of new variables
         '''
         if node.id != self.class_self_id:
-            self.variables.append(Variable(node.id, self.annotation))
+            self.variables.append(Argument(node.id, self.annotation))
 
     def visit_Attribute(self, node: Attribute):
         '''
         Detects declarations of new attributes on 'self'
         '''
         if isinstance(node.value, Name) and node.value.id == self.class_self_id:
-            self.self_attributes.append(Variable(node.attr, self.annotation))
+            self.self_attributes.append(Argument(node.attr, self.annotation))
 
     def visit_Subscript(self, node: Subscript):
         '''
         Assigns a value to a subscript of an existing variable: must be skipped
         '''
         pass
+
+
+class ClassVisitor(NodeVisitor):
+
+    def __init__(self, class_type: Type, root_fqn: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.uml_methods: List[UmlMethod] = []
+
+    def visit_FunctionDef(self, node: FunctionDef):
+        method_visitor = MethodVisitor()
+        method_visitor.visit(node)
+        self.uml_methods.append(method_visitor.uml_method)
+
+
+class TypeVisitor(NodeVisitor):
+    """ Returns a string representation of a data type. Supports nested compound data types """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def visit_Name(self, node):
+        return node.id
+
+    def visit_Constant(self, node):
+        return node.value
+
+    def visit_Subscript(self, node: Subscript):
+        """ Visit node of type ast.Subscript and returns a string representation of the compound datatype. Iterate
+        over elements contained in slice attribute by calling recursively visit() method of new instances of
+        TypeVisitor. This allows to resolve nested compound datatype. """
+
+        datatypes = []
+
+        if hasattr(node.slice.value, 'elts'):
+            for child_node in node.slice.value.elts:
+                child_visitor = TypeVisitor()
+                datatypes.append(child_visitor.visit(child_node))
+        else:
+            child_visitor = TypeVisitor()
+            datatypes.append(child_visitor.visit(node.slice.value))
+
+        joined_datatypes = ', '.join(datatypes)
+
+        return f'{node.value.id}[{joined_datatypes}]'
+
+
+class MethodVisitor(NodeVisitor):
+    """
+    Node visitor subclass used to walk the abstract syntax tree of a method class and identify method arguments.
+
+    If the method is the class constructor, instance attributes (and their type) are also identified by looking both at the constructor signature and constructor's body. When searching in the constructor's body, the visitor looks for relevant assignments (with and without type annotation).
+     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.variables_namespace: List[Argument] = []
+        self.uml_method: UmlMethod
+
+    def visit_FunctionDef(self, node: FunctionDef):
+        decorators = [decorator.id for decorator in node.decorator_list]
+        is_static = 'staticmethod' in decorators
+        is_class = 'classmethod' in decorators
+        arguments_collector = SignatureArgumentsCollector(skip_self=is_static)
+        arguments_collector.visit(node)
+        self.variables_namespace = arguments_collector.arguments
+
+        self.uml_method = UmlMethod(name=node.name, is_static=is_static, is_class=is_class)
+
+        for argument in arguments_collector.arguments:
+            if argument.id == arguments_collector.class_self_id:
+                self.uml_method.arguments[argument.id] = None
+            if argument.type_expr:
+                if hasattr(argument.type_expr, 'id'):
+                    self.uml_method.arguments[argument.id] = argument.type_expr.id
+                else:
+
+                    self.uml_method.arguments[argument.id] = arguments_collector.datatypes[argument.id]
+            else:
+                self.uml_method.arguments[argument.id] = None
+
+        if node.returns is not None:
+            return_visitor = TypeVisitor()
+            self.uml_method.return_type = return_visitor.visit(node.returns)
 
 
 class ConstructorVisitor(NodeVisitor):
@@ -77,7 +163,7 @@ class ConstructorVisitor(NodeVisitor):
         self.root_fqn = root_fqn
         self.module_resolver = module_resolver
         self.class_self_id: str
-        self.variables_namespace: List[Variable] = []
+        self.variables_namespace: List[Argument] = []
         self.uml_attributes: List[UmlAttribute] = []
         self.uml_relations_by_target_fqn: Dict[str, UmlRelation] = {}
 
@@ -90,7 +176,7 @@ class ConstructorVisitor(NodeVisitor):
             )
         })
 
-    def get_from_namespace(self, variable_id: str) -> Variable:
+    def get_from_namespace(self, variable_id: str) -> Argument:
         return next((
             variable
             # variables namespace is iterated antichronologically
@@ -105,10 +191,10 @@ class ConstructorVisitor(NodeVisitor):
     def visit_FunctionDef(self, node: FunctionDef):
         # retrieves constructor arguments ('self' reference and typed arguments)
         if node.name == '__init__':
-            variables_collector = SignatureVariablesCollector(self.constructor_source)
+            variables_collector = SignatureArgumentsCollector()
             variables_collector.visit(node)
             self.class_self_id: str = variables_collector.class_self_id
-            self.variables_namespace = variables_collector.variables
+            self.variables_namespace = variables_collector.arguments
 
         self.generic_visit(node)
 
@@ -158,7 +244,6 @@ class ConstructorVisitor(NodeVisitor):
             # other assignments were done in new variables that can shadow existing ones
             self.variables_namespace.extend(variables_collector.variables)
 
-
     def derive_type_annotation_details(self, annotation: expr) -> Tuple[str, List[str]]:
         '''
         From a type annotation, derives:
@@ -182,12 +267,11 @@ class ConstructorVisitor(NodeVisitor):
             return short_type, [full_namespaced_type]
         # compound type (List[...], Tuple[Dict[str, float], module.DomainType], etc.)
         elif isinstance(annotation, Subscript):
-            return shorten_compound_type_annotation(
-                get_source_segment(self.constructor_source, annotation),
-                self.module_resolver
-            )
-
+            source_segment = get_source_segment(self.constructor_source, annotation)
+            short_type, associated_types = shorten_compound_type_annotation(source_segment, self.module_resolver)
+            return short_type, associated_types
         return None, []
+
 
 def shorten_compound_type_annotation(type_annotation: str, module_resolver: ModuleResolver) -> Tuple[str, List[str]]:
     '''

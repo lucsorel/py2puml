@@ -1,4 +1,4 @@
-
+import unittest
 from typing import Dict, Tuple, List
 
 from ast import parse, AST, get_source_segment
@@ -7,11 +7,12 @@ from textwrap import dedent
 
 from pytest import mark
 
-from py2puml.parsing.astvisitors import AssignedVariablesCollector, SignatureVariablesCollector, Variable, shorten_compound_type_annotation
+from py2puml.parsing.astvisitors import AssignedVariablesCollector, TypeVisitor, SignatureArgumentsCollector, Argument, shorten_compound_type_annotation
 from py2puml.parsing.moduleresolver import ModuleResolver
 
 from tests.asserts.variable import assert_Variable
 from tests.py2puml.parsing.mockedinstance import MockedInstance
+from tests.modules.withmethods import withmethods
 
 
 class ParseMyConstructorArguments:
@@ -31,17 +32,18 @@ def test_SignatureVariablesCollector_collect_arguments():
     constructor_source: str = dedent(getsource(ParseMyConstructorArguments.__init__.__code__))
     constructor_ast: AST = parse(constructor_source)
 
-    collector = SignatureVariablesCollector(constructor_source)
+    collector = SignatureArgumentsCollector()
     collector.visit(constructor_ast)
 
     assert collector.class_self_id == 'me'
-    assert len(collector.variables) == 6, 'all the arguments must be detected'
-    assert_Variable(collector.variables[0], 'an_int', 'int', constructor_source)
-    assert_Variable(collector.variables[1], 'an_untyped', None, constructor_source)
-    assert_Variable(collector.variables[2], 'a_compound_type', 'Tuple[float, Dict[str, List[bool]]]', constructor_source)
-    assert_Variable(collector.variables[3], 'a_default_string', 'str', constructor_source)
-    assert_Variable(collector.variables[4], 'args', None, constructor_source)
-    assert_Variable(collector.variables[5], 'kwargs', None, constructor_source)
+    assert len(collector.arguments) == 7, 'all the arguments must be detected'
+    assert_Variable(collector.arguments[0], 'me', None, constructor_source)
+    assert_Variable(collector.arguments[1], 'an_int', 'int', constructor_source)
+    assert_Variable(collector.arguments[2], 'an_untyped', None, constructor_source)
+    assert_Variable(collector.arguments[3], 'a_compound_type', 'Tuple[float, Dict[str, List[bool]]]', constructor_source)
+    assert_Variable(collector.arguments[4], 'a_default_string', 'str', constructor_source)
+    assert_Variable(collector.arguments[5], 'args', None, constructor_source)
+    assert_Variable(collector.arguments[6], 'kwargs', None, constructor_source)
 
 @mark.parametrize(
     'class_self_id,assignment_code,annotation_as_str,self_attributes,variables', [
@@ -188,3 +190,45 @@ def test_shorten_compound_type_annotation(full_annotation: str, short_annotation
     shortened_annotation, full_namespaced_definitions = shorten_compound_type_annotation(full_annotation, module_resolver)
     assert shortened_annotation == short_annotation
     assert full_namespaced_definitions == namespaced_definitions
+
+
+class TestTypeVisitor(unittest.TestCase):
+
+    def test_return_type_int(self):
+        source_code = 'def dummy_function() -> int:\n     pass'
+        ast = parse(source_code)
+        node = ast.body[0].returns
+        visitor = TypeVisitor()
+        actual_rtype = visitor.visit(node)
+        expected_rtype = 'int'
+        self.assertEqual(expected_rtype, actual_rtype)
+
+    def test_return_type_compound(self):
+        """ Test non-nested compound datatype"""
+        source_code = 'def dummy_function() -> Tuple[float, str]:\n     pass'
+        ast = parse(source_code)
+        node = ast.body[0].returns
+        visitor = TypeVisitor()
+        actual_rtype = visitor.visit(node)
+        expected_rtype = 'Tuple[float, str]'
+        self.assertEqual(expected_rtype, actual_rtype)
+
+    def test_return_type_compound_nested(self):
+        """ Test nested compound datatype"""
+        source_code = 'def dummy_function() -> Tuple[float, Dict[str, List[bool]]]:\n     pass'
+        ast = parse(source_code)
+        node = ast.body[0].returns
+        visitor = TypeVisitor()
+        actual_rtype = visitor.visit(node)
+        expected_rtype = 'Tuple[float, Dict[str, List[bool]]]'
+        self.assertEqual(expected_rtype, actual_rtype)
+
+    def test_return_type_user_defined(self):
+        """ Test user-defined class datatype"""
+        source_code = 'def dummy_function() -> Point:\n     pass'
+        ast = parse(source_code)
+        node = ast.body[0].returns
+        visitor = TypeVisitor()
+        actual_rtype = visitor.visit(node)
+        expected_rtype = 'Point'
+        self.assertEqual(expected_rtype, actual_rtype)

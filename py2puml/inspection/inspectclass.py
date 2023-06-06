@@ -1,20 +1,19 @@
-from dataclasses import dataclass
 from importlib import import_module
-from inspect import isabstract
+from inspect import isabstract, getsource
 from re import compile as re_compile
 from typing import Type, List, Dict
-
+from ast import parse, AST
 
 from py2puml.domain.umlitem import UmlItem
-from py2puml.domain.umlclass import UmlClass, UmlAttribute
+from py2puml.domain.umlclass import UmlClass, UmlAttribute, UmlMethod
 from py2puml.domain.umlrelation import UmlRelation, RelType
-from py2puml.parsing.astvisitors import shorten_compound_type_annotation
+from py2puml.parsing.astvisitors import shorten_compound_type_annotation, ClassVisitor
 from py2puml.parsing.parseclassconstructor import parse_class_constructor
 from py2puml.parsing.moduleresolver import ModuleResolver
-# from py2puml.utils import investigate_domain_definition
 
 
 CONCRETE_TYPE_PATTERN = re_compile("^<(?:class|enum) '([\\.|\\w]+)'>$")
+
 
 def handle_inheritance_relation(
     class_type: Type,
@@ -28,6 +27,7 @@ def handle_inheritance_relation(
             domain_relations.append(
                 UmlRelation(base_type_fqn, class_fqn, RelType.INHERITANCE)
             )
+
 
 def inspect_static_attributes(
     class_type: Type,
@@ -47,20 +47,28 @@ def inspect_static_attributes(
         name=class_type.__name__,
         fqn=class_type_fqn,
         attributes=definition_attrs,
-        is_abstract=isabstract(class_type)
+        is_abstract=isabstract(class_type),
+        methods=[]
     )
     domain_items_by_fqn[class_type_fqn] = uml_class
     # investigate_domain_definition(class_type)
 
     type_annotations = getattr(class_type, '__annotations__', None)
+    parent_class_type = getattr(class_type, '__bases__', None)[0]
+    parent_type_annotations = getattr(parent_class_type, '__annotations__', None)
+
     if type_annotations is not None:
         # stores only once the compositions towards the same class
         relations_by_target_fqdn: Dict[str: UmlRelation] = {}
         # utility which outputs the fully-qualified name of the attribute types
         module_resolver = ModuleResolver(import_module(class_type.__module__))
 
-        # builds the definitions of the class attrbutes and their relationships by iterating over the type annotations 
+        # builds the definitions of the class attributes and their relationships by iterating over the type annotations
         for attr_name, attr_class in type_annotations.items():
+            # Skip class attributes accidentally inherited from parent class
+            if parent_type_annotations and attr_name in parent_type_annotations.keys():
+                continue
+
             attr_raw_type = str(attr_class)
             concrete_type_match = CONCRETE_TYPE_PATTERN.search(attr_raw_type)
             # basic type
@@ -89,6 +97,18 @@ def inspect_static_attributes(
 
     return definition_attrs
 
+
+def inspect_methods(definition_methods: List, class_type: Type, root_module_name: str):
+    """ This function parses a class using AST to identify methods. """
+    print(f'inspecting {class_type.__name__} from {class_type.__module__}')
+    class_source: str = getsource(class_type)
+    class_ast: AST = parse(class_source)
+    visitor = ClassVisitor(class_type, root_module_name)
+    visitor.visit(class_ast)
+    for method in visitor.uml_methods:
+        definition_methods.append(method)
+
+
 def inspect_class_type(
     class_type: Type,
     class_type_fqn: str,
@@ -104,10 +124,13 @@ def inspect_class_type(
     attributes.extend(instance_attributes)
     domain_relations.extend(compositions.values())
 
+    inspect_methods(domain_items_by_fqn[class_type_fqn].methods, class_type, root_module_name)
+
     handle_inheritance_relation(class_type, class_type_fqn, root_module_name, domain_relations)
 
+
 def inspect_dataclass_type(
-    class_type: Type[dataclass],
+    class_type: Type,
     class_type_fqn: str,
     root_module_name: str,
     domain_items_by_fqn: Dict[str, UmlItem],

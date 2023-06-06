@@ -1,0 +1,64 @@
+@startuml
+class py2puml.parsing.astvisitors.AssignedVariablesCollector {
+  class_self_id: str
+  annotation: expr
+  variables: List[Variable]
+  self_attributes: List[Variable]
+  generic_visit(self, node)
+  visit(self, node)
+  visit_Attribute(self, node: ast.Attribute)
+  visit_Constant(self, node)
+  visit_Name(self, node: ast.Name)
+  visit_Subscript(self, node: ast.Subscript)
+}
+class py2puml.parsing.compoundtypesplitter.CompoundTypeSplitter {
+  compound_type_annotation: str
+  get_parts(self) -> Tuple[str]
+}
+class py2puml.parsing.astvisitors.ConstructorVisitor {
+  constructor_source: str
+  class_fqn: str
+  root_fqn: str
+  module_resolver: ModuleResolver
+  class_self_id: str
+  variables_namespace: List[Variable]
+  uml_attributes: List[UmlAttribute]
+  uml_relations_by_target_fqn: Dict[str, UmlRelation]
+  derive_type_annotation_details(self, annotation: ast.expr) -> Tuple[str, List[str]]
+  extend_relations(self, target_fqns: List[str])
+  generic_visit(self, node)
+  get_from_namespace(self, variable_id: str) -> py2puml.parsing.astvisitors.Variable
+  visit(self, node)
+  visit_AnnAssign(self, node: ast.AnnAssign)
+  visit_Assign(self, node: ast.Assign)
+  visit_Constant(self, node)
+  visit_FunctionDef(self, node: ast.FunctionDef)
+}
+class py2puml.parsing.moduleresolver.ModuleResolver {
+  module: module
+  get_module_full_name(self) -> str
+  resolve_full_namespace_type(self, partial_dotted_path: str) -> Tuple[str, str]
+}
+class py2puml.parsing.moduleresolver.NamespacedType {
+  full_namespace: Any
+  type_name: Any
+}
+class py2puml.parsing.astvisitors.SignatureVariablesCollector {
+  constructor_source: str
+  class_self_id: str
+  variables: List[Variable]
+  generic_visit(self, node)
+  visit(self, node)
+  visit_Constant(self, node)
+  visit_arg(self, node: ast.arg)
+}
+class py2puml.parsing.astvisitors.Variable {
+  id: Any
+  type_expr: Any
+}
+py2puml.parsing.astvisitors.AssignedVariablesCollector *-- py2puml.parsing.astvisitors.Variable
+py2puml.parsing.astvisitors.ConstructorVisitor *-- py2puml.parsing.moduleresolver.ModuleResolver
+py2puml.parsing.astvisitors.ConstructorVisitor *-- py2puml.parsing.astvisitors.Variable
+py2puml.parsing.astvisitors.SignatureVariablesCollector *-- py2puml.parsing.astvisitors.Variable
+@enduml
+
