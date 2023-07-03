@@ -72,8 +72,10 @@ SPLIT_PENALTY_BEFORE_IF_EXPR = 0
 line-length = 120
 # activated families of verifications (https://beta.ruff.rs/docs/rules/
 select = ["B", "E", "F", "W", "N", "SIM", "C4"]
-# do not check line lengths, yapf and isort already handle them
-extend-ignore = ["E501"]
+# do not check:
+# - E501 line lengths: yapf and isort already handle them
+# - B905 zip(*, strict=True): strict was introduced in Python 3.10+
+extend-ignore = ["E501", "B905"]
 # automatically fixes when possible
 fix = true
 

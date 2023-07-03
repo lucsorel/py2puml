@@ -94,13 +94,12 @@ def test_AssignedVariablesCollector_single_assignment_separate_variable_from_ins
 
     # detection of self attributes
     assert len(assignment_collector.self_attributes) == len(self_attributes)
-    for self_attribute, (variable_id, variable_type_str) in zip(assignment_collector.self_attributes, self_attributes,
-                                                                strict=True):
+    for self_attribute, (variable_id, variable_type_str) in zip(assignment_collector.self_attributes, self_attributes):
         assert_Variable(self_attribute, variable_id, variable_type_str, assignment_code)
 
     # detection of new variables occupying the memory scope
     assert len(assignment_collector.variables) == len(variables)
-    for variable, (variable_id, variable_type_str) in zip(assignment_collector.variables, variables, strict=True):
+    for variable, (variable_id, variable_type_str) in zip(assignment_collector.variables, variables):
         assert_Variable(variable, variable_id, variable_type_str, assignment_code)
 
 
@@ -132,19 +131,18 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
 
     assert len(assignment_ast.targets
               ) == len(self_attributes_and_variables_by_target), 'test consistency: all targets must be tested'
-    for assignment_target, (self_attribute_ids, variable_ids) in zip(
-            assignment_ast.targets, self_attributes_and_variables_by_target, strict=True):
+    for assignment_target, (self_attribute_ids, variable_ids) in zip(assignment_ast.targets,
+                                                                     self_attributes_and_variables_by_target):
         assignment_collector = AssignedVariablesCollector(class_self_id, None)
         assignment_collector.visit(assignment_target)
 
         assert len(assignment_collector.self_attributes) == len(self_attribute_ids), 'test consistency'
-        for self_attribute, self_attribute_id in zip(assignment_collector.self_attributes, self_attribute_ids,
-                                                     strict=True):
+        for self_attribute, self_attribute_id in zip(assignment_collector.self_attributes, self_attribute_ids):
             assert self_attribute.id == self_attribute_id
             assert self_attribute.type_expr is None, 'Python does not allow type annotation in multiple assignment'
 
         assert len(assignment_collector.variables) == len(variable_ids), 'test consistency'
-        for variable, variable_id in zip(assignment_collector.variables, variable_ids, strict=True):
+        for variable, variable_id in zip(assignment_collector.variables, variable_ids):
             assert variable.id == variable_id
             assert variable.type_expr is None, 'Python does not allow type annotation in multiple assignment'
 

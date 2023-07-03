@@ -126,7 +126,7 @@ def test_visit_package(
     expected_namespace_lines: List[str]
 ):
     for expected_namespace_line, namespace_line in zip(expected_namespace_lines, visit_package(
-            package_to_visit, parent_namespace_names, indentation_level), strict=True):
+            package_to_visit, parent_namespace_names, indentation_level)):
         assert expected_namespace_line == namespace_line
 
 
@@ -140,5 +140,5 @@ def test_build_packages_structure_visit_package_from_tree_package(
 
     with open(f'{domain_path}/plantuml_namespace.txt', encoding='utf8') as tree_namespace_file:
         for line_index, (namespace_line, expected_namespace_line) in enumerate(zip(visit_package(package, (), 0),
-                                                                                   tree_namespace_file, strict=True)):
+                                                                                   tree_namespace_file)):
             assert namespace_line == expected_namespace_line, f'{line_index}: namespace content'
