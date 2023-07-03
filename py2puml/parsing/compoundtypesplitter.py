@@ -1,7 +1,6 @@
-
-from re import compile as re_compile, Pattern
+from re import Pattern
+from re import compile as re_compile
 from typing import Tuple
-
 
 FORWARD_REFERENCES: Pattern = re_compile(r"ForwardRef\('([^']+)'\)")
 IS_COMPOUND_TYPE: Pattern = re_compile(r'^[a-z|A-Z|0-9|\[|\]|\.|,|\s|_]+$')
@@ -14,7 +13,10 @@ def remove_forward_references(compound_type_annotation: str, module_name: str) -
     This happens when a class attribute refers to the class being defined (where Person.friends is of type List[Person])
     The type which is referred to is prefixed by the module where it is defined to help resolution.
     '''
-    return None if compound_type_annotation is None else FORWARD_REFERENCES.sub(f'{module_name}.\\1', compound_type_annotation)
+    return None if compound_type_annotation is None else FORWARD_REFERENCES.sub(
+        f'{module_name}.\\1', compound_type_annotation
+    )
+
 
 class CompoundTypeSplitter:
     '''
@@ -28,7 +30,7 @@ class CompoundTypeSplitter:
             raise ValueError(f'{compound_type_annotation} seems to be an invalid type annotation')
 
         self.compound_type_annotation = resolved_type_annotations
-    
+
     def get_parts(self) -> Tuple[str]:
         parts = [self.compound_type_annotation]
         for splitting_character in SPLITTING_CHARACTERS:
@@ -39,10 +41,6 @@ class CompoundTypeSplitter:
                 if len(splitted_parts) > 1:
                     for splitted_part in splitted_parts[1:]:
                         new_parts.extend([splitting_character, splitted_part])
-            parts = [
-                new_part.strip()
-                for new_part in new_parts
-                if len(new_part.strip()) > 0
-            ]
+            parts = [new_part.strip() for new_part in new_parts if len(new_part.strip()) > 0]
 
         return tuple(parts)

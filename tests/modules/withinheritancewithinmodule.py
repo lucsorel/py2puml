@@ -5,13 +5,16 @@ from dataclasses import dataclass
 class Animal:
     has_notochord: bool
 
+
 @dataclass
 class Fish(Animal):
     fins_number: int
 
+
 @dataclass
 class Light:
     luminosity_max: float
+
 
 @dataclass
 class GlowingFish(Fish, Light):

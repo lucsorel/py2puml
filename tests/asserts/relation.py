@@ -1,5 +1,5 @@
+from py2puml.domain.umlrelation import RelType, UmlRelation
 
-from py2puml.domain.umlrelation import UmlRelation, RelType
 
 def assert_relation(uml_relation: UmlRelation, source_fqn: str, target_fqn: str, rel_type: RelType):
     assert uml_relation.source_fqn == source_fqn, 'source end'

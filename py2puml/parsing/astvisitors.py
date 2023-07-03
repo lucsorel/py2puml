@@ -1,20 +1,14 @@
-
+from ast import AnnAssign, Assign, Attribute, FunctionDef, Name, NodeVisitor, Subscript, arg, expr, get_source_segment
+from collections import namedtuple
 from typing import Dict, List, Tuple
 
-from ast import (
-    NodeVisitor, arg, expr,
-    FunctionDef, Assign, AnnAssign,
-    Attribute, Name, Subscript, get_source_segment
-)
-from collections import namedtuple
-
 from py2puml.domain.umlclass import UmlAttribute
-from py2puml.domain.umlrelation import UmlRelation, RelType
-from py2puml.parsing.compoundtypesplitter import CompoundTypeSplitter, SPLITTING_CHARACTERS
-from py2puml.parsing.moduleresolver import ModuleResolver, NamespacedType
-
+from py2puml.domain.umlrelation import RelType, UmlRelation
+from py2puml.parsing.compoundtypesplitter import SPLITTING_CHARACTERS, CompoundTypeSplitter
+from py2puml.parsing.moduleresolver import ModuleResolver
 
 Variable = namedtuple('Variable', ['id', 'type_expr'])
+
 
 class SignatureVariablesCollector(NodeVisitor):
     '''
@@ -70,7 +64,9 @@ class ConstructorVisitor(NodeVisitor):
     '''
     Identifies the attributes (and infer their type) assigned to self in the body of a constructor method
     '''
-    def __init__(self, constructor_source: str, class_name: str, root_fqn: str, module_resolver: ModuleResolver, *args, **kwargs):
+    def __init__(
+        self, constructor_source: str, class_name: str, root_fqn: str, module_resolver: ModuleResolver, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.constructor_source = constructor_source
         self.class_fqn: str = f'{module_resolver.module.__name__}.{class_name}'
@@ -82,22 +78,25 @@ class ConstructorVisitor(NodeVisitor):
         self.uml_relations_by_target_fqn: Dict[str, UmlRelation] = {}
 
     def extend_relations(self, target_fqns: List[str]):
-        self.uml_relations_by_target_fqn.update({
-            target_fqn: UmlRelation(self.class_fqn, target_fqn, RelType.COMPOSITION)
-            for target_fqn in target_fqns
-            if target_fqn.startswith(self.root_fqn) and (
-                target_fqn not in self.uml_relations_by_target_fqn
-            )
-        })
+        self.uml_relations_by_target_fqn.update(
+            {
+                target_fqn: UmlRelation(self.class_fqn, target_fqn, RelType.COMPOSITION)
+                for target_fqn in target_fqns
+                if target_fqn.startswith(self.root_fqn) and (target_fqn not in self.uml_relations_by_target_fqn)
+            }
+        )
 
     def get_from_namespace(self, variable_id: str) -> Variable:
-        return next((
-            variable
-            # variables namespace is iterated antichronologically
-            # to account for variables being overridden
-            for variable in self.variables_namespace[::-1]
-            if variable.id == variable_id
-        ), None)
+        return next(
+            (
+                variable
+                # variables namespace is iterated antichronologically
+                # to account for variables being overridden
+                for variable in self.variables_namespace[::-1]
+                if variable.id == variable_id
+            ),
+            None
+        )
 
     def generic_visit(self, node):
         NodeVisitor.generic_visit(self, node)
@@ -132,20 +131,14 @@ class ConstructorVisitor(NodeVisitor):
             variables_collector.visit(assigned_target)
 
             # attempts to infer attribute type when a single attribute is assigned to a variable
-            if (
-                len(variables_collector.self_attributes) == 1
-            ) and (
-                isinstance(node.value, Name)
-            ):
+            if (len(variables_collector.self_attributes) == 1) and (isinstance(node.value, Name)):
                 assigned_variable = self.get_from_namespace(node.value.id)
                 if assigned_variable is not None:
                     short_type, full_namespaced_definitions = self.derive_type_annotation_details(
                         assigned_variable.type_expr
                     )
                     self.uml_attributes.append(
-                        UmlAttribute(
-                            variables_collector.self_attributes[0].id, short_type, False
-                        )
+                        UmlAttribute(variables_collector.self_attributes[0].id, short_type, False)
                     )
                     self.extend_relations(full_namespaced_definitions)
 
@@ -158,7 +151,6 @@ class ConstructorVisitor(NodeVisitor):
             # other assignments were done in new variables that can shadow existing ones
             self.variables_namespace.extend(variables_collector.variables)
 
-
     def derive_type_annotation_details(self, annotation: expr) -> Tuple[str, List[str]]:
         '''
         From a type annotation, derives:
@@ -170,9 +162,7 @@ class ConstructorVisitor(NodeVisitor):
 
         # primitive type, object definition
         if isinstance(annotation, Name):
-            full_namespaced_type, short_type = self.module_resolver.resolve_full_namespace_type(
-                annotation.id
-            )
+            full_namespaced_type, short_type = self.module_resolver.resolve_full_namespace_type(annotation.id)
             return short_type, [full_namespaced_type]
         # definition from module
         elif isinstance(annotation, Attribute):
@@ -183,11 +173,11 @@ class ConstructorVisitor(NodeVisitor):
         # compound type (List[...], Tuple[Dict[str, float], module.DomainType], etc.)
         elif isinstance(annotation, Subscript):
             return shorten_compound_type_annotation(
-                get_source_segment(self.constructor_source, annotation),
-                self.module_resolver
+                get_source_segment(self.constructor_source, annotation), self.module_resolver
             )
 
         return None, []
+
 
 def shorten_compound_type_annotation(type_annotation: str, module_resolver: ModuleResolver) -> Tuple[str, List[str]]:
     '''
@@ -208,11 +198,11 @@ def shorten_compound_type_annotation(type_annotation: str, module_resolver: Modu
                 compound_short_type_parts.append(' ')
         # replaces each type definition by its short class name
         else:
-            full_namespaced_type, short_type = module_resolver.resolve_full_namespace_type(
-                compound_type_part
-            )
+            full_namespaced_type, short_type = module_resolver.resolve_full_namespace_type(compound_type_part)
             if short_type is None:
-                raise ValueError(f'Could not resolve type {compound_type_part} in module {module_resolver.module}: it needs to be imported explicitely.')
+                raise ValueError(
+                    f'Could not resolve type {compound_type_part} in module {module_resolver.module}: it needs to be imported explicitely.'
+                )
             else:
                 compound_short_type_parts.append(short_type)
             associated_types.append(full_namespaced_type)

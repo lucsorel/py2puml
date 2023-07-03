@@ -3,9 +3,11 @@ from typing import List
 
 from ..nomoduleroot.modulechild.leaf import OakLeaf
 
+
 @dataclass
 class Branch:
     length: float
+
 
 @dataclass
 class OakBranch(Branch):

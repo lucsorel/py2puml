@@ -1,4 +1,4 @@
-from json import dumps, JSONEncoder
+from json import JSONEncoder, dumps
 from typing import _GenericAlias
 
 
@@ -15,7 +15,7 @@ class MockedInstance:
         for instance_attribute, value in attributes_dict.items():
             if isinstance(value, dict):
                 setattr(instance, instance_attribute, MockedInstance(value))
-    
+
     def __repr__(self):
         return dumps(self.__dict__, cls=MockedInstanceEncoder)
 

@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from typing import List
 
@@ -9,6 +8,7 @@ class Address:
     zipcode: str
     city: str
 
+
 @dataclass
 class Worker:
     name: str
@@ -17,6 +17,7 @@ class Worker:
     boss: 'Worker'
     home_address: Address
     work_address: Address
+
 
 @dataclass
 class Firm:
