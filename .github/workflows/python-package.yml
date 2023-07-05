@@ -11,14 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install poetry
-        run: pipx install poetry
       - name: Install Python
         uses: actions/setup-python@v4
         with:
           python-version-file: '.python-version'
-          cache: 'poetry'
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.5.1
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       - name: Install project dependencies
-        run: poetry install --without lint
+        run: poetry install
       - name: Run automated tests (with code coverage)
         run: poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under $MIN_CODE_COVERAGE_PERCENT
