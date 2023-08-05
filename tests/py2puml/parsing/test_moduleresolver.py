@@ -50,3 +50,9 @@ def test_ModuleResolver_get_module_full_name():
     source_module = MockedInstance({'__name__': 'tests.modules.withconstructor'})
     module_resolver = ModuleResolver(source_module)
     assert module_resolver.get_module_full_name() == 'tests.modules.withconstructor'
+
+
+def test_ModuleResolver_repr():
+    source_module = MockedInstance({'__name__': 'tests.modules.withconstructor'})
+    module_resolver = ModuleResolver(source_module)
+    assert module_resolver.__repr__() == 'ModuleResolver({"__name__": "tests.modules.withconstructor"})'

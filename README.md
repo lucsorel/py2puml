@@ -167,9 +167,9 @@ docker start plantumlserver
 
 ## Python API
 
-For example, to create the diagram of the classes used by `py2puml`:
+For example, to create the diagram of the domain classes used by `py2puml`:
 
-* import the `py2puml` function in your script (see [py2puml/example.py](py2puml/example.py)):
+* import the `py2puml` function in your script:
 
 ```python
 from py2puml.py2puml import py2puml
@@ -179,11 +179,11 @@ if __name__ == '__main__':
     print(''.join(py2puml('py2puml/domain', 'py2puml.domain')))
 
     # writes the PlantUML content in a file
-    with open('py2puml/domain.puml', 'w') as puml_file:
+    with open('py2puml/py2puml.domain.puml', 'w', encoding='utf8') as puml_file:
         puml_file.writelines(py2puml('py2puml/domain', 'py2puml.domain'))
 ```
 
-* running it (`python3 -m py2puml.example`) outputs the previous PlantUML diagram in the terminal and writes it in a file.
+* running it outputs the previous PlantUML diagram in the terminal and writes it in a file.
 
 
 # Tests
@@ -199,7 +199,7 @@ python3 -m pytest -v
 Code coverage (with [missed branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
 
 ```sh
-poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 92
+poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 93
 ```
 
 # Changelog
