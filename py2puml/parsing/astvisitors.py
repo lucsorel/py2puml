@@ -1,4 +1,6 @@
-from ast import AnnAssign, Assign, Attribute, FunctionDef, Name, NodeVisitor, Subscript, arg, expr, get_source_segment
+from ast import (
+    AnnAssign, Assign, Attribute, BinOp, FunctionDef, Name, NodeVisitor, Subscript, arg, expr, get_source_segment
+)
 from collections import namedtuple
 from typing import Dict, List, Tuple
 
@@ -170,8 +172,8 @@ class ConstructorVisitor(NodeVisitor):
                 get_source_segment(self.constructor_source, annotation)
             )
             return short_type, [full_namespaced_type]
-        # compound type (List[...], Tuple[Dict[str, float], module.DomainType], etc.)
-        elif isinstance(annotation, Subscript):
+        # compound type (List[...], Tuple[Dict[str, float], module.DomainType], etc.) or '|'-based union type
+        elif isinstance(annotation, (Subscript, BinOp)):
             return shorten_compound_type_annotation(
                 get_source_segment(self.constructor_source, annotation), self.module_resolver
             )
@@ -191,17 +193,20 @@ def shorten_compound_type_annotation(type_annotation: str, module_resolver: Modu
     compound_short_type_parts: List[str] = []
     associated_types: List[str] = []
     for compound_type_part in compound_type_parts:
-        # characters like '[', ']', ','
+        # characters like '[', ']', ',', '|'
         if compound_type_part in SPLITTING_CHARACTERS:
-            compound_short_type_parts.append(compound_type_part)
             if compound_type_part == ',':
-                compound_short_type_parts.append(' ')
+                compound_short_type_parts.append(', ')
+            elif compound_type_part == '|':
+                compound_short_type_parts.append(' | ')
+            else:
+                compound_short_type_parts.append(compound_type_part)
         # replaces each type definition by its short class name
         else:
             full_namespaced_type, short_type = module_resolver.resolve_full_namespace_type(compound_type_part)
             if short_type is None:
                 raise ValueError(
-                    f'Could not resolve type {compound_type_part} in module {module_resolver.module}: it needs to be imported explicitely.'
+                    f'Could not resolve type {compound_type_part} in module {module_resolver.module}: it needs to be imported explicitly.'
                 )
             else:
                 compound_short_type_parts.append(short_type)

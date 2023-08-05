@@ -89,6 +89,8 @@ fix = true
 "tests/py2puml/parsing/test_compoundtypesplitter.py" = ["N802"]
 "tests/py2puml/parsing/test_moduleresolver.py" = ["N802"]
 "tests/__init__.py" = ["B023"]
+# test classes with underscore in their names
+"tests/modules/withuniontypes.py" = ['N801']
 
 [build-system]
 requires = ["poetry-core"]

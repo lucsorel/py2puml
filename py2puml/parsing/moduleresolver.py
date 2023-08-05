@@ -68,6 +68,10 @@ class ModuleResolver:
         if partial_dotted_path is None:
             return EMPTY_NAMESPACED_TYPE
 
+        # special case for Union types
+        if partial_dotted_path == 'None':
+            return NamespacedType('builtins.None', 'None')
+
         def string_repr(module_attribute) -> str:
             return f'{module_attribute.__module__}.{module_attribute.__name__}' if isclass(
                 module_attribute

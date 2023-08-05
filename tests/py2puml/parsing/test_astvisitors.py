@@ -1,7 +1,7 @@
 from ast import AST, get_source_segment, parse
 from inspect import getsource
 from textwrap import dedent
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 from pytest import mark
 
@@ -22,6 +22,13 @@ class ParseMyConstructorArguments:
         an_int: int,
         an_untyped,
         a_compound_type: Tuple[float, Dict[str, List[bool]]],
+
+        # union types
+        x_a: Union[int, float],
+        y_a: Union[int, float, None],
+        x_b: int | float,
+        y_b: int | float | None,
+
         # an argument with a default value
         a_default_string: str = 'text',
         # positional and keyword wildcard arguments
@@ -39,19 +46,25 @@ def test_SignatureVariablesCollector_collect_arguments():
     collector.visit(constructor_ast)
 
     assert collector.class_self_id == 'me'
-    assert len(collector.variables) == 6, 'all the arguments must be detected'
+    assert len(collector.variables) == 10, 'all the arguments must be detected'
     assert_Variable(collector.variables[0], 'an_int', 'int', constructor_source)
     assert_Variable(collector.variables[1], 'an_untyped', None, constructor_source)
     assert_Variable(
         collector.variables[2], 'a_compound_type', 'Tuple[float, Dict[str, List[bool]]]', constructor_source
     )
-    assert_Variable(collector.variables[3], 'a_default_string', 'str', constructor_source)
-    assert_Variable(collector.variables[4], 'args', None, constructor_source)
-    assert_Variable(collector.variables[5], 'kwargs', None, constructor_source)
+
+    assert_Variable(collector.variables[3], 'x_a', 'Union[int, float]', constructor_source)
+    assert_Variable(collector.variables[4], 'y_a', 'Union[int, float, None]', constructor_source)
+    assert_Variable(collector.variables[5], 'x_b', 'int | float', constructor_source)
+    assert_Variable(collector.variables[6], 'y_b', 'int | float | None', constructor_source)
+
+    assert_Variable(collector.variables[7], 'a_default_string', 'str', constructor_source)
+    assert_Variable(collector.variables[8], 'args', None, constructor_source)
+    assert_Variable(collector.variables[9], 'kwargs', None, constructor_source)
 
 
 @mark.parametrize(
-    'class_self_id,assignment_code,annotation_as_str,self_attributes,variables',
+    ['class_self_id', 'assignment_code', 'annotation_as_str', 'self_attributes', 'variables'],
     [
         # detects the assignment to a new variable
         ('self', 'my_var = 5', None, [], [('my_var', None)]),
@@ -187,7 +200,41 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
                     }
                 }
             }
-        )
+        ),
+        (
+            # union types
+            'Dict[typing.Union[int,id.Identifier],str|domain.Person]',
+            'Dict[Union[int, Identifier], str | Person]',
+            ['typing.Dict', 'typing.Union', 'builtins.int', 'id.Identifier', 'builtins.str', 'domain.Person'],
+            {
+                '__name__': 'testmodule',
+                '__builtins__': {
+                    'int': {
+                        '__module__': 'builtins',
+                        '__name__': 'int',
+                    },
+                    'str': {
+                        '__module__': 'builtins',
+                        '__name__': 'str',
+                    }
+                },
+                'Dict': Dict,
+                'List': List,
+                'Union': Union,
+                'id': {
+                    'Identifier': {
+                        '__module__': 'id',
+                        '__name__': 'Identifier',
+                    }
+                },
+                'domain': {
+                    'Person': {
+                        '__module__': 'domain',
+                        '__name__': 'Person',
+                    }
+                }
+            }
+        ),
     ]
 )
 def test_shorten_compound_type_annotation(
