@@ -14,7 +14,7 @@ Generate PlantUML class diagrams to document your Python application.
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/lucsorel/py2puml/main.svg)](https://results.pre-commit.ci/latest/github/lucsorel/py2puml/main)
 
 
-`pydoctrace` uses [pre-commit hooks](https://pre-commit.com/) and [pre-commit.ci Continuous Integration](https://pre-commit.ci/) to enforce commit messages, code formatting and linting for quality and consistency sake.
+`py2puml` uses [pre-commit hooks](https://pre-commit.com/) and [pre-commit.ci Continuous Integration](https://pre-commit.ci/) to enforce commit messages, code formatting and linting for quality and consistency sake.
 See the [code conventions](#code-conventions) section if you would like to contribute to the project.
 
 

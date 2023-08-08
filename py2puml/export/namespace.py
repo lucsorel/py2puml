@@ -95,4 +95,4 @@ def puml_namespace_content(uml_items: List[UmlItem]) -> Iterable[str]:
 
     # yields the documentation using a visitor pattern approach
     for namespace_line in visit_package(root_package, (), 0):
-        yield f'{namespace_line}'
+        yield namespace_line
