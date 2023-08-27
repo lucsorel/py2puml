@@ -38,7 +38,8 @@ class Point:
         self.x_unit = self.y_unit = unit
         # type of self.z should be undefined, z has been overridden without type annotation
         z, (r, t) = str(x) + y, ('r', 't')
-        print(r, t)
+        assert r == 'r'
+        assert t == 't'
         self.z = z
         # this assignment should be ignored
         self.z[2]: int = x

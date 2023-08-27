@@ -1,5 +1,5 @@
 from json import JSONEncoder, dumps
-from typing import Any, Union, _GenericAlias, _SpecialForm, _SpecialGenericAlias
+from typing import Any, Hashable, Union, _GenericAlias, _SpecialForm, _SpecialGenericAlias
 
 
 class MockedInstance:
@@ -16,7 +16,7 @@ class MockedInstance:
             if isinstance(value, dict):
                 setattr(instance, instance_attribute, MockedInstance(value))
 
-    def get(self, key: Any, default=None) -> Any:
+    def get(self, key: Hashable, default: Any = None) -> Any:
         return self.__dict__.get(key, default)
 
     def __repr__(self):
