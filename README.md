@@ -23,7 +23,16 @@ See the [code conventions](#code-conventions) section if you would like to contr
 `py2puml` produces a class diagram [PlantUML script](https://plantuml.com/en/class-diagram) representing classes properties (static and instance attributes) and their relations (composition and inheritance relationships).
 
 `py2puml` internally uses code [inspection](https://docs.python.org/3/library/inspect.html) (also called *reflexion* in other programming languages) and [abstract tree parsing](https://docs.python.org/3/library/ast.html) to retrieve relevant information.
-Some parsing features are available only since Python 3.8 (like [ast.get_source_segment](https://docs.python.org/3/library/ast.html#ast.get_source_segment)).
+
+## Minimum Python versions to run py2puml
+
+`p2puml` uses some code-parsing features that are available only since **Python 3.8** (like [ast.get_source_segment](https://docs.python.org/3/library/ast.html#ast.get_source_segment)).
+If your codebase uses the `int | float` syntax to define optional types, then you should use Python 3.10 to run `py2puml`.
+
+To sum it up, use at least Python 3.8 to run py2puml, or a higher version if you use syntax features available only in higher versions.
+
+The [.python-version](.python-version) file indicates the Python version used to develop the library.
+It is a file used by [pyenv](https://github.com/pyenv/pyenv/) to define the binary used by the project.
 
 ## Features
 
