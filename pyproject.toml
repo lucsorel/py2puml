@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py2puml"
-version = "0.7.2"
+version = "0.8.0"
 description = "Generate PlantUML class diagrams to document your Python application."
 keywords = ["class diagram", "PlantUML", "documentation", "inspection", "AST"]
 readme = "README.md"
@@ -19,31 +19,79 @@ py2puml = 'py2puml.cli:run'
 python = "^3.8"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^2.16.1"
 pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
 
+[tool.poetry.group.lint.dependencies]
+pre-commit = "^3.3.3"
+
 [tool.pytest.ini_options]
-minversion = "6.2"
-testpaths = ["tests"]
 console_output_style = "count"
 
-[tool.pylint.messages_control]
-disable = [
-  # makes docstring optional
-  "missing-docstring",
-  # superfluous parentheses often helps reading the code
-  "superfluous-parens",
-  # iterative coding always involve TODO and FIXME
-  "fixme",
-  # cli and web APIs involve except clauses with generic exception for logging and error management purposes
-  "broad-except",
-  # used to define the RAM allowed in a child process searching for matching samples
-  "subprocess-popen-preexec-fn",
-  # line length management is delegated to yapf
-  "line-too-long"
-]
+[tool.isort]
+# maintain consistency with other quality tools
+line_length = 120
+# consistency with yapf: mode 5
+# from third_party import (
+#     lib1, lib2, lib3, lib4,
+#     lib5, etc.
+# )
+multi_line_output = 5
+balanced_wrapping = false
+# TESTS->known_tests: create a specific section for imports of tests modules
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER", "TESTS"]
+known_tests = ["tests"]
+
+[tool.yapf]
+# see https://github.com/google/yapf#knobs
+based_on_style = "facebook"
+# maintain consistency with other quality tools
+COLUMN_LIMIT = 120
+COALESCE_BRACKETS = false
+DEDENT_CLOSING_BRACKETS = true
+INDENT_DICTIONARY_VALUE = false
+EACH_DICT_ENTRY_ON_SEPARATE_LINE = true
+FORCE_MULTILINE_DICT = true
+JOIN_MULTIPLE_LINES = false
+SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN = false
+SPLIT_BEFORE_CLOSING_BRACKET = true
+SPLIT_BEFORE_DICT_SET_GENERATOR = true
+SPLIT_COMPLEX_COMPREHENSION = true
+SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN = true
+SPLIT_BEFORE_FIRST_ARGUMENT = true
+CONTINUATION_ALIGN_STYLE = "SPACE"
+CONTINUATION_INDENT_WIDTH = 4
+SPLIT_PENALTY_COMPREHENSION = 0
+SPLIT_PENALTY_AFTER_OPENING_BRACKET = 0
+SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT = 0
+SPLIT_PENALTY_BEFORE_IF_EXPR = 0
+
+
+[tool.ruff]
+# maintain consistency with other quality tools
+line-length = 120
+# activated families of verifications (https://beta.ruff.rs/docs/rules/
+select = ["B", "E", "F", "W", "N", "SIM", "C4"]
+# do not check:
+# - E501 line lengths: yapf and isort already handle them
+# - B905 zip(*, strict=True): strict was introduced in Python 3.10+
+extend-ignore = ["E501", "B905"]
+# automatically fixes when possible
+fix = true
+
+[tool.ruff.per-file-ignores]
+# do not check unused imports in __init__.py files (they expose module features)
+"__init__.py" = ["E402"]
+# visiting function names include uppercase words (visit_FunctionDef)
+"py2puml/parsing/astvisitors.py" = ["N802"]
+"tests/asserts/variable.py" = ["N802"]
+"tests/py2puml/parsing/test_astvisitors.py" = ["N802", "N805"]
+"tests/py2puml/parsing/test_compoundtypesplitter.py" = ["N802"]
+"tests/py2puml/parsing/test_moduleresolver.py" = ["N802"]
+"tests/__init__.py" = ["B023"]
+# test classes with underscore in their names
+"tests/modules/withuniontypes.py" = ['N801']
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

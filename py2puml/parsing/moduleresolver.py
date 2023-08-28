@@ -1,7 +1,7 @@
-from inspect import isclass
 from functools import reduce
-from typing import Type, Iterable, List, NamedTuple
+from inspect import isclass
 from types import ModuleType
+from typing import Iterable, List, NamedTuple, Type
 
 
 class NamespacedType(NamedTuple):
@@ -15,6 +15,7 @@ class NamespacedType(NamedTuple):
 
 
 EMPTY_NAMESPACED_TYPE = NamespacedType(None, None)
+
 
 def search_in_module_or_builtins(searched_module: ModuleType, namespace: str):
     if searched_module is None:
@@ -31,20 +32,13 @@ def search_in_module_or_builtins(searched_module: ModuleType, namespace: str):
 
 
 def search_in_module(namespaces: List[str], module: ModuleType):
-    leaf_type: Type = reduce(
-        search_in_module_or_builtins,
-        namespaces,
-        module
-    )
+    leaf_type: Type = reduce(search_in_module_or_builtins, namespaces, module)
     if leaf_type is None:
         return EMPTY_NAMESPACED_TYPE
     else:
         # https://bugs.python.org/issue34422#msg323772
         short_type = getattr(leaf_type, '__name__', getattr(leaf_type, '_name', None))
-        return NamespacedType(
-            f'{leaf_type.__module__}.{short_type}',
-            short_type
-        )
+        return NamespacedType(f'{leaf_type.__module__}.{short_type}', short_type)
 
 
 class ModuleResolver:
@@ -59,7 +53,6 @@ class ModuleResolver:
 
     The two approaches are a bit entangled for now, they could be separated a bit more for performance sake.
     '''
-
     def __init__(self, module: ModuleType):
         self.module = module
 
@@ -75,19 +68,26 @@ class ModuleResolver:
         if partial_dotted_path is None:
             return EMPTY_NAMESPACED_TYPE
 
+        # special case for Union types
+        if partial_dotted_path == 'None':
+            return NamespacedType('builtins.None', 'None')
+
         def string_repr(module_attribute) -> str:
-            return f'{module_attribute.__module__}.{module_attribute.__name__}' if isclass(module_attribute) else f'{module_attribute}'
+            return f'{module_attribute.__module__}.{module_attribute.__name__}' if isclass(
+                module_attribute
+            ) else f'{module_attribute}'
 
         # searches the class in the module imports
         namespaced_types_iter: Iterable[NamespacedType] = (
             NamespacedType(string_repr(getattr(self.module, module_var)), module_var)
             for module_var in vars(self.module)
         )
-        found_namespaced_type = next((
-            namespaced_type
-            for namespaced_type in namespaced_types_iter
-            if namespaced_type.full_namespace == partial_dotted_path
-        ), None)
+        found_namespaced_type = next(
+            (
+                namespaced_type for namespaced_type in namespaced_types_iter
+                if namespaced_type.full_namespace == partial_dotted_path
+            ), None
+        )
 
         # searches the class in the builtins
         if found_namespaced_type is None:

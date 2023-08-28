@@ -6,6 +6,7 @@ class ClassTemplate(ABC):
     def must_be_implemented(self):
         """ Docstring."""
 
+
 class ConcreteClass(ClassTemplate):
     def must_be_implemented(self):
         pass

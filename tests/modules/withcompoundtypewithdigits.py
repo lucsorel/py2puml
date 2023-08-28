@@ -6,6 +6,7 @@ class IPv6:
     def __init__(self, address: str) -> None:
         self.address: str = address
 
+
 class Multicast:
     def __init__(self, address: IPv6, repetition: int):
         # List[IPv6] must be parsed

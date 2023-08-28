@@ -64,6 +64,19 @@ version = "major.minor.patch"
 It takes time to write comprehensive guidelines.
 To save time (my writing time and your reading time), I tried to make it short so my best advice is _go have a look at the production and test codes and try to follow the conventions you draw from what you see_ 🙂
 
+To homogenize code style consistency and enforce code quality, this project uses:
+
+- the `yapf` formatter and the `ruff` linter
+- `pre-commit` hooks that are triggered on the Github CI (in pull-requests) and should be activated locally when contributing to the project:
+
+```sh
+# installs the dependencies, including pre-commit as a lint dependency
+poetry install
+
+# activates the pre-commit hooks
+poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
+```
+
 ## Unit tests
 
 Pull requests must come with unit tests, either new ones (for feature addtitions), changed ones (for feature changes) or non-regression ones (for bug fixes).
@@ -91,82 +104,3 @@ When manipulating **literal strings**:
 python_version = '3.8+'
 f'use f-strings to format strings, py2puml use Python {python_version}'
 ```
-
-### Code formatting
-
-#### Imports
-
-The following guidelines regarding imports are designed to help people understand what a Python module does or deals with:
-
-* place import statements at the top of the file
-* explicit the functionalities you import with the `from ... import ...` syntax instead of importing a whole module (it does not tell how this module is being used)
-* order the imports by family of modules:
-  1. the native modules (the types imported from the typing module are often placed first)
-  1. the dependency modules defined in the [pyproject.toml file](pyproject.toml) (`py2puml` only use development dependencies)
-  1. the modules of the `py2puml` package
-* when they are so many items imported from a module that they do not fit on a single line, wrap them with a pair of parentheses instead of using a backslash
-
-```python
-from typing import Dict, List, Tuple
-
-from ast import (
-    NodeVisitor, arg, expr,
-    FunctionDef, Assign, AnnAssign,
-    Attribute, Name, Tuple as AstTuple,
-    Subscript, get_source_segment
-)
-from collections import namedtuple
-
-from py2puml.domain.umlclass import UmlAttribute
-from py2puml.domain.umlrelation import UmlRelation, RelType
-```
-
-#### Code indentation
-
-Most settings in Python-code editors replace tabulation by 4 space characters.
-That is what is used for this library as well.
-
-This library follows an opiniated way for formatting the code between **parentheses, brackets or braces**.
-Whenever a block of python expressions is surrounded by a pair of parentheses, brackets or braces:
-
-* start the inner content in an indented block (one tabulation is enough) in a new line following the opening parenthesis, bracket or brace
-* type the closing parenthesis, bracket or brace in a new line, de-indent so that the inner content is visually enclosed between the opening and closing symbol
-* repeat the logic within the inner content block
-
-Some examples:
-
-```python
-# function signature and return type
-def parse_class_constructor(
-    class_type: Type,
-    class_fqn: str, root_module_name: str
-) -> Tuple[
-    List[UmlAttribute], Dict[str, UmlRelation]
-]:
-    constructor = getattr(class_type, '__init__', None)
-    ...
-
-# function call
-print(''.join(
-    py2puml('py2puml/domain', 'py2puml.domain')
-))
-
-# using a generator to get the first matching item
-definition_module_member = next((
-    member for member in definition_members
-    # ensures that the type belongs to the module being parsed
-    if member[0] == '__module__' and member[1].startswith(root_module_name)
-), None)
-
-# dictionary comprehension with a complex filtering expression
-def extend_relations(self, target_fqns: List[str]):
-    self.uml_relations_by_target_fqn.update({
-        target_fqn: UmlRelation(self.class_fqn, target_fqn, RelType.COMPOSITION)
-        for target_fqn in target_fqns
-        if target_fqn.startswith(self.root_fqn) and (
-            target_fqn not in self.uml_relations_by_target_fqn
-        )
-    })
-```
-
-I am looking forward to providing the linting settings corresponding to these practices.

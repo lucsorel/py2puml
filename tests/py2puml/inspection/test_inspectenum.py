@@ -1,16 +1,17 @@
-
 from typing import Dict, List
 
-from py2puml.domain.umlenum import UmlEnum, Member
+from py2puml.domain.umlenum import Member, UmlEnum
 from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlrelation import UmlRelation
 from py2puml.inspection.inspectmodule import inspect_domain_definition
 
 from tests.modules.withenum import TimeUnit
 
+
 def assert_member(member: Member, expected_name: str, expected_value: str):
     assert member.name == expected_name
     assert member.value == expected_value
+
 
 def test_inspect_enum_type():
     domain_items_by_fqn: Dict[str, UmlItem] = {}

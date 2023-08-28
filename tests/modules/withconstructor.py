@@ -2,14 +2,16 @@ import datetime
 from math import pi
 from typing import List, Tuple
 
-from tests.modules import withenum
 from tests import modules
+from tests.modules import withenum
 from tests.modules.withenum import TimeUnit
+
 
 class Coordinates:
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
+
 
 class Point:
     PI: float = pi
@@ -33,9 +35,11 @@ class Point:
             self.x = x
             self.y = y
         # multiple assignments
-        self.x_unit = self.y_unit = z_unit = unit
+        self.x_unit = self.y_unit = unit
         # type of self.z should be undefined, z has been overridden without type annotation
         z, (r, t) = str(x) + y, ('r', 't')
+        assert r == 'r'
+        assert t == 't'
         self.z = z
         # this assignment should be ignored
         self.z[2]: int = x

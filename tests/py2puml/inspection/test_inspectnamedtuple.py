@@ -1,12 +1,13 @@
-
 from typing import Dict, List
-from py2puml.domain.umlitem import UmlItem
+
 from py2puml.domain.umlclass import UmlClass
+from py2puml.domain.umlitem import UmlItem
 from py2puml.domain.umlrelation import UmlRelation
 from py2puml.inspection.inspectmodule import inspect_domain_definition
 
-from tests.modules.withnamedtuple import Circle
 from tests.asserts.attribute import assert_attribute
+from tests.modules.withnamedtuple import Circle
+
 
 def test_parse_namedtupled_class():
     domain_items_by_fqn: Dict[str, UmlItem] = {}

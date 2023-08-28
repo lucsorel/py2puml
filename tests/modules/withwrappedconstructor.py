@@ -1,5 +1,6 @@
 from functools import wraps
 
+
 def count_signature_args(func):
     @wraps(func)
     def signature_args_counter(*args, **kwargs):
@@ -9,6 +10,7 @@ def count_signature_args(func):
 
     return signature_args_counter
 
+
 def signature_arg_values(func):
     @wraps(func)
     def signature_values_lister(*args, **kwargs):
@@ -17,6 +19,7 @@ def signature_arg_values(func):
         func(*args, **kwargs)
 
     return signature_values_lister
+
 
 class Point:
     '''
@@ -28,7 +31,9 @@ class Point:
         self.x = x
         self.y = y
 
+
 # Point(2.5, y=3.2)
+
 
 def signature_improper_decorator(func):
     def not_wrapping_decorator(*args, **kwargs):
@@ -36,6 +41,7 @@ def signature_improper_decorator(func):
         func(*args, **kwargs)
 
     return not_wrapping_decorator
+
 
 class PointDecoratedWithoutWrapping:
     '''
@@ -45,5 +51,6 @@ class PointDecoratedWithoutWrapping:
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
+
 
 # PointDecoratedWithoutWrapping(2.5, y=3.2)
