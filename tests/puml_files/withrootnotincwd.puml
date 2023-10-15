@@ -1,8 +1,6 @@
 @startuml withrootnotincwd
-namespace withrootnotincwd {
-  namespace point {}
-  namespace segment {}
-}
+!pragma useIntermediatePackages false
+
 class withrootnotincwd.point.Point {
   x: float
   y: float

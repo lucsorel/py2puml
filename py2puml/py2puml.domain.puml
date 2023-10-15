@@ -1,16 +1,6 @@
 @startuml py2puml.domain
-namespace py2puml.domain {
-  namespace package {}
-  namespace umlclass {}
-  namespace umlitem {}
-  namespace umlenum {}
-  namespace umlrelation {}
-}
-class py2puml.domain.package.Package {
-  name: str
-  children: List[Package]
-  items_number: int
-}
+!pragma useIntermediatePackages false
+
 class py2puml.domain.umlclass.UmlAttribute {
   name: str
   type: str
@@ -40,7 +30,6 @@ class py2puml.domain.umlrelation.UmlRelation {
   target_fqn: str
   type: RelType
 }
-py2puml.domain.package.Package *-- py2puml.domain.package.Package
 py2puml.domain.umlclass.UmlClass *-- py2puml.domain.umlclass.UmlAttribute
 py2puml.domain.umlitem.UmlItem <|-- py2puml.domain.umlclass.UmlClass
 py2puml.domain.umlenum.UmlEnum *-- py2puml.domain.umlenum.Member
