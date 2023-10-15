@@ -3,7 +3,7 @@ from tests import __description__, __version__
 
 # Ensures the library version is modified in the pyproject.toml file when upgrading it (pull request)
 def test_version():
-    assert __version__ == '0.8.0'
+    assert __version__ == '0.8.1'
 
 
 # Description also output in the CLI

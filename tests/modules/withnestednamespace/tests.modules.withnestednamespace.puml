@@ -1,13 +1,6 @@
 @startuml tests.modules.withnestednamespace
-namespace tests.modules.withnestednamespace {
-  namespace nomoduleroot.modulechild.leaf {}
-  namespace tree {}
-  namespace branches.branch {}
-  namespace withonlyonesubpackage.underground {
-    namespace roots.roots {}
-  }
-  namespace trunks.trunk {}
-}
+!pragma useIntermediatePackages false
+
 class tests.modules.withnestednamespace.nomoduleroot.modulechild.leaf.CommownLeaf {
   color: int
   area: float

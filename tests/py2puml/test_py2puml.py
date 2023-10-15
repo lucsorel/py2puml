@@ -24,10 +24,8 @@ def test_py2puml_with_heavily_nested_model():
 
 def test_py2puml_with_subdomain():
     expected = """@startuml tests.modules.withsubdomain
-namespace tests.modules.withsubdomain {
-  namespace subdomain.insubdomain {}
-  namespace withsubdomain {}
-}
+!pragma useIntermediatePackages false
+
 class tests.modules.withsubdomain.subdomain.insubdomain.Engine {
   horsepower: int
 }
