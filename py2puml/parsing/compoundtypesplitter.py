@@ -1,7 +1,6 @@
 from re import Pattern
 from re import compile as re_compile
 from re import sub as re_sub
-
 from typing import Tuple
 
 # a class name wrapped by ForwardRef(...)
@@ -16,31 +15,32 @@ SPLITTING_CHARACTERS = '[', ']', ',', '|'
 # 'None' in 'Union[str, None]' type signature is changed into 'NoneType' when inspecting a module
 LAST_NONETYPE_IN_UNION: Pattern = re_compile(r'Union\[(?:(?:[^\[\]])*NoneType)')
 
+
 def replace_typing_annotated_with_type(compound_type_annotation: str) -> str:
     """Replace all occurances of typing.Annotated[type, extraInfo] with type.
-    
+
     This simplifies the compound_type_annotation for further processing, losing the extraInfo.
-    
-    Even nested replacements are possible, e.g. 
+
+    Even nested replacements are possible, e.g.
     typing.Annotated[typing.Annotated[type, extraInfo], extraInfo] is replaced by type.
-    
+
     Since the extraInfo can be a complex string with alot of () and [] when Field from pydantic is used,
     the "problematic" strings from the extraInfo are detected and removed first to be able to remove the
     whole extraInfo part robustly.
     """
     simple_compound_type_annotation = compound_type_annotation
-    
+
     # Remove metadata[....] from extraInfo if present
-    simple_compound_type_annotation = re_sub(r"metadata=\[(.*?)\]", "", simple_compound_type_annotation)
-    
+    simple_compound_type_annotation = re_sub(r'metadata=\[(.*?)\]', '', simple_compound_type_annotation)
+
     # Then remove the FieldInfo(...) if present
-    simple_compound_type_annotation = re_sub(r"FieldInfo\((.*?)\)", "", simple_compound_type_annotation)
-    
+    simple_compound_type_annotation = re_sub(r'FieldInfo\((.*?)\)', '', simple_compound_type_annotation)
+
     # Remove the typing.Annotated (recursively if they are nested)
     re_search_rule = r'typing\.Annotated\[(.*?)\,(.*?)]'
-    while('typing.Annotated' in simple_compound_type_annotation):
+    while ('typing.Annotated' in simple_compound_type_annotation):
         simple_compound_type_annotation = re_sub(re_search_rule, r'\1', simple_compound_type_annotation)
-        
+
     return simple_compound_type_annotation
 
 
@@ -81,7 +81,7 @@ class CompoundTypeSplitter:
     Splits the representation of a compound type annotation into a list of:
     - its components (that can be resolved against the module where the type annotation was found)
     - its structuring characters: '[', ']' and ','
-    
+
     Also removes the typing.Annotated[type, extraInfo] string to directly get the acutal type.
     '''
     def __init__(self, compound_type_annotation: str, module_name: str):
