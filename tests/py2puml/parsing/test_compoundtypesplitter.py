@@ -15,8 +15,7 @@ from py2puml.parsing.compoundtypesplitter import (
         'Tuple[str, withenum.TimeUnit]',
         'List[datetime.date]',
         'modules.withenum.TimeUnit',
-        'Dict[str, Dict[str,builtins.float]]',
-    ]
+        'Dict[str, Dict[str,builtins.float]]']
 )
 def test_CompoundTypeSplitter_from_valid_types(type_annotation: str):
     splitter = CompoundTypeSplitter(type_annotation, 'type.module')
@@ -56,6 +55,8 @@ def test_CompoundTypeSplitter_from_invalid_types(type_annotation: str):
         ),
         ('int|float', ('int', '|', 'float')),
         ('int | None', ('int', '|', 'None')),
+        ('typing.Annotated[float, FieldInfo(annotation=NoneType, required=True, metadata=[Gt(gt=0.0), Le(le=1.0)])]',('float', )),
+        ('typing.Annotated[int, Gt(gt=0)]',('int', ))
     ]
 )
 def test_CompoundTypeSplitter_get_parts(type_annotation: str, expected_parts: Tuple[str]):
