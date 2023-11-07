@@ -9,13 +9,8 @@ from py2puml.parsing.compoundtypesplitter import (
 
 @mark.parametrize(
     'type_annotation', [
-        'int',
-        'str',
-        '_ast.Name',
-        'Tuple[str, withenum.TimeUnit]',
-        'List[datetime.date]',
-        'modules.withenum.TimeUnit',
-        'Dict[str, Dict[str,builtins.float]]',
+        'int', 'str', '_ast.Name', 'Tuple[str, withenum.TimeUnit]', 'List[datetime.date]', 'modules.withenum.TimeUnit',
+        'Dict[str, Dict[str,builtins.float]]'
     ]
 )
 def test_CompoundTypeSplitter_from_valid_types(type_annotation: str):
@@ -37,25 +32,23 @@ def test_CompoundTypeSplitter_from_invalid_types(type_annotation: str):
 
 @mark.parametrize(
     ['type_annotation', 'expected_parts'], [
-        ('int', ('int', )),
-        ('str', ('str', )),
-        ('_ast.Name', ('_ast.Name', )),
+        ('int', ('int', )), ('str', ('str', )), ('_ast.Name', ('_ast.Name', )),
         ('Tuple[str, withenum.TimeUnit]', ('Tuple', '[', 'str', ',', 'withenum.TimeUnit', ']')),
-        ('List[datetime.date]', ('List', '[', 'datetime.date', ']')),
-        ('List[IPv6]', ('List', '[', 'IPv6', ']')),
+        ('List[datetime.date]', ('List', '[', 'datetime.date', ']')), ('List[IPv6]', ('List', '[', 'IPv6', ']')),
         ('modules.withenum.TimeUnit', ('modules.withenum.TimeUnit', )),
         (
             'Dict[str, Dict[str,builtins.float]]',
             ('Dict', '[', 'str', ',', 'Dict', '[', 'str', ',', 'builtins.float', ']', ']')
-        ),
-        ('typing.List[Package]', ('typing.List', '[', 'Package', ']')),
+        ), ('typing.List[Package]', ('typing.List', '[', 'Package', ']')),
         ("typing.List[ForwardRef('Package')]", ('typing.List', '[', 'py2puml.domain.package.Package', ']')),
         (
             'typing.List[py2puml.domain.umlclass.UmlAttribute]',
             ('typing.List', '[', 'py2puml.domain.umlclass.UmlAttribute', ']')
-        ),
-        ('int|float', ('int', '|', 'float')),
-        ('int | None', ('int', '|', 'None')),
+        ), ('int|float', ('int', '|', 'float')), ('int | None', ('int', '|', 'None')),
+        (
+            'typing.Annotated[float, FieldInfo(annotation=NoneType, required=True, metadata=[Gt(gt=0.0), Le(le=1.0)])]',
+            ('float', )
+        ), ('typing.Annotated[int, Gt(gt=0)]', ('int', ))
     ]
 )
 def test_CompoundTypeSplitter_get_parts(type_annotation: str, expected_parts: Tuple[str]):
