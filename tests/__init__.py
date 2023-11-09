@@ -24,6 +24,6 @@ def get_from_line_and_pattern(content_line: str, pattern) -> str:
 with open(PROJECT_PATH / 'pyproject.toml', encoding='utf8') as pyproject_file:
     for line in takewhile(lambda _: __version__ is None or __description__ is None, pyproject_file):
         __version__ = __version__ if __version__ is not None else get_from_line_and_pattern(line, VERSION_PATTERN)
-        __description__ = __description__ if __description__ is not None else get_from_line_and_pattern(
-            line, DESCRIPTION_PATTERN
+        __description__ = (
+            __description__ if __description__ is not None else get_from_line_and_pattern(line, DESCRIPTION_PATTERN)
         )

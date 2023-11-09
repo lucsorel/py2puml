@@ -18,19 +18,22 @@ def filter_domain_definitions(module: ModuleType, root_module_name: str) -> Iter
             definition_members = getmembers(definition_type)
             definition_module_member = next(
                 (
-                    member for member in definition_members
+                    member
+                    for member in definition_members
                     # ensures that the type belongs to the module being parsed
                     if member[0] == '__module__' and member[1].startswith(root_module_name)
                 ),
-                None
+                None,
             )
             if definition_module_member is not None:
                 yield definition_type
 
 
 def inspect_domain_definition(
-    definition_type: Type, root_module_name: str, domain_items_by_fqn: Dict[str, UmlItem],
-    domain_relations: List[UmlRelation]
+    definition_type: Type,
+    root_module_name: str,
+    domain_items_by_fqn: Dict[str, UmlItem],
+    domain_relations: List[UmlRelation],
 ):
     definition_type_fqn = f'{definition_type.__module__}.{definition_type.__name__}'
     if definition_type_fqn not in domain_items_by_fqn:
@@ -49,8 +52,10 @@ def inspect_domain_definition(
 
 
 def inspect_module(
-    domain_item_module: ModuleType, root_module_name: str, domain_items_by_fqn: Dict[str, UmlItem],
-    domain_relations: List[UmlRelation]
+    domain_item_module: ModuleType,
+    root_module_name: str,
+    domain_items_by_fqn: Dict[str, UmlItem],
+    domain_relations: List[UmlRelation],
 ):
     # processes only the definitions declared or imported within the given root module
     for definition_type in filter_domain_definitions(domain_item_module, root_module_name):

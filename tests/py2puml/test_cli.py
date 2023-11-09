@@ -28,16 +28,16 @@ def test_cli_on_specific_working_directory():
         assert_multilines(
             # removes the last return carriage added by the stdout
             list(StringIO(cli_process.stdout))[:-1],
-            expected_puml_file
+            expected_puml_file,
         )
 
 
 @mark.parametrize('version_command', [['-v'], ['--version']])
 def test_cli_version(version_command: List[str]):
-    '''
+    """
     Ensures the consistency between the CLI version and the project version set in pyproject.toml
     which is not included when the CLI is installed system-wise
-    '''
+    """
     command = ['py2puml'] + version_command
     cli_version = run(command, stdout=PIPE, stderr=PIPE, text=True, check=True).stdout
 
@@ -46,10 +46,10 @@ def test_cli_version(version_command: List[str]):
 
 @mark.parametrize('help_command', [['-h'], ['--help']])
 def test_cli_help(help_command: List[str]):
-    '''
+    """
     Ensures the consistency between the CLI help and the project description set in pyproject.toml
     which is not included when the CLI is installed system-wise
-    '''
+    """
     command = ['py2puml'] + help_command
     help_text = run(command, stdout=PIPE, stderr=PIPE, text=True, check=True).stdout.replace('\n', ' ')
 

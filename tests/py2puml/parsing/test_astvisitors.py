@@ -6,7 +6,9 @@ from typing import Dict, List, Tuple, Union
 from pytest import mark
 
 from py2puml.parsing.astvisitors import (
-    AssignedVariablesCollector, SignatureVariablesCollector, shorten_compound_type_annotation
+    AssignedVariablesCollector,
+    SignatureVariablesCollector,
+    shorten_compound_type_annotation,
 )
 from py2puml.parsing.moduleresolver import ModuleResolver
 
@@ -22,18 +24,16 @@ class ParseMyConstructorArguments:
         an_int: int,
         an_untyped,
         a_compound_type: Tuple[float, Dict[str, List[bool]]],
-
         # union types
         x_a: Union[int, float],
         y_a: Union[int, float, None],
         x_b: int | float,
         y_b: int | float | None,
-
         # an argument with a default value
         a_default_string: str = 'text',
         # positional and keyword wildcard arguments
         *args,
-        **kwargs
+        **kwargs,
     ):
         pass
 
@@ -83,7 +83,7 @@ def test_SignatureVariablesCollector_collect_arguments():
         # assignment to an attribute of a reference which is not 'self'
         ('me', 'self.my_attr = 6', None, [], []),
         ('me', 'self.my_attr: int = 6', 'int', [], []),
-    ]
+    ],
 )
 def test_AssignedVariablesCollector_single_assignment_separate_variable_from_instance_attribute(
     class_self_id: str, assignment_code: str, annotation_as_str: str, self_attributes: list, variables: list
@@ -117,24 +117,41 @@ def test_AssignedVariablesCollector_single_assignment_separate_variable_from_ins
 
 
 @mark.parametrize(
-    ['class_self_id', 'assignment_code', 'self_attributes_and_variables_by_target'], [
-        ('self', 'x = y = 0', [
-            ([], ['x']),
-            ([], ['y']),
-        ]),
-        ('self', 'self.x = self.y = 0', [
-            (['x'], []),
-            (['y'], []),
-        ]),
-        ('self', 'self.my_attr = self.my_list[0] = 5', [
-            (['my_attr'], []),
-            ([], []),
-        ]),
-        ('self', 'self.x, self.y = self.origin = (0, 0)', [
-            (['x', 'y'], []),
-            (['origin'], []),
-        ]),
-    ]
+    ['class_self_id', 'assignment_code', 'self_attributes_and_variables_by_target'],
+    [
+        (
+            'self',
+            'x = y = 0',
+            [
+                ([], ['x']),
+                ([], ['y']),
+            ],
+        ),
+        (
+            'self',
+            'self.x = self.y = 0',
+            [
+                (['x'], []),
+                (['y'], []),
+            ],
+        ),
+        (
+            'self',
+            'self.my_attr = self.my_list[0] = 5',
+            [
+                (['my_attr'], []),
+                ([], []),
+            ],
+        ),
+        (
+            'self',
+            'self.x, self.y = self.origin = (0, 0)',
+            [
+                (['x', 'y'], []),
+                (['origin'], []),
+            ],
+        ),
+    ],
 )
 def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_instance_attribute(
     class_self_id: str, assignment_code: str, self_attributes_and_variables_by_target: tuple
@@ -142,10 +159,12 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
     # the assignment is the first line of the body
     assignment_ast: AST = parse(assignment_code).body[0]
 
-    assert len(assignment_ast.targets
-              ) == len(self_attributes_and_variables_by_target), 'test consistency: all targets must be tested'
-    for assignment_target, (self_attribute_ids, variable_ids) in zip(assignment_ast.targets,
-                                                                     self_attributes_and_variables_by_target):
+    assert len(assignment_ast.targets) == len(
+        self_attributes_and_variables_by_target
+    ), 'test consistency: all targets must be tested'
+    for assignment_target, (self_attribute_ids, variable_ids) in zip(
+        assignment_ast.targets, self_attributes_and_variables_by_target
+    ):
         assignment_collector = AssignedVariablesCollector(class_self_id, None)
         assignment_collector.visit(assignment_target)
 
@@ -168,15 +187,7 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
             'people.Person',
             'Person',
             ['domain.people.Person'],
-            {
-                '__name__': 'testmodule',
-                'people': {
-                    'Person': {
-                        '__module__': 'domain.people',
-                        '__name__': 'Person'
-                    }
-                }
-            }
+            {'__name__': 'testmodule', 'people': {'Person': {'__module__': 'domain.people', '__name__': 'Person'}}},
         ),
         (
             # combination of compound types
@@ -198,8 +209,8 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
                         '__module__': 'domain',
                         '__name__': 'Person',
                     }
-                }
-            }
+                },
+            },
         ),
         (
             # union types
@@ -216,7 +227,7 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
                     'str': {
                         '__module__': 'builtins',
                         '__name__': 'str',
-                    }
+                    },
                 },
                 'Dict': Dict,
                 'List': List,
@@ -232,10 +243,10 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
                         '__module__': 'domain',
                         '__name__': 'Person',
                     }
-                }
-            }
+                },
+            },
         ),
-    ]
+    ],
 )
 def test_shorten_compound_type_annotation(
     full_annotation: str, short_annotation: str, namespaced_definitions: List[str], module_dict: dict

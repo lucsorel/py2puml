@@ -29,51 +29,31 @@ pre-commit = "^3.3.3"
 console_output_style = "count"
 
 [tool.isort]
+py_version=38
 # maintain consistency with other quality tools
 line_length = 120
-# consistency with yapf: mode 5
+# consistency with ruff-format: mode 3
 # from third_party import (
-#     lib1, lib2, lib3, lib4,
-#     lib5, etc.
+#     lib1,
+#     lib2,
+#     [...]
+#     libn,
 # )
-multi_line_output = 5
-balanced_wrapping = false
+multi_line_output = 3
+include_trailing_comma = true
 # TESTS->known_tests: create a specific section for imports of tests modules
+# (this is the reason why isort is still used alongside ruff-format)
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER", "TESTS"]
 known_tests = ["tests"]
 
-[tool.yapf]
-# see https://github.com/google/yapf#knobs
-based_on_style = "facebook"
-# maintain consistency with other quality tools
-COLUMN_LIMIT = 120
-COALESCE_BRACKETS = false
-DEDENT_CLOSING_BRACKETS = true
-INDENT_DICTIONARY_VALUE = false
-EACH_DICT_ENTRY_ON_SEPARATE_LINE = true
-FORCE_MULTILINE_DICT = true
-JOIN_MULTIPLE_LINES = false
-SPACES_AROUND_DEFAULT_OR_NAMED_ASSIGN = false
-SPLIT_BEFORE_CLOSING_BRACKET = true
-SPLIT_BEFORE_DICT_SET_GENERATOR = true
-SPLIT_COMPLEX_COMPREHENSION = true
-SPLIT_BEFORE_EXPRESSION_AFTER_OPENING_PAREN = true
-SPLIT_BEFORE_FIRST_ARGUMENT = true
-CONTINUATION_ALIGN_STYLE = "SPACE"
-CONTINUATION_INDENT_WIDTH = 4
-SPLIT_PENALTY_COMPREHENSION = 0
-SPLIT_PENALTY_AFTER_OPENING_BRACKET = 0
-SPLIT_PENALTY_FOR_ADDED_LINE_SPLIT = 0
-SPLIT_PENALTY_BEFORE_IF_EXPR = 0
-
-
 [tool.ruff]
+target-version = "py38"
 # maintain consistency with other quality tools
 line-length = 120
 # activated families of verifications (https://beta.ruff.rs/docs/rules/
 select = ["B", "E", "F", "W", "N", "SIM", "C4"]
 # do not check:
-# - E501 line lengths: yapf and isort already handle them
+# - E501 line lengths: ruff formatter already handles them
 # - B905 zip(*, strict=True): strict was introduced in Python 3.10+
 extend-ignore = ["E501", "B905"]
 # automatically fixes when possible
@@ -91,6 +71,14 @@ fix = true
 "tests/__init__.py" = ["B023"]
 # test classes with underscore in their names
 "tests/modules/withuniontypes.py" = ['N801']
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "lf"
+quote-style = "single"
+
+[tool.ruff.lint.isort]
+forced-separate = ["tests"]
 
 [build-system]
 requires = ["poetry-core"]

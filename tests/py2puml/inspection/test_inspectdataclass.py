@@ -44,13 +44,17 @@ def test_inspect_domain_definition_single_class_with_composition():
     assert len(domain_relations) == 2, 'class has 2 domain components'
     # forward reference to colleagues
     assert_relation(
-        domain_relations[0], 'tests.modules.withcomposition.Worker', 'tests.modules.withcomposition.Worker',
-        RelType.COMPOSITION
+        domain_relations[0],
+        'tests.modules.withcomposition.Worker',
+        'tests.modules.withcomposition.Worker',
+        RelType.COMPOSITION,
     )
     # adress of worker
     assert_relation(
-        domain_relations[1], 'tests.modules.withcomposition.Worker', 'tests.modules.withcomposition.Address',
-        RelType.COMPOSITION
+        domain_relations[1],
+        'tests.modules.withcomposition.Worker',
+        'tests.modules.withcomposition.Address',
+        RelType.COMPOSITION,
     )
 
 
@@ -74,10 +78,14 @@ def test_parse_inheritance_within_module():
     parent_fish, parent_light = domain_relations
 
     assert_relation(
-        parent_fish, 'tests.modules.withinheritancewithinmodule.Fish',
-        'tests.modules.withinheritancewithinmodule.GlowingFish', RelType.INHERITANCE
+        parent_fish,
+        'tests.modules.withinheritancewithinmodule.Fish',
+        'tests.modules.withinheritancewithinmodule.GlowingFish',
+        RelType.INHERITANCE,
     )
     assert_relation(
-        parent_light, 'tests.modules.withinheritancewithinmodule.Light',
-        'tests.modules.withinheritancewithinmodule.GlowingFish', RelType.INHERITANCE
+        parent_light,
+        'tests.modules.withinheritancewithinmodule.Light',
+        'tests.modules.withinheritancewithinmodule.GlowingFish',
+        RelType.INHERITANCE,
     )
