@@ -7,16 +7,18 @@ CURRENT_DIR = Path(__file__).parent
 
 
 def test_py2puml_model_on_py2uml_domain():
-    '''
+    """
     Ensures that the documentation of the py2puml domain model is up-to-date
-    '''
+    """
     domain_diagram_file_path = CURRENT_DIR.parent.parent / 'py2puml' / 'py2puml.domain.puml'
 
     assert_py2puml_is_file_content('py2puml/domain', 'py2puml.domain', domain_diagram_file_path)
 
 
 def test_py2puml_with_heavily_nested_model():
-    domain_diagram_file_path = CURRENT_DIR.parent / 'modules' / 'withnestednamespace' / 'tests.modules.withnestednamespace.puml'
+    domain_diagram_file_path = (
+        CURRENT_DIR.parent / 'modules' / 'withnestednamespace' / 'tests.modules.withnestednamespace.puml'
+    )
     assert_py2puml_is_file_content(
         'tests/modules/withnestednamespace', 'tests.modules.withnestednamespace', domain_diagram_file_path
     )

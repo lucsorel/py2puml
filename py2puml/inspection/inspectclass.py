@@ -26,14 +26,17 @@ def handle_inheritance_relation(
 
 
 def inspect_static_attributes(
-    class_type: Type, class_type_fqn: str, root_module_name: str, domain_items_by_fqn: Dict[str, UmlItem],
-    domain_relations: List[UmlRelation]
+    class_type: Type,
+    class_type_fqn: str,
+    root_module_name: str,
+    domain_items_by_fqn: Dict[str, UmlItem],
+    domain_relations: List[UmlRelation],
 ) -> List[UmlAttribute]:
-    '''
+    """
     Adds the definitions:
     - of the inspected type
     - of its static attributes from the class annotations (type and relation)
-    '''
+    """
     # defines the class being inspected
     definition_attrs: List[UmlAttribute] = []
     uml_class = UmlClass(
@@ -85,8 +88,11 @@ def inspect_static_attributes(
 
 
 def inspect_class_type(
-    class_type: Type, class_type_fqn: str, root_module_name: str, domain_items_by_fqn: Dict[str, UmlItem],
-    domain_relations: List[UmlRelation]
+    class_type: Type,
+    class_type_fqn: str,
+    root_module_name: str,
+    domain_items_by_fqn: Dict[str, UmlItem],
+    domain_relations: List[UmlRelation],
 ):
     attributes = inspect_static_attributes(
         class_type, class_type_fqn, root_module_name, domain_items_by_fqn, domain_relations
@@ -99,11 +105,15 @@ def inspect_class_type(
 
 
 def inspect_dataclass_type(
-    class_type: Type[dataclass], class_type_fqn: str, root_module_name: str, domain_items_by_fqn: Dict[str, UmlItem],
-    domain_relations: List[UmlRelation]
+    class_type: Type[dataclass],
+    class_type_fqn: str,
+    root_module_name: str,
+    domain_items_by_fqn: Dict[str, UmlItem],
+    domain_relations: List[UmlRelation],
 ):
-    for attribute in inspect_static_attributes(class_type, class_type_fqn, root_module_name, domain_items_by_fqn,
-                                               domain_relations):
+    for attribute in inspect_static_attributes(
+        class_type, class_type_fqn, root_module_name, domain_items_by_fqn, domain_relations
+    ):
         attribute.static = False
 
     handle_inheritance_relation(class_type, class_type_fqn, root_module_name, domain_relations)

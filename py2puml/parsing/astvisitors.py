@@ -1,5 +1,15 @@
 from ast import (
-    AnnAssign, Assign, Attribute, BinOp, FunctionDef, Name, NodeVisitor, Subscript, arg, expr, get_source_segment
+    AnnAssign,
+    Assign,
+    Attribute,
+    BinOp,
+    FunctionDef,
+    Name,
+    NodeVisitor,
+    Subscript,
+    arg,
+    expr,
+    get_source_segment,
 )
 from collections import namedtuple
 from typing import Dict, List, Tuple
@@ -13,9 +23,10 @@ Variable = namedtuple('Variable', ['id', 'type_expr'])
 
 
 class SignatureVariablesCollector(NodeVisitor):
-    '''
+    """
     Collects the variables and their type annotations from the signature of a constructor method
-    '''
+    """
+
     def __init__(self, constructor_source: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.constructor_source = constructor_source
@@ -34,7 +45,8 @@ class SignatureVariablesCollector(NodeVisitor):
 
 
 class AssignedVariablesCollector(NodeVisitor):
-    '''Parses the target of an assignment statement to detect whether the value is assigned to a variable or an instance attribute'''
+    """Parses the target of an assignment statement to detect whether the value is assigned to a variable or an instance attribute"""
+
     def __init__(self, class_self_id: str, annotation: expr):
         self.class_self_id: str = class_self_id
         self.annotation: expr = annotation
@@ -42,30 +54,31 @@ class AssignedVariablesCollector(NodeVisitor):
         self.self_attributes: List[Variable] = []
 
     def visit_Name(self, node: Name):
-        '''
+        """
         Detects declarations of new variables
-        '''
+        """
         if node.id != self.class_self_id:
             self.variables.append(Variable(node.id, self.annotation))
 
     def visit_Attribute(self, node: Attribute):
-        '''
+        """
         Detects declarations of new attributes on 'self'
-        '''
+        """
         if isinstance(node.value, Name) and node.value.id == self.class_self_id:
             self.self_attributes.append(Variable(node.attr, self.annotation))
 
     def visit_Subscript(self, node: Subscript):
-        '''
+        """
         Assigns a value to a subscript of an existing variable: must be skipped
-        '''
+        """
         pass
 
 
 class ConstructorVisitor(NodeVisitor):
-    '''
+    """
     Identifies the attributes (and infer their type) assigned to self in the body of a constructor method
-    '''
+    """
+
     def __init__(
         self, constructor_source: str, class_name: str, root_fqn: str, module_resolver: ModuleResolver, *args, **kwargs
     ):
@@ -97,7 +110,7 @@ class ConstructorVisitor(NodeVisitor):
                 for variable in self.variables_namespace[::-1]
                 if variable.id == variable_id
             ),
-            None
+            None,
         )
 
     def generic_visit(self, node):
@@ -154,11 +167,11 @@ class ConstructorVisitor(NodeVisitor):
             self.variables_namespace.extend(variables_collector.variables)
 
     def derive_type_annotation_details(self, annotation: expr) -> Tuple[str, List[str]]:
-        '''
+        """
         From a type annotation, derives:
         - a short version of the type (withenum.TimeUnit -> TimeUnit, Tuple[withenum.TimeUnit] -> Tuple[TimeUnit])
         - a list of the full-namespaced definitions involved in the type annotation (in order to build the relationships)
-        '''
+        """
         if annotation is None:
             return None, []
 
@@ -182,13 +195,13 @@ class ConstructorVisitor(NodeVisitor):
 
 
 def shorten_compound_type_annotation(type_annotation: str, module_resolver: ModuleResolver) -> Tuple[str, List[str]]:
-    '''
+    """
     In the string representation of a compound type annotation, the elementary types can be prefixed by their packages or sub-packages.
     Like in 'Dict[datetime.datetime,typing.List[Worker]]'. This function returns a tuple of 2 values:
     - a string representation with shortened types for display purposes in the PlantUML documentation: 'Dict[datetime, List[Worker]]'
       (note: a space is inserted after each coma for readability sake)
     - a list of the fully-qualified types involved in the annotation: ['typing.Dict', 'datetime.datetime', 'typing.List', 'mymodule.Worker']
-    '''
+    """
     compound_type_parts: List[str] = CompoundTypeSplitter(type_annotation, module_resolver.module.__name__).get_parts()
     compound_short_type_parts: List[str] = []
     associated_types: List[str] = []

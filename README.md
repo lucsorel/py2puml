@@ -202,6 +202,7 @@ poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-
 
 # Changelog
 
+* `upcoming`: replaced yapf by the ruff formatter
 * `0.8.1`: delegated the grouping of nested namespaces (see `0.7.0`) to the PlantUML binary, which handles it natively
 * `0.8.0`: added support for union types, and github actions (pre-commit hooks + automated tests)
 * `0.7.2`: added the current working directory to the import path to make py2puml work in any directory or in native virtual environment (not handled by poetry)
@@ -238,7 +239,7 @@ Pull-requests are welcome and will be processed on a best-effort basis.
 Pull requests must follow the guidelines enforced by the `pre-commit` hooks:
 
 - commit messages must follow the Angular conventions enforced by the `commitlint` hook
-- code formatting must follow the conventions enforced by the `isort` and `yapf` hooks
+- code formatting must follow the conventions enforced by the `isort` and `ruff-format` hooks
 - code linting should not detect code smells in your contributions, this is checked by the `ruff` hook
 
 Please also follow the [contributing guide](CONTRIBUTING.md) to ease your contribution.
@@ -274,7 +275,7 @@ When merging your pull-request, the new version of the project will be derived f
 
 ### Code formatting
 
-This project uses `isort` and `yapf` to format the code.
+This project uses `isort` and `ruff-format` to format the code.
 The guidelines are expressed in their respective sections in the [pyproject.toml](pyproject.toml) file.
 
 ### Best practices

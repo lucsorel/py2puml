@@ -12,14 +12,14 @@ def assert_py2puml_is_file_content(domain_path: str, domain_module: str, diagram
 
 
 def normalize_lines_with_returns(lines_with_returns: Iterable[str]) -> List[str]:
-    '''
+    """
     When comparing contents, each piece of contents can either be:
     - a formatted string block output by the py2puml command containg line returns
     - a single line of contents read from a file, each line ending with a line return
 
     This function normalizes each sequence of contents as a list of string lines,
     each one finishing without a line return to ease comparison.
-    '''
+    """
     return ''.join(lines_with_returns).split('\n')
 
 
@@ -34,6 +34,8 @@ def assert_multilines(actual_multilines: List[str], expected_multilines: List[st
     line_index = 0
     for line_index, (actual_line, expected_line) in enumerate(zip(actual_multilines, expected_multilines)):
         # print(f'{actual_line=}\n{expected_line=}')
-        assert actual_line == expected_line, f'actual and expected contents have changed at line {line_index + 1}: {actual_line=}, {expected_line=}'
+        assert (
+            actual_line == expected_line
+        ), f'actual and expected contents have changed at line {line_index + 1}: {actual_line=}, {expected_line=}'
 
     assert line_index + 1 == len(actual_multilines), f'actual and expected diagrams have {line_index + 1} lines'

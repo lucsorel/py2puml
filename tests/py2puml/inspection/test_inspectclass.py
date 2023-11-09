@@ -14,8 +14,10 @@ def test_inspect_module_should_find_static_and_instance_attributes(
     domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
 ):
     inspect_module(
-        import_module('tests.modules.withconstructor'), 'tests.modules.withconstructor', domain_items_by_fqn,
-        domain_relations
+        import_module('tests.modules.withconstructor'),
+        'tests.modules.withconstructor',
+        domain_items_by_fqn,
+        domain_relations,
     )
 
     assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
@@ -57,8 +59,10 @@ def test_inspect_module_should_find_static_and_instance_attributes(
     # Coordinates is a component of Point
     assert len(domain_relations) == 1, '1 composition'
     assert_relation(
-        domain_relations[0], 'tests.modules.withconstructor.Point', 'tests.modules.withconstructor.Coordinates',
-        RelType.COMPOSITION
+        domain_relations[0],
+        'tests.modules.withconstructor.Point',
+        'tests.modules.withconstructor.Coordinates',
+        RelType.COMPOSITION,
     )
 
 
@@ -87,12 +91,16 @@ def test_inspect_module_parse_class_constructor_should_not_process_inherited_con
 ):
     # inspects the two sub-modules
     inspect_module(
-        import_module('tests.modules.withinheritedconstructor.point'), 'tests.modules.withinheritedconstructor.point',
-        domain_items_by_fqn, domain_relations
+        import_module('tests.modules.withinheritedconstructor.point'),
+        'tests.modules.withinheritedconstructor.point',
+        domain_items_by_fqn,
+        domain_relations,
     )
     inspect_module(
         import_module('tests.modules.withinheritedconstructor.metricorigin'),
-        'tests.modules.withinheritedconstructor.metricorigin', domain_items_by_fqn, domain_relations
+        'tests.modules.withinheritedconstructor.metricorigin',
+        domain_items_by_fqn,
+        domain_relations,
     )
 
     assert len(domain_items_by_fqn) == 3, 'three classes must be inspected'
@@ -112,7 +120,8 @@ def test_inspect_module_parse_class_constructor_should_not_process_inherited_con
 
     # MetricOrigin UmlClass
     metric_origin_umlitem: UmlClass = domain_items_by_fqn[
-        'tests.modules.withinheritedconstructor.metricorigin.MetricOrigin']
+        'tests.modules.withinheritedconstructor.metricorigin.MetricOrigin'
+    ]
     assert len(metric_origin_umlitem.attributes) == 1, '1 attribute of MetricOrigin must be inspected'
     unit_attribute = metric_origin_umlitem.attributes[0]
     assert_attribute(unit_attribute, 'unit', 'str', expected_staticity=True)
@@ -122,8 +131,10 @@ def test_inspect_module_should_unwrap_decorated_constructor(
     domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
 ):
     inspect_module(
-        import_module('tests.modules.withwrappedconstructor'), 'tests.modules.withwrappedconstructor',
-        domain_items_by_fqn, domain_relations
+        import_module('tests.modules.withwrappedconstructor'),
+        'tests.modules.withwrappedconstructor',
+        domain_items_by_fqn,
+        domain_relations,
     )
 
     assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
@@ -137,10 +148,11 @@ def test_inspect_module_should_unwrap_decorated_constructor(
 
     # PointDecoratedWithoutWrapping UmlClass
     point_without_wrapping_umlitem: UmlClass = domain_items_by_fqn[
-        'tests.modules.withwrappedconstructor.PointDecoratedWithoutWrapping']
-    assert len(
-        point_without_wrapping_umlitem.attributes
-    ) == 0, 'the attributes of the original constructor could not be found, the constructor was not wrapped by the decorator'
+        'tests.modules.withwrappedconstructor.PointDecoratedWithoutWrapping'
+    ]
+    assert (
+        len(point_without_wrapping_umlitem.attributes) == 0
+    ), 'the attributes of the original constructor could not be found, the constructor was not wrapped by the decorator'
 
 
 def test_inspect_module_should_handle_compound_types_with_numbers_in_their_name(

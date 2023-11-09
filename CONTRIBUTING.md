@@ -66,7 +66,8 @@ To save time (my writing time and your reading time), I tried to make it short s
 
 To homogenize code style consistency and enforce code quality, this project uses:
 
-- the `yapf` formatter and the `ruff` linter
+- the `ruff` linter and formatter
+- the `isort` formatter for imports, because it handles the 'tests' sections in the imports
 - `pre-commit` hooks that are triggered on the Github CI (in pull-requests) and should be activated locally when contributing to the project:
 
 ```sh
@@ -75,6 +76,9 @@ poetry install
 
 # activates the pre-commit hooks
 poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
+
+# runs the code quality hooks on the codebase
+poetry run pre-commit run --all-files
 ```
 
 ## Unit tests

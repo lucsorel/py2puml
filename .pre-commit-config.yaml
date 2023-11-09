@@ -8,8 +8,6 @@ repos:
     -   id: trailing-whitespace
     # ensures that all files end in a newline and only a newline
     -   id: end-of-file-fixer
-    # replace "double quotes" by 'single quotes' unless "it's impossible"
-    -   id: double-quote-string-fixer
     # prevents large files from being committed (>100kb)
     -   id: check-added-large-files
         args: [--maxkb=100]
@@ -32,14 +30,8 @@ repos:
     -   id: isort
         additional_dependencies: [toml]
 
--   repo: https://github.com/google/yapf
-    rev: v0.40.2
-    hooks:
-    -   id: yapf
-        name: Yapf
-        additional_dependencies: [toml]
-
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.4
+    rev: v0.1.5
     hooks:
     -   id: ruff
+    -   id: ruff-format

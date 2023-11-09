@@ -29,7 +29,7 @@ class DistanceCalculator:
         y_a: Union[int, float, None],
         x_b: int | float,
         y_b: int | float | None,
-        euclidian: bool = True
+        euclidian: bool = True,
     ):
         self.x_a = x_a
         self.y_a = y_a
