@@ -67,7 +67,7 @@ class CompoundTypeSplitter:
         self.compound_type_annotation = resolved_type_annotations
 
     def get_parts(self) -> Tuple[str]:
-        'Iteratively splits the type annotation with the different SPLITTING_CHARACTERS'
+        "Iteratively splits the type annotation with the different SPLITTING_CHARACTERS"
 
         parts = [self.compound_type_annotation]
         for splitting_character in SPLITTING_CHARACTERS:
