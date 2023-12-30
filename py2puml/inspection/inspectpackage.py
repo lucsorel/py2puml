@@ -11,6 +11,10 @@ from py2puml.inspection.inspectmodule import inspect_module
 def inspect_package(
     domain_path: str, domain_module: str, domain_items_by_fqn: Dict[str, UmlItem], domain_relations: List[UmlRelation]
 ):
+    # inspects the package module first, then its children modules and subpackages
+    item_module = import_module(domain_module)
+    inspect_module(item_module, domain_module, domain_items_by_fqn, domain_relations)
+
     for _, name, is_pkg in walk_packages([domain_path], f'{domain_module}.'):
         if not is_pkg:
             domain_item_module: ModuleType = import_module(name)
