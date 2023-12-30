@@ -15,6 +15,30 @@ def test_py2puml_model_on_py2uml_domain():
     assert_py2puml_is_file_content('py2puml/domain', 'py2puml.domain', domain_diagram_file_path)
 
 
+def test_py2puml_with_pkg_init_only():
+    """
+    Ensure that __init__.py files are also parsed
+    """
+    domain_diagram_file_path = CURRENT_DIR.parent / 'modules/withpkginitonly' / 'tests.modules.withpkginitonly.puml'
+
+    assert_py2puml_is_file_content(
+        'tests/modules/withpkginitonly', 'tests.modules.withpkginitonly', domain_diagram_file_path
+    )
+
+
+def test_py2puml_with_pkg_init_and_module():
+    """
+    Ensure that __init__.py files are also parsed, in combination with other module
+    """
+    domain_diagram_file_path = (
+        CURRENT_DIR.parent / 'modules/withpkginitandmodule' / 'tests.modules.withpkginitandmodule.puml'
+    )
+
+    assert_py2puml_is_file_content(
+        'tests/modules/withpkginitandmodule', 'tests.modules.withpkginitandmodule', domain_diagram_file_path
+    )
+
+
 def test_py2puml_with_heavily_nested_model():
     domain_diagram_file_path = (
         CURRENT_DIR.parent / 'modules' / 'withnestednamespace' / 'tests.modules.withnestednamespace.puml'

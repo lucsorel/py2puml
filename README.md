@@ -203,6 +203,7 @@ poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-
 # Changelog
 
 * `upcoming`: replaced yapf by the ruff formatter
+* `0.8.2`: add classes defined in `__init__.py` files to plantuml output
 * `0.8.1`: delegated the grouping of nested namespaces (see `0.7.0`) to the PlantUML binary, which handles it natively
 * `0.8.0`: added support for union types, and github actions (pre-commit hooks + automated tests)
 * `0.7.2`: added the current working directory to the import path to make py2puml work in any directory or in native virtual environment (not handled by poetry)
@@ -231,6 +232,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 * [Doyou Jung](https://github.com/doyou89)
 * [Julien Jerphanion](https://github.com/jjerphan)
 * [Luis Fernando Villanueva Pérez](https://github.com/jonykalavera)
+* [Konstantin Zangerle](https://github.com/justkiddingcode)
 
 ## Pull requests
 
