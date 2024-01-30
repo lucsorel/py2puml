@@ -202,7 +202,8 @@ poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-
 
 # Changelog
 
-* `upcoming`: fix url to PlantUML logo
+* `0.9.1`: improved 0.7.2 by adding the current working directory at the beginning of the sys.path to resolve the module paths of the project being inspected.
+Fix url to PlantUML logo on the README.md page
 * `0.9.0`: add classes defined in `__init__.py` files to plantuml output; replaced yapf by the ruff formatter
 * `0.8.1`: delegated the grouping of nested namespaces (see `0.7.0`) to the PlantUML binary, which handles it natively
 * `0.8.0`: added support for union types, and github actions (pre-commit hooks + automated tests)
