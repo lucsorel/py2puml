@@ -7,6 +7,7 @@ This non-regression test ensures that the current working directory is
 in the first position of the paths of PYTHON_PATH (sys.path) so that
 module resolution is attempted first in the inspected codebase.
 """
+
 from datetime import datetime
 
 
