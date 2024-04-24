@@ -41,7 +41,7 @@ def replace_typing_annotated_with_type(compound_type_annotation: str) -> str:
 
     # Remove the typing.Annotated (recursively if they are nested)
     re_search_rule = r'typing\.Annotated\[(.*?)\,(.*?)]'
-    while ('typing.Annotated' in simple_compound_type_annotation):
+    while 'typing.Annotated' in simple_compound_type_annotation:
         simple_compound_type_annotation = re_sub(re_search_rule, r'\1', simple_compound_type_annotation)
 
     return simple_compound_type_annotation
@@ -91,6 +91,7 @@ class CompoundTypeSplitter:
 
     Also removes the typing.Annotated[type, extraInfo] string to directly get the acutal type.
     """
+
     def __init__(self, compound_type_annotation: str, module_name: str):
         compound_type_annotation = replace_typing_annotated_with_type(compound_type_annotation)
         resolved_type_annotations = remove_forward_references(compound_type_annotation, module_name)

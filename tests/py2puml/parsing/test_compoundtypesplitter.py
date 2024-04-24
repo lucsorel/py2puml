@@ -65,8 +65,9 @@ def test_CompoundTypeSplitter_from_invalid_types(type_annotation: str):
         ('int | None', ('int', '|', 'None')),
         (
             'typing.Annotated[float, FieldInfo(annotation=NoneType, required=True, metadata=[Gt(gt=0.0), Le(le=1.0)])]',
-            ('float', )
-        ), ('typing.Annotated[int, Gt(gt=0)]', ('int', ))
+            ('float',),
+        ),
+        ('typing.Annotated[int, Gt(gt=0)]', ('int',)),
     ],
 )
 def test_CompoundTypeSplitter_get_parts(type_annotation: str, expected_parts: Tuple[str]):
