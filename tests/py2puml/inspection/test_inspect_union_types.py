@@ -11,9 +11,9 @@ from tests.asserts.attribute import assert_attribute
 
 @fixture(scope='module', autouse=True)
 def inspected_union_types_items() -> Dict[str, UmlItem]:
-    '''
+    """
     Inspects the test module containing several types involving union types, once for all the unit tests involved in this module
-    '''
+    """
     fqdn = 'tests.modules.withuniontypes'
     domain_items_by_fqn: Dict[str, UmlItem] = {}
     inspect_module(import_module(fqdn), fqdn, domain_items_by_fqn, [])

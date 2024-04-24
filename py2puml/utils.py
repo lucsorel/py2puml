@@ -2,9 +2,9 @@ from typing import Type
 
 
 def investigate_domain_definition(type_to_inspect: Type):
-    '''
+    """
     Utilitary function which inspects the annotations of the given type
-    '''
+    """
     type_annotations = getattr(type_to_inspect, '__annotations__', None)
     if type_annotations is None:
         # print(f'class {type_to_inspect.__module__}.{type_to_inspect.__name__} of type {type(type_to_inspect)} has no annotation')

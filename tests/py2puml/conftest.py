@@ -1,4 +1,4 @@
-'''
+"""
 Fixtures that can be used by the automated unit tests.
 
 .. code-block:: python
@@ -8,7 +8,7 @@ Fixtures that can be used by the automated unit tests.
         inspect_module(import_module(fqdn), fqdn, domain_items_by_fqn, domain_relations)
         assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
         ...
-'''
+"""
 
 from typing import Dict, List
 

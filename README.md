@@ -4,7 +4,7 @@
       src="https://www.python.org/static/community_logos/python-logo-generic.svg" />
   </a>
   <a href="https://plantuml.com/" target="_blank">
-    <img width="116px" height="112px" alt="PlantUML logo" src="https://s.plantuml.com/logoc.png" style="margin-bottom: 40px" vspace="40px" />
+    <img width="116px" height="112px" alt="PlantUML logo" src="https://cdn-0.plantuml.com/logoc.png" style="margin-bottom: 40px" vspace="40px" />
   </a>
   <h1>Python to PlantUML</h1>
 </div>
@@ -202,6 +202,9 @@ poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-
 
 # Changelog
 
+* `0.9.1`: improved 0.7.2 by adding the current working directory at the beginning of the sys.path to resolve the module paths of the project being inspected.
+Fix url to PlantUML logo on the README.md page
+* `0.9.0`: add classes defined in `__init__.py` files to plantuml output; replaced yapf by the ruff formatter
 * `0.8.1`: delegated the grouping of nested namespaces (see `0.7.0`) to the PlantUML binary, which handles it natively
 * `0.8.0`: added support for union types, and github actions (pre-commit hooks + automated tests)
 * `0.7.2`: added the current working directory to the import path to make py2puml work in any directory or in native virtual environment (not handled by poetry)
@@ -230,6 +233,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 * [Doyou Jung](https://github.com/doyou89)
 * [Julien Jerphanion](https://github.com/jjerphan)
 * [Luis Fernando Villanueva Pérez](https://github.com/jonykalavera)
+* [Konstantin Zangerle](https://github.com/justkiddingcode)
 
 ## Pull requests
 
@@ -238,7 +242,7 @@ Pull-requests are welcome and will be processed on a best-effort basis.
 Pull requests must follow the guidelines enforced by the `pre-commit` hooks:
 
 - commit messages must follow the Angular conventions enforced by the `commitlint` hook
-- code formatting must follow the conventions enforced by the `isort` and `yapf` hooks
+- code formatting must follow the conventions enforced by the `isort` and `ruff-format` hooks
 - code linting should not detect code smells in your contributions, this is checked by the `ruff` hook
 
 Please also follow the [contributing guide](CONTRIBUTING.md) to ease your contribution.
@@ -274,7 +278,7 @@ When merging your pull-request, the new version of the project will be derived f
 
 ### Code formatting
 
-This project uses `isort` and `yapf` to format the code.
+This project uses `isort` and `ruff-format` to format the code.
 The guidelines are expressed in their respective sections in the [pyproject.toml](pyproject.toml) file.
 
 ### Best practices

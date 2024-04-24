@@ -22,9 +22,10 @@ def signature_arg_values(func):
 
 
 class Point:
-    '''
+    """
     A Point class, with a constructor which is decorated by wrapping decorators
-    '''
+    """
+
     @count_signature_args
     @signature_arg_values
     def __init__(self, x: float, y: float):
@@ -44,9 +45,10 @@ def signature_improper_decorator(func):
 
 
 class PointDecoratedWithoutWrapping:
-    '''
+    """
     A Point class, with a constructor which is decorated by wrapping decorators
-    '''
+    """
+
     @signature_improper_decorator
     def __init__(self, x: float, y: float):
         self.x = x
