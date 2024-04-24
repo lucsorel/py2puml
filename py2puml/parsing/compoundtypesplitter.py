@@ -28,6 +28,9 @@ def replace_typing_annotated_with_type(compound_type_annotation: str) -> str:
     the "problematic" strings from the extraInfo are detected and removed first to be able to remove the
     whole extraInfo part robustly.
     """
+    if compound_type_annotation is None:
+        return compound_type_annotation
+
     simple_compound_type_annotation = compound_type_annotation
 
     # Remove metadata[....] from extraInfo if present
