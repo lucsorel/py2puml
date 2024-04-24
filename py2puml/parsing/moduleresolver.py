@@ -39,6 +39,12 @@ def search_in_module(namespaces: List[str], module: ModuleType):
     else:
         # https://bugs.python.org/issue34422#msg323772
         short_type = getattr(leaf_type, '__name__', getattr(leaf_type, '_name', None))
+
+        # handle case where a type hint references a class defined in the same module
+        if short_type is None:
+            if hasattr(leaf_type, "__class__"):
+                short_type = leaf_type.__class__.__name__
+
         return NamespacedType(f'{leaf_type.__module__}.{short_type}', short_type)
 
 
