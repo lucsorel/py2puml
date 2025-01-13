@@ -34,8 +34,8 @@ def assert_multilines(actual_multilines: List[str], expected_multilines: List[st
     line_index = 0
     for line_index, (actual_line, expected_line) in enumerate(zip(actual_multilines, expected_multilines)):
         # print(f'{actual_line=}\n{expected_line=}')
-        assert (
-            actual_line == expected_line
-        ), f'actual and expected contents have changed at line {line_index + 1}: {actual_line=}, {expected_line=}'
+        assert actual_line == expected_line, (
+            f'actual and expected contents have changed at line {line_index + 1}: {actual_line=}, {expected_line=}'
+        )
 
     assert line_index + 1 == len(actual_multilines), f'actual and expected diagrams have {line_index + 1} lines'

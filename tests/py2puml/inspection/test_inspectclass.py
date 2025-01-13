@@ -150,9 +150,9 @@ def test_inspect_module_should_unwrap_decorated_constructor(
     point_without_wrapping_umlitem: UmlClass = domain_items_by_fqn[
         'tests.modules.withwrappedconstructor.PointDecoratedWithoutWrapping'
     ]
-    assert (
-        len(point_without_wrapping_umlitem.attributes) == 0
-    ), 'the attributes of the original constructor could not be found, the constructor was not wrapped by the decorator'
+    assert len(point_without_wrapping_umlitem.attributes) == 0, (
+        'the attributes of the original constructor could not be found, the constructor was not wrapped by the decorator'
+    )
 
 
 def test_inspect_module_should_handle_compound_types_with_numbers_in_their_name(
