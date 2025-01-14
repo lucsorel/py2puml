@@ -159,9 +159,9 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
     # the assignment is the first line of the body
     assignment_ast: AST = parse(assignment_code).body[0]
 
-    assert len(assignment_ast.targets) == len(
-        self_attributes_and_variables_by_target
-    ), 'test consistency: all targets must be tested'
+    assert len(assignment_ast.targets) == len(self_attributes_and_variables_by_target), (
+        'test consistency: all targets must be tested'
+    )
     for assignment_target, (self_attribute_ids, variable_ids) in zip(
         assignment_ast.targets, self_attributes_and_variables_by_target
     ):
