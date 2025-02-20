@@ -183,6 +183,30 @@ if __name__ == '__main__':
 
 * running it outputs the previous PlantUML diagram in the terminal and writes it in a file.
 
+### Additionally you can also pass filters to skip specific blocks and relations
+```python
+from py2puml.domain.umlrelation import UmlRelation
+from py2puml.domain.umlclass import UmlMethod
+from py2puml.domain.umlitem import UmlItem
+from py2puml.export.puml import Filters
+from py2puml.py2puml import py2puml
+
+def skip_block(item: UmlItem) -> bool:
+    return item.fqn.endswith('<block-to-ignore>')
+
+def skip_relation(relation: UmlRelation) -> bool:
+    return relation.source_fqn.endswith('<relation-source>') and relation.target_fqn.endswith('<relation-target>')
+
+filters = Filters(skip_block, skip_relation)
+
+puml_content = "".join(
+        py2puml(
+            'py2puml/domain',
+            'py2puml.domain',
+            filters
+        )
+    )
+```
 
 # Tests
 
