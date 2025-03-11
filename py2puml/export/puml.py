@@ -1,4 +1,5 @@
-from typing import Iterable, List
+from dataclasses import dataclass
+from typing import Callable, Iterable, List, Optional
 
 from py2puml.domain.umlclass import UmlClass
 from py2puml.domain.umlenum import UmlEnum
@@ -26,11 +27,40 @@ FEATURE_STATIC = ' {static}'
 FEATURE_INSTANCE = ''
 
 
-def to_puml_content(diagram_name: str, uml_items: List[UmlItem], uml_relations: List[UmlRelation]) -> Iterable[str]:
+@dataclass
+class Filters:
+    skip_block: Optional[Callable[[UmlItem], bool]] = None
+    skip_relation: Optional[Callable[[UmlRelation], bool]] = None
+
+
+def should_skip(filter: Callable | None, item: UmlItem | UmlRelation) -> bool:
+    if filter is None:
+        return False
+
+    if not callable(filter):
+        raise ValueError('Filter must be a callable')
+
+    try:
+        _should_skip = filter(item)
+        if not isinstance(_should_skip, bool):
+            raise ValueError('Filter must return a boolean value')
+        return _should_skip
+    except Exception as e:
+        raise ValueError('Error while applying filter') from e
+
+
+def to_puml_content(
+    diagram_name: str, uml_items: List[UmlItem], uml_relations: List[UmlRelation], filters: Optional[Filters] = None
+) -> Iterable[str]:
+    if filters is None:
+        filters = Filters()
+
     yield PUML_FILE_START.format(diagram_name=diagram_name)
 
     # exports the domain classes and enums
     for uml_item in uml_items:
+        if should_skip(filters.skip_block, uml_item):
+            continue
         if isinstance(uml_item, UmlEnum):
             uml_enum: UmlEnum = uml_item
             yield PUML_ITEM_START_TPL.format(item_type='enum', item_fqn=uml_enum.fqn)
@@ -48,12 +78,15 @@ def to_puml_content(diagram_name: str, uml_items: List[UmlItem], uml_relations: 
                     attr_type=uml_attr.type,
                     staticity=FEATURE_STATIC if uml_attr.static else FEATURE_INSTANCE,
                 )
+            # TODO: Add skip_method filter here once PR #43 is merged
             yield PUML_ITEM_END
         else:
             raise TypeError(f'cannot process uml_item of type {uml_item.__class__}')
 
     # exports the domain relationships between classes and enums
     for uml_relation in uml_relations:
+        if should_skip(filters.skip_relation, uml_relation):
+            continue
         yield PUML_RELATION_TPL.format(
             source_fqn=uml_relation.source_fqn, rel_type=uml_relation.type.value, target_fqn=uml_relation.target_fqn
         )
