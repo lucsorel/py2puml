@@ -270,8 +270,6 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
 def test_shorten_compound_type_annotation(
     full_annotation: str, short_annotation: str, namespaced_definitions: List[str], module_dict: dict
 ):
-    # print('md', module_dict)
-    # assert 0 == 1
     module_resolver = ModuleResolver(MockedInstance(module_dict))
     shortened_annotation, full_namespaced_definitions = shorten_compound_type_annotation(
         full_annotation, module_resolver
