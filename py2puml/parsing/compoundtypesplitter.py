@@ -9,7 +9,7 @@ FORWARD_REFERENCES: Pattern = re_compile(r"ForwardRef\('([^']+)'\)")
 IS_COMPOUND_TYPE: Pattern = re_compile(r'^[a-z|A-Z|0-9|\[|\]|\.|,|\s|_|\|]+$')
 
 # characters involved in the build-up of compound types
-SPLITTING_CHARACTERS = '[', ']', ',', '|'
+SPLITTING_CHARACTERS = '[', ']', ',', '|', '...'
 
 # 'None' in 'Union[str, None]' type signature is changed into 'NoneType' when inspecting a module
 LAST_NONETYPE_IN_UNION: Pattern = re_compile(r'Union\[(?:(?:[^\[\]])*NoneType)')

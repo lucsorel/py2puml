@@ -29,6 +29,8 @@ class ParseMyConstructorArguments:
         y_a: Union[int, float, None],
         x_b: int | float,
         y_b: int | float | None,
+        # arbitrary-length homogenous tuple type
+        bb: Tuple[int, ...],
         # an argument with a default value
         a_default_string: str = 'text',
         # positional and keyword wildcard arguments
@@ -46,7 +48,7 @@ def test_SignatureVariablesCollector_collect_arguments():
     collector.visit(constructor_ast)
 
     assert collector.class_self_id == 'me'
-    assert len(collector.variables) == 10, 'all the arguments must be detected'
+    assert len(collector.variables) == 11, 'all the arguments must be detected'
     assert_Variable(collector.variables[0], 'an_int', 'int', constructor_source)
     assert_Variable(collector.variables[1], 'an_untyped', None, constructor_source)
     assert_Variable(
@@ -58,9 +60,10 @@ def test_SignatureVariablesCollector_collect_arguments():
     assert_Variable(collector.variables[5], 'x_b', 'int | float', constructor_source)
     assert_Variable(collector.variables[6], 'y_b', 'int | float | None', constructor_source)
 
-    assert_Variable(collector.variables[7], 'a_default_string', 'str', constructor_source)
-    assert_Variable(collector.variables[8], 'args', None, constructor_source)
-    assert_Variable(collector.variables[9], 'kwargs', None, constructor_source)
+    assert_Variable(collector.variables[7], 'bb', 'Tuple[int, ...]', constructor_source)
+    assert_Variable(collector.variables[8], 'a_default_string', 'str', constructor_source)
+    assert_Variable(collector.variables[9], 'args', None, constructor_source)
+    assert_Variable(collector.variables[10], 'kwargs', None, constructor_source)
 
 
 @mark.parametrize(
@@ -244,6 +247,22 @@ def test_AssignedVariablesCollector_multiple_assignments_separate_variable_from_
                         '__name__': 'Person',
                     }
                 },
+            },
+        ),
+        (
+            # new test case for Tuple[int, ...]
+            'typing.Tuple[int, ...]',
+            'Tuple[int, ...]',
+            ['typing.Tuple', 'builtins.int'],
+            {
+                '__name__': 'testmodule',
+                '__builtins__': {
+                    'int': {
+                        '__module__': 'builtins',
+                        '__name__': 'int',
+                    },
+                },
+                'Tuple': Tuple,
             },
         ),
     ],
