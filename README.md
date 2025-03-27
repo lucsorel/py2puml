@@ -230,6 +230,10 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 
 # Contributions
 
+I'm thankful to [all the people who have contributed](https://github.com/lucsorel/py2puml/graphs/contributors) to this project:
+
+![](https://contrib.rocks/image?repo=lucsorel/py2puml)
+
 * [Luc Sorel-Giffo](https://github.com/lucsorel)
 * [Doyou Jung](https://github.com/doyou89)
 * [Julien Jerphanion](https://github.com/jjerphan)
