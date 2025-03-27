@@ -161,7 +161,7 @@ def test_inspect_module_should_handle_compound_types_with_numbers_in_their_name(
     fqdn = 'tests.modules.withcompoundtypewithdigits'
     inspect_module(import_module(fqdn), fqdn, domain_items_by_fqn, domain_relations)
 
-    assert len(domain_items_by_fqn) == 2, 'two classes must be inspected'
+    assert len(domain_items_by_fqn) == 3, 'three classes must be inspected'
 
     # IPv6 UmlClass
     ipv6_umlitem: UmlClass = domain_items_by_fqn[f'{fqdn}.IPv6']
@@ -174,3 +174,9 @@ def test_inspect_module_should_handle_compound_types_with_numbers_in_their_name(
     assert len(multicast_umlitem.attributes) == 1, '1 attributes of Multicast must be inspected'
     address_attribute = multicast_umlitem.attributes[0]
     assert_attribute(address_attribute, 'addresses', 'List[IPv6]', expected_staticity=False)
+
+    # Network UmlClass
+    network_umlitem: UmlClass = domain_items_by_fqn[f'{fqdn}.Network']
+    assert len(network_umlitem.attributes) == 1, '1 attributes of Network must be inspected'
+    devices_attribute = network_umlitem.attributes[0]
+    assert_attribute(devices_attribute, 'devices', 'Tuple[IPv6, ...]', expected_staticity=False)

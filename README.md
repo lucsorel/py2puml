@@ -202,6 +202,7 @@ poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-
 
 # Changelog
 
+* `0.10.0`: support ellipsis in type annotations (tuple with arbitrary length)
 * `0.9.1`: improved 0.7.2 by adding the current working directory at the beginning of the sys.path to resolve the module paths of the project being inspected.
 Fix url to PlantUML logo on the README.md page
 * `0.9.0`: add classes defined in `__init__.py` files to plantuml output; replaced yapf by the ruff formatter
@@ -234,6 +235,7 @@ Unless stated otherwise all works are licensed under the [MIT license](http://sp
 * [Julien Jerphanion](https://github.com/jjerphan)
 * [Luis Fernando Villanueva Pérez](https://github.com/jonykalavera)
 * [Konstantin Zangerle](https://github.com/justkiddingcode)
+* [Mieszko](https://github.com/0xmzk)
 
 ## Pull requests
 

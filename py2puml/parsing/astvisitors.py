@@ -206,7 +206,6 @@ def shorten_compound_type_annotation(type_annotation: str, module_resolver: Modu
     compound_short_type_parts: List[str] = []
     associated_types: List[str] = []
     for compound_type_part in compound_type_parts:
-        # characters like '[', ']', ',', '|'
         if compound_type_part in SPLITTING_CHARACTERS:
             if compound_type_part == ',':
                 compound_short_type_parts.append(', ')
