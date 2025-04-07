@@ -50,16 +50,23 @@ known_tests = ["tests"]
 target-version = "py38"
 # maintain consistency with other quality tools
 line-length = 120
+# automatically fixes when possible
+fix = true
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "lf"
+quote-style = "single"
+
+[tool.ruff.lint]
 # activated families of verifications (https://beta.ruff.rs/docs/rules/
 select = ["B", "E", "F", "W", "N", "SIM", "C4"]
 # do not check:
 # - E501 line lengths: ruff formatter already handles them
 # - B905 zip(*, strict=True): strict was introduced in Python 3.10+
 extend-ignore = ["E501", "B905"]
-# automatically fixes when possible
-fix = true
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # do not check unused imports in __init__.py files (they expose module features)
 "__init__.py" = ["E402"]
 # visiting function names include uppercase words (visit_FunctionDef)
@@ -71,11 +78,6 @@ fix = true
 "tests/__init__.py" = ["B023"]
 # test classes with underscore in their names
 "tests/modules/withuniontypes.py" = ['N801']
-
-[tool.ruff.format]
-indent-style = "space"
-line-ending = "lf"
-quote-style = "single"
 
 [tool.ruff.lint.isort]
 forced-separate = ["tests"]
