@@ -12,8 +12,7 @@ from py2puml.inspection.inspectnamedtuple import inspect_namedtuple_type
 
 
 def filter_domain_definitions(module: ModuleType, root_module_name: str) -> Iterable[Type]:
-    for definition_key in dir(module):
-        definition_type = getattr(module, definition_key)
+    for definition_type in vars(module).values():
         if isclass(definition_type):
             definition_members = getmembers(definition_type)
             definition_module_member = next(

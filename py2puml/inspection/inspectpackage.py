@@ -19,5 +19,5 @@ def inspect_package(
         if not is_pkg:
             domain_item_module: ModuleType = import_module(name)
             inspect_module(domain_item_module, domain_module, domain_items_by_fqn, domain_relations)
-    item_module = import_module(f'{domain_module}', f'{domain_module}.')
-    inspect_module(item_module, domain_module, domain_items_by_fqn, domain_relations)
+    # item_module = import_module(f'{domain_module}', f'{domain_module}.')
+    # inspect_module(item_module, domain_module, domain_items_by_fqn, domain_relations)
