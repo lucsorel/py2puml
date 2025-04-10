@@ -15,12 +15,15 @@ from contextlib import contextmanager
 from pathlib import Path
 from sys import path, stdout
 from typing import Generator, Protocol, Sequence, TextIO
+from warnings import warn
 
 from py2puml.domain.inspection import Inspection
 from py2puml.inspector import Inspector
 
 
 class InspectorArgs(Protocol):
+    deprecated_path: str = None
+    deprecated_namespace: str = None
     path: Path = None
     namespace: str = None
     output_file: Path = None
@@ -31,15 +34,38 @@ class InspectorController:
         argparser = ArgumentParser(description='Generate PlantUML class diagrams to document your Python application.')
 
         argparser.add_argument('-v', '--version', action='version', version='py2puml 0.10.0')
+
+        # deprecated positional arguments
         argparser.add_argument(
-            '-p', '--path', metavar='path', type=Path, help='the filepath to the domain to inspect', default=None
+            'deprecated_path',
+            nargs='?',
+            type=Path,
+            metavar='path',
+            help='the filepath to the domain to inspect - deprecated: use --path path/to/module... instead',
+            default=None,
+        )
+        argparser.add_argument(
+            'deprecated_namespace',
+            nargs='?',
+            metavar='namespace',
+            help='the namespace of the domain to inspect - deprecated: use --namespace package.to.module instead',
+            default=None,
+        )
+
+        # optional arguments
+        argparser.add_argument(
+            '-p',
+            '--path',
+            metavar='path',
+            type=Path,
+            help='the filepath to the domain to inspect. Use the current working directory as the root of the domain if unspecified',
+            default=None,
         )
         argparser.add_argument(
             '-n',
             '--namespace',
             metavar='namespace',
-            type=str,
-            help='the namespace of the domain to inspect',
+            help='the namespace of the domain to inspect. Use the current working directory',
             default=None,
         )
         argparser.add_argument(
@@ -68,6 +94,20 @@ class InspectorController:
         path.insert(0, str(current_working_directory))
 
         args = self._parse_args()
+
+        # adapts the old cli arguments if any
+        if None not in (args.deprecated_path, args.deprecated_namespace):
+            deprecation_message_parts = [
+                'Deprecation warning: specify the path to inspect and its corresponding namespace with specific flags',
+                f'Use `py2puml --path {args.deprecated_path} --namespace {args.deprecated_namespace}` instead',
+                'Type py2puml --help for more details about the available flags.',
+            ]
+            args.path = args.deprecated_path
+            args.namespace = args.deprecated_namespace
+            args.deprecated_path = None
+            args.deprecated_namespace = None
+
+            warn('. '.join(deprecation_message_parts), DeprecationWarning, stacklevel=1)
 
         # inspects the current working directory if no path is specified
         root_domain_path = args.path or current_working_directory
