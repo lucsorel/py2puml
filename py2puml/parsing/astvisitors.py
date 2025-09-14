@@ -97,6 +97,10 @@ class TypeVisitor(NodeVisitor):
 
         datatypes = []
 
+        # print(f'{node.slice=}')
+        # print(f'{dir(node.slice)=}')
+        # print(f'{dir(node.slice.value)=}')
+        
         if hasattr(node.slice.value, 'elts'):
             for child_node in node.slice.value.elts:
                 child_visitor = TypeVisitor()

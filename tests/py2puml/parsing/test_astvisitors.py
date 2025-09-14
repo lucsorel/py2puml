@@ -266,6 +266,7 @@ class TestTypeVisitor(unittest.TestCase):
         node = ast.body[0].returns
         visitor = TypeVisitor()
         actual_rtype = visitor.visit(node)
+        # assert False
         expected_rtype = 'Tuple[float, Dict[str, List[bool]]]'
         self.assertEqual(expected_rtype, actual_rtype)
 
