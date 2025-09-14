@@ -52,7 +52,7 @@ def inspect_static_attributes(
         # utility which outputs the fully-qualified name of the attribute types
         module_resolver = ModuleResolver(import_module(class_type.__module__))
 
-        # builds the definitions of the class attrbutes and their relationships by iterating over the type annotations
+        # builds the definitions of the class attributes and their relationships by iterating over the type annotations
         for attr_name, attr_class in type_annotations.items():
             attr_raw_type = str(attr_class)
             concrete_type_match = CONCRETE_TYPE_PATTERN.search(attr_raw_type)

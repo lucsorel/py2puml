@@ -13,7 +13,7 @@ include = [
 ]
 
 [tool.poetry.scripts]
-py2puml = 'py2puml.cli:run'
+py2puml = 'py2puml.__main__:run'
 
 [tool.poetry.dependencies]
 python = "^3.8"

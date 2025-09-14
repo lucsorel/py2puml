@@ -5,6 +5,11 @@ from typing import Iterable, List, Union
 from py2puml.py2puml import py2puml
 
 
+def assert_output_path(output_path: Path, domain_diagram_file_path: Path, domain_path: str, domain_module: str):
+    # TODO
+    raise NotImplementedError
+
+
 def assert_py2puml_is_file_content(domain_path: str, domain_module: str, diagram_filepath: Union[str, Path]):
     # reads the existing class diagram
     with open(diagram_filepath, 'r', encoding='utf8') as expected_puml_file:

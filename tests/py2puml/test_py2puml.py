@@ -1,18 +1,18 @@
 from io import StringIO
 from pathlib import Path
 
-from py2puml.asserts import assert_py2puml_is_file_content, assert_py2puml_is_stringio
+from py2puml.asserts import assert_output_path, assert_py2puml_is_file_content, assert_py2puml_is_stringio
 
 CURRENT_DIR = Path(__file__).parent
 
 
-def test_py2puml_model_on_py2uml_domain():
+def test_py2puml_model_on_py2uml_domain(tmp_path: Path):
     """
     Ensures that the documentation of the py2puml domain model is up-to-date
     """
+    output_path = tmp_path / 'py2puml.domain.puml'
     domain_diagram_file_path = CURRENT_DIR.parent.parent / 'py2puml' / 'py2puml.domain.puml'
-
-    assert_py2puml_is_file_content('py2puml/domain', 'py2puml.domain', domain_diagram_file_path)
+    assert_output_path(output_path, domain_diagram_file_path, 'py2puml/domain', 'py2puml.domain')
 
 
 def test_py2puml_with_pkg_init_only():

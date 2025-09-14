@@ -1,4 +1,4 @@
-from typing import Iterable, List
+from typing import Iterator, List
 
 from py2puml.domain.umlclass import UmlClass
 from py2puml.domain.umlenum import UmlEnum
@@ -26,7 +26,7 @@ FEATURE_STATIC = ' {static}'
 FEATURE_INSTANCE = ''
 
 
-def to_puml_content(diagram_name: str, uml_items: List[UmlItem], uml_relations: List[UmlRelation]) -> Iterable[str]:
+def to_puml_content(diagram_name: str, uml_items: List[UmlItem], uml_relations: List[UmlRelation]) -> Iterator[str]:
     yield PUML_FILE_START.format(diagram_name=diagram_name)
 
     # exports the domain classes and enums

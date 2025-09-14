@@ -1,4 +1,4 @@
-"""This is a package with a __init__.py file only"""
+"""This is a package with a __init__.py and a test module only"""
 
 from dataclasses import dataclass
 

@@ -13,7 +13,7 @@ cases
 from argparse import ArgumentParser
 from contextlib import contextmanager
 from pathlib import Path
-from sys import path, stdout
+from sys import stdout
 from typing import Generator, Protocol, Sequence, TextIO
 from warnings import warn
 
@@ -22,8 +22,6 @@ from py2puml.inspector import Inspector
 
 
 class InspectorArgs(Protocol):
-    deprecated_path: str = None
-    deprecated_namespace: str = None
     path: Path = None
     namespace: str = None
     output_file: Path = None
@@ -77,7 +75,25 @@ class InspectorController:
             default=None,
         )
 
-        return argparser.parse_args(args)
+        args = argparser.parse_args(args)
+
+        # adapts the old cli arguments if any
+        if args.deprecated_path or args.deprecated_namespace:
+            deprecation_message_parts = [
+                'Deprecation warning: specify the path to inspect and its corresponding namespace with specific flags',
+                f'Use `py2puml --path {args.deprecated_path} --namespace {args.deprecated_namespace}` instead',
+                'Type py2puml --help for more details about the available flags.',
+            ]
+            args.path = args.deprecated_path
+            args.namespace = args.deprecated_namespace
+
+            warn('. '.join(deprecation_message_parts), DeprecationWarning, stacklevel=1)
+
+        # remove deprecated arguments from the returned namespace
+        delattr(args, 'deprecated_path')
+        delattr(args, 'deprecated_namespace')
+
+        return args
 
     @contextmanager
     def _open_output(self, output_file: Path = None) -> Generator[TextIO, None, None]:
@@ -87,42 +103,27 @@ class InspectorController:
             with open(output_file, 'w', encoding='utf-8') as plantuml_file:
                 yield plantuml_file
 
-    def inspect(self):
-        # adds the current working directory to the system path in the first place
-        # to ease module resolution when py2puml imports them
-        current_working_directory = Path.cwd().resolve()
-        path.insert(0, str(current_working_directory))
-
-        args = self._parse_args()
-
-        # adapts the old cli arguments if any
-        if None not in (args.deprecated_path, args.deprecated_namespace):
-            deprecation_message_parts = [
-                'Deprecation warning: specify the path to inspect and its corresponding namespace with specific flags',
-                f'Use `py2puml --path {args.deprecated_path} --namespace {args.deprecated_namespace}` instead',
-                'Type py2puml --help for more details about the available flags.',
-            ]
-            args.path = args.deprecated_path
-            args.namespace = args.deprecated_namespace
-            args.deprecated_path = None
-            args.deprecated_namespace = None
-
-            warn('. '.join(deprecation_message_parts), DeprecationWarning, stacklevel=1)
+    def inspect(self, args: Sequence[str] = None):
+        parsed_args = self._parse_args(args)
 
         # inspects the current working directory if no path is specified
-        root_domain_path = args.path or current_working_directory
+        current_working_directory = Path.cwd().resolve()
+        root_domain_path = parsed_args.path or current_working_directory
 
         # eases the default case where the domain namespace is the relative namespace
         # between the inspected path and the current working directory
-        if args.namespace is None:
+        if parsed_args.namespace is None:
             namespace_relative_path = root_domain_path.resolve().relative_to(current_working_directory)
-            root_domain_namespace = '.'.join(namespace_relative_path.parts)
+            if root_domain_path.is_dir():
+                namespace_parts = namespace_relative_path.parts
+            else:
+                namespace_parts = namespace_relative_path.parent.parts + (namespace_relative_path.stem,)
+            root_domain_namespace = '.'.join(namespace_parts)
         else:
             root_domain_namespace = args.namespace
+            self._check_domain_path_and_namespace_consistency(root_domain_path, root_domain_namespace)
 
-        self._check_domain_path_and_namespace_consistency(root_domain_path, root_domain_namespace)
-
-        with self._open_output(args.output_file) as output_io:
+        with self._open_output(parsed_args.output_file) as output_io:
             for plantuml_line in Inspector(root_domain_path, root_domain_namespace).inspect(Inspection({}, [])):
                 output_io.write(plantuml_line)
 
@@ -132,11 +133,6 @@ class InspectorController:
             zip(reversed(root_domain_path.parts), reversed(namespace_parts))
         ):
             if path_part != namespace_part:
-                namespace = '.'.join(root_domain_namespace)
                 subpath = '/'.join(root_domain_path.parts[:-from_end_index])
-                path_and_namespace_error = f"the namespace part '{namespace_part}' of namespace '{namespace}' does not match subpath '{subpath}' of '{str(root_domain_path)}'"
+                path_and_namespace_error = f"the namespace part '{namespace_part}' of namespace '{root_domain_namespace}' does not match subpath '{subpath}' of '{str(root_domain_path)}'"
                 raise ValueError(path_and_namespace_error)
-
-
-if __name__ == '__main__':
-    InspectorController().inspect()
