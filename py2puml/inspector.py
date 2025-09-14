@@ -2,6 +2,7 @@ from importlib import import_module
 from inspect import getabsfile, isclass
 from pathlib import Path
 from pkgutil import walk_packages
+from sys import path
 from types import ModuleType
 from typing import Dict, Iterator, Tuple, Type
 
@@ -17,10 +18,14 @@ class Inspector:
         self.filtered_definitions: Dict[str, bool] = {}
 
     def inspect(self, inspection: Inspection) -> Iterator[str]:
+        # adds the current working directory to the system path in the first place
+        # to ease module resolution when py2puml imports them
+        current_working_directory = Path.cwd().resolve()
+        path.insert(0, str(current_working_directory))
         if self.root_domain_path.is_dir():
             self._inspect_package(self.root_domain_path, self.root_domain_namespace, inspection)
         else:
-            self._inspect_module(self.root_domain_path, self.root_domain_namespace, inspection)
+            self._inspect_module(self.root_domain_namespace, inspection)
 
         for puml_line in to_puml_content(
             self.root_domain_namespace if self.root_domain_namespace else self.root_domain_path.name,
@@ -28,20 +33,22 @@ class Inspector:
             inspection.relations,
         ):
             yield puml_line
-        # yield f"' {inspection=}\n"
 
     def _inspect_package(self, domain_path: Path, root_domain_namespace: str, inspection: Inspection):
         # inspects the packages module and inner packages
+
+        # inspects the package's __init__ module
+        if domain_path.is_dir():
+            self._inspect_module(root_domain_namespace, inspection)
+
         root_domain_namespace_prefix = f'{root_domain_namespace}.' if root_domain_namespace else ''
-        for _, name, is_pkg in walk_packages([str(domain_path)], root_domain_namespace_prefix):
-            module_name = f'{name}.__init__' if is_pkg else name
+        for _, module_name, _ in walk_packages([str(domain_path)], root_domain_namespace_prefix):
             self._inspect_module(module_name, inspection)
 
     def _inspect_module(self, module_name: str, inspection: Inspection):
         # print(f'inspecting module {module_name}')
         module_to_inspect = import_module(module_name)
         for _, definition in self._filter_module_definitions(module_to_inspect):
-            # print(definition_fqn, definition)
             inspect_domain_definition(
                 definition, self.root_domain_namespace, inspection.items_by_fqn, inspection.relations
             )
