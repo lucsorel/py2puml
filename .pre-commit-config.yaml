@@ -1,6 +1,8 @@
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
     -   id: check-yaml
     -   id: check-toml
@@ -18,20 +20,20 @@ repos:
         exclude: tests.asserts.*|tests.modules.*|tests/py2puml/parsing/mockedinstance.py
 
 -   repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.22.0
+    rev: v9.23.0
     hooks:
     -   id: commitlint
         stages: [commit-msg]
         additional_dependencies: ['@commitlint/config-conventional']
 
 -   repo: https://github.com/PyCQA/isort
-    rev: 6.0.1
+    rev: 7.0.0
     hooks:
     -   id: isort
         additional_dependencies: [toml]
 
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.2
+    rev: v0.14.0
     hooks:
-    -   id: ruff
+    -   id: ruff-check
     -   id: ruff-format
