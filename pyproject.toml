@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py2puml"
-version = "0.10.0"
+version = "0.11.0"
 description = "Generate PlantUML class diagrams to document your Python application."
 keywords = ["class diagram", "PlantUML", "documentation", "inspection", "AST"]
 readme = "README.md"
@@ -16,7 +16,7 @@ include = [
 py2puml = 'py2puml.__main__:run'
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
@@ -29,7 +29,7 @@ pre-commit = "^3.3.3"
 console_output_style = "count"
 
 [tool.isort]
-py_version=38
+py_version=310
 # maintain consistency with other quality tools
 line_length = 120
 # consistency with ruff-format: mode 3
@@ -47,7 +47,7 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER", "TEST
 known_tests = ["tests"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 # maintain consistency with other quality tools
 line-length = 120
 # automatically fixes when possible
