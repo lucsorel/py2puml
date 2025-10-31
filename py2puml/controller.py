@@ -31,7 +31,7 @@ class InspectorController:
     def _parse_args(self, args: Sequence[str] = None) -> InspectorArgs:
         argparser = ArgumentParser(description='Generate PlantUML class diagrams to document your Python application.')
 
-        argparser.add_argument('-v', '--version', action='version', version='py2puml 0.10.0')
+        argparser.add_argument('-v', '--version', action='version', version='py2puml 0.11.0')
 
         # deprecated positional arguments
         argparser.add_argument(
@@ -117,22 +117,29 @@ class InspectorController:
             if root_domain_path.is_dir():
                 namespace_parts = namespace_relative_path.parts
             else:
-                namespace_parts = namespace_relative_path.parent.parts + (namespace_relative_path.stem,)
+                namespace_parts = [*namespace_relative_path.parent.parts, namespace_relative_path.stem]
             root_domain_namespace = '.'.join(namespace_parts)
         else:
-            root_domain_namespace = args.namespace
+            root_domain_namespace = parsed_args.namespace
             self._check_domain_path_and_namespace_consistency(root_domain_path, root_domain_namespace)
 
         with self._open_output(parsed_args.output_file) as output_io:
             for plantuml_line in Inspector(root_domain_path, root_domain_namespace).inspect(Inspection({}, [])):
                 output_io.write(plantuml_line)
 
-    def _check_domain_path_and_namespace_consistency(self, root_domain_path: Path, root_domain_namespace: str):
+    def _check_domain_path_and_namespace_consistency(self, root_domain_path: Path, root_domain_namespace: str) -> bool:
         namespace_parts = root_domain_namespace.split('.') if root_domain_namespace else ()
+        if root_domain_path.is_file():
+            root_domain_path_parts = [*root_domain_path.parent.parts, root_domain_path.stem]
+        else:
+            root_domain_path_parts = root_domain_path.parts
+
         for from_end_index, (path_part, namespace_part) in enumerate(
-            zip(reversed(root_domain_path.parts), reversed(namespace_parts))
+            zip(reversed(root_domain_path_parts), reversed(namespace_parts))
         ):
             if path_part != namespace_part:
                 subpath = '/'.join(root_domain_path.parts[:-from_end_index])
                 path_and_namespace_error = f"the namespace part '{namespace_part}' of namespace '{root_domain_namespace}' does not match subpath '{subpath}' of '{str(root_domain_path)}'"
                 raise ValueError(path_and_namespace_error)
+
+        return True
