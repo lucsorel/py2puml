@@ -6,8 +6,8 @@ from re import compile as re_compile
 __version__ = None
 __description__ = None
 
-TESTS_PATH = Path(__file__).parent
-PROJECT_PATH = TESTS_PATH.parent
+PROJECT_PATH = Path(__file__).parent.parent
+TEST_MODULES_PATH = PROJECT_PATH / 'tests' / 'modules'
 
 VERSION_PATTERN = re_compile('^version = "([^"]+)"$')
 DESCRIPTION_PATTERN = re_compile('^description = "([^"]+)"$')

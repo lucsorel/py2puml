@@ -202,6 +202,7 @@ poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-
 
 # Changelog
 
+* `0.11.0`: new CLI API to support parsing a module or a package, even outside from the project namespace
 * `0.10.0`: support ellipsis in type annotations (tuple with arbitrary length)
 * `0.9.1`: improved 0.7.2 by adding the current working directory at the beginning of the sys.path to resolve the module paths of the project being inspected.
 Fix url to PlantUML logo on the README.md page
@@ -258,23 +259,23 @@ Please also follow the [contributing guide](CONTRIBUTING.md) to ease your contri
 The code conventions are described and enforced by [pre-commit hooks](https://pre-commit.com/hooks.html) to maintain consistency across the code base.
 The hooks are declared in the [.pre-commit-config.yaml](.pre-commit-config.yaml) file.
 
-Set the git hooks (pre-commit and commit-msg types):
+Set the git hooks (`pre-commit` and `commit-msg` types):
 
 ```sh
-poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
+poetry run pre-commit install
 ```
 
 Before committing, you can check your changes with:
 
 ```sh
-# put all your changes in the git staging area
-git add -A
+# all hooks on the staged files
+poetry run pre-commit run
 
-# all hooks
+# all hooks on all files
 poetry run pre-commit run --all-files
 
-# a specific hook
-poetry run pre-commit run ruff --all-files
+# a specific hook on all files
+poetry run pre-commit run ruff-format --all-files
 ```
 
 ### Commit messages
