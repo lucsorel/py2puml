@@ -22,17 +22,17 @@ class Inspector:
         # to ease module resolution when py2puml imports them
         current_working_directory = Path.cwd().resolve()
         path.insert(0, str(current_working_directory))
+
         if self.root_domain_path.is_dir():
             self._inspect_package(self.root_domain_path, self.root_domain_namespace, inspection)
         else:
             self._inspect_module(self.root_domain_namespace, inspection)
 
-        for puml_line in to_puml_content(
+        yield from to_puml_content(
             self.root_domain_namespace if self.root_domain_namespace else self.root_domain_path.name,
             inspection.items_by_fqn.values(),
             inspection.relations,
-        ):
-            yield puml_line
+        )
 
     def _inspect_package(self, domain_path: Path, root_domain_namespace: str, inspection: Inspection):
         # inspects the packages module and inner packages
@@ -75,9 +75,9 @@ class Inspector:
                             definition_namespace = (
                                 tuple(self.root_domain_namespace.split('.'))
                                 if self.root_domain_namespace
-                                else () + relative_path.parts
+                                else tuple(relative_path.parts)
                             )
-                            definition_static_fqn = f'{".".join(definition_namespace)}.{definition.__qualname__}'
+                            definition_static_fqn = '.'.join((*definition_namespace, definition.__qualname__))
 
                             # filters on the specified namespace if any, or on the source filepath of the definition
                             if self.root_domain_namespace:
