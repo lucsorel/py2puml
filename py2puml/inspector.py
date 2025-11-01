@@ -12,7 +12,8 @@ from py2puml.inspection.inspectmodule import inspect_domain_definition
 
 
 class Inspector:
-    def __init__(self, root_domain_path: Path, root_domain_namespace: str):
+    def __init__(self, inspection_working_directory: Path, root_domain_path: Path, root_domain_namespace: str):
+        self.inspection_working_directory = inspection_working_directory
         self.root_domain_path = root_domain_path.resolve()
         self.root_domain_namespace = root_domain_namespace
         self.filtered_definitions: Dict[str, bool] = {}
@@ -20,8 +21,7 @@ class Inspector:
     def inspect(self, inspection: Inspection) -> Iterator[str]:
         # adds the current working directory to the system path in the first place
         # to ease module resolution when py2puml imports them
-        current_working_directory = Path.cwd().resolve()
-        path.insert(0, str(current_working_directory))
+        path.insert(0, str(self.inspection_working_directory))
 
         if self.root_domain_path.is_dir():
             self._inspect_package(self.root_domain_path, self.root_domain_namespace, inspection)

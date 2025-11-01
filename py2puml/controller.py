@@ -12,6 +12,7 @@ cases
 
 from argparse import ArgumentParser
 from contextlib import contextmanager
+from itertools import zip_longest
 from pathlib import Path
 from sys import stdout
 from typing import Generator, Protocol, Sequence, TextIO
@@ -112,6 +113,7 @@ class InspectorController:
 
         # eases the default case where the domain namespace is the relative namespace
         # between the inspected path and the current working directory
+        inspection_working_directory = current_working_directory
         if parsed_args.namespace is None:
             namespace_relative_path = root_domain_path.resolve().relative_to(current_working_directory)
             if root_domain_path.is_dir():
@@ -121,25 +123,45 @@ class InspectorController:
             root_domain_namespace = '.'.join(namespace_parts)
         else:
             root_domain_namespace = parsed_args.namespace
-            self._check_domain_path_and_namespace_consistency(root_domain_path, root_domain_namespace)
+            cwd_diff_path = self._check_domain_path_and_namespace_consistency(root_domain_path, root_domain_namespace)
+            inspection_working_directory = inspection_working_directory.joinpath(cwd_diff_path).resolve()
 
         with self._open_output(parsed_args.output_file) as output_io:
-            for plantuml_line in Inspector(root_domain_path, root_domain_namespace).inspect(Inspection({}, [])):
+            for plantuml_line in Inspector(
+                inspection_working_directory, root_domain_path, root_domain_namespace
+            ).inspect(Inspection({}, [])):
                 output_io.write(plantuml_line)
 
-    def _check_domain_path_and_namespace_consistency(self, root_domain_path: Path, root_domain_namespace: str) -> bool:
+    def _check_domain_path_and_namespace_consistency(self, root_domain_path: Path, root_domain_namespace: str) -> Path:
+        """
+        Checks that the path to the domain to inspect matches its namespace.
+
+        Raises:
+            ValueError: if there is an inconsistency
+
+        Returns:
+            the path difference from the current working directory in which the inspection should start
+        """
         namespace_parts = root_domain_namespace.split('.') if root_domain_namespace else ()
         if root_domain_path.is_file():
             root_domain_path_parts = [*root_domain_path.parent.parts, root_domain_path.stem]
         else:
             root_domain_path_parts = root_domain_path.parts
 
+        relative_cwd_change = []
         for from_end_index, (path_part, namespace_part) in enumerate(
-            zip(reversed(root_domain_path_parts), reversed(namespace_parts))
+            zip_longest(reversed(root_domain_path_parts), reversed(namespace_parts), fillvalue=None)
         ):
-            if path_part != namespace_part:
+            # moves the cwd to the parent to reach the root of the domain namespace
+            if path_part is None:
+                relative_cwd_change.insert(0, '..')
+            # moves the cwd deeper to reach the root of the domain namespace
+            elif namespace_part is None:
+                relative_cwd_change.insert(0, path_part)
+            # raises an error if there is a mismatch between the path part and the namespace part
+            elif path_part != namespace_part:
                 subpath = '/'.join(root_domain_path.parts[:-from_end_index])
                 path_and_namespace_error = f"the namespace part '{namespace_part}' of namespace '{root_domain_namespace}' does not match subpath '{subpath}' of '{str(root_domain_path)}'"
                 raise ValueError(path_and_namespace_error)
 
-        return True
+        return Path(*relative_cwd_change)
