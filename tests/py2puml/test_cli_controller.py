@@ -52,12 +52,34 @@ def test_controller_warns_on_obsolete_positional_args():
             TEST_MODULES_PATH / 'withimportedbuiltins.puml',
             None,
         ),
-        # with specific working directories
+        # adapts the inspection directory to the parent py2puml directory
+        (
+            '--path domain --namespace py2puml.domain',
+            PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml',
+            'py2puml',
+        ),
+        ('-p withenum.py -n tests.modules.withenum', TEST_MODULES_PATH / 'withenum.puml', 'tests/modules'),
+        # adapts the inspection directory to the nested directory
+        (
+            '-p tests/modules/withrootnotincwd -n withrootnotincwd',
+            TEST_MODULES_PATH / 'withrootnotincwd' / 'withrootnotincwd.puml',
+            None,
+        ),
         ('-p withrootnotincwd', TEST_MODULES_PATH / 'withrootnotincwd' / 'withrootnotincwd.puml', 'tests/modules'),
+        (
+            '-p tests/modules/withrootnotincwd -n withrootnotincwd',
+            TEST_MODULES_PATH / 'withrootnotincwd' / 'withrootnotincwd.puml',
+            None,
+        ),
         (
             '-p test',
             TEST_MODULES_PATH / 'withconfusingrootpackage' / 'test' / 'test.puml',
             'tests/modules/withconfusingrootpackage',
+        ),
+        (
+            '-p withconfusingrootpackage/test -n test',
+            TEST_MODULES_PATH / 'withconfusingrootpackage' / 'test' / 'test.puml',
+            'tests/modules',
         ),
     ],
 )
