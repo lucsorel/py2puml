@@ -17,11 +17,14 @@ class Inspector:
         self.root_domain_path = root_domain_path.resolve()
         self.root_domain_namespace = root_domain_namespace
         self.filtered_definitions: Dict[str, bool] = {}
+        self.has_src_folder: bool = (inspection_working_directory / 'src').exists()
 
     def inspect(self, inspection: Inspection) -> Iterator[str]:
         # adds the current working directory to the system path in the first place
-        # to ease module resolution when py2puml imports them
+        # to ease module resolution when py2puml imports the module to inspect
         path.insert(0, str(self.inspection_working_directory))
+        if self.has_src_folder:
+            path.insert(0, str(self.inspection_working_directory / 'src'))
 
         if self.root_domain_path.is_dir():
             self._inspect_package(self.root_domain_path, self.root_domain_namespace, inspection)
@@ -46,7 +49,6 @@ class Inspector:
             self._inspect_module(module_name, inspection)
 
     def _inspect_module(self, module_name: str, inspection: Inspection):
-        # print(f'inspecting module {module_name}')
         module_to_inspect = import_module(module_name)
         for _, definition in self._filter_module_definitions(module_to_inspect):
             inspect_domain_definition(

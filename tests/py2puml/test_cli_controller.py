@@ -81,6 +81,16 @@ def test_controller_warns_on_obsolete_positional_args():
             TEST_MODULES_PATH / 'withconfusingrootpackage' / 'test' / 'test.puml',
             'tests/modules',
         ),
+        (
+            '-p tool.py',
+            TEST_MODULES_PATH / 'withrootscriptandsrc' / 'tool.puml',
+            'tests/modules/withrootscriptandsrc',
+        ),
+        (
+            '-p src/withrootscriptandsrc -n withrootscriptandsrc',
+            TEST_MODULES_PATH / 'withrootscriptandsrc' / 'withrootscriptandsrc.puml',
+            'tests/modules/withrootscriptandsrc',
+        ),
     ],
 )
 def test_controller_stdout_and_in_file(
