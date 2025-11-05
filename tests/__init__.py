@@ -7,6 +7,7 @@ __version__ = None
 __description__ = None
 
 PROJECT_PATH = Path(__file__).parent.parent
+PROJECT_SRC_PATH = PROJECT_PATH / 'src'
 TEST_MODULES_PATH = PROJECT_PATH / 'tests' / 'modules'
 
 VERSION_PATTERN = re_compile('^version = "([^"]+)"$')

@@ -1,1 +1,7 @@
-poetry='^1.8.5'
+uv='latest'
+
+[tools.python]
+backend = "uv"
+
+[settings]
+auto-install = true

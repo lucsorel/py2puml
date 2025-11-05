@@ -5,7 +5,7 @@ from pytest import raises, warns
 
 from py2puml.asserts import assert_py2puml_command_args, assert_py2puml_ios
 
-from tests import PROJECT_PATH
+from tests import PROJECT_SRC_PATH
 
 ACTUAL_CONTENTS = """@startuml contact
 !pragma useIntermediatePackages false
@@ -64,7 +64,9 @@ def test_assert_py2puml_command_args_warns_on_overwrite_mode_in_stdout():
         UserWarning, match=r"assert_py2puml_command_args\(\) is used to overwrite file '.+py2puml\.domain\.puml'"
     ):
         assert_py2puml_command_args(
-            '-p py2puml/domain', PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml', overwrite_expected_output=True
+            '-p src/py2puml/domain -n py2puml.domain',
+            PROJECT_SRC_PATH / 'py2puml' / 'py2puml.domain.puml',
+            overwrite_expected_output=True,
         )
 
 
@@ -73,7 +75,7 @@ def test_assert_py2puml_command_args_warns_on_overwrite_mode_in_file(tmp_path):
         UserWarning, match=r"assert_py2puml_command_args\(\) is used to overwrite file '.+py2puml\.domain\.puml'"
     ):
         assert_py2puml_command_args(
-            f'-p py2puml/domain -o {tmp_path / "py2puml.domain.puml"}',
-            PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml',
+            f'-p src/py2puml/domain -n py2puml.domain -o {tmp_path / "py2puml.domain.puml"}',
+            PROJECT_SRC_PATH / 'py2puml' / 'py2puml.domain.puml',
             overwrite_expected_output=True,
         )

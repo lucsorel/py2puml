@@ -324,7 +324,7 @@ Please also follow the [contributing guide](CONTRIBUTING.md) to ease your contri
 Set the git hooks (`pre-commit` and `commit-msg` types):
 
 ```sh
-poetry run pre-commit install
+uv run pre-commit install
 ```
 
 #### Run the hooks locally
@@ -333,13 +333,13 @@ Before committing, you can check your changes with:
 
 ```sh
 # all hooks on the staged files
-poetry run pre-commit run
+uv run pre-commit run
 
 # all hooks on all files
-poetry run pre-commit run --all-files
+uv run pre-commit run --all-files
 
 # a specific hook on all files
-poetry run pre-commit run ruff-format --all-files
+uv run pre-commit run ruff-format --all-files
 ```
 
 #### Code formatting
@@ -362,20 +362,20 @@ Add automated tests on your contributions, which can be run with the vollowing c
 
 ```sh
 # directly with poetry
-poetry run pytest -v
+uv run pytest -v
 
 # in a virtual environment
 python3 -m pytest -v
 
 # a specific test suite file or a given test
-poetry run pytest -v tests/py2puml/test_cli_controller.py
-poetry run pytest -v -k test_controller_stdout_and_in_file
+uv run pytest -v tests/py2puml/test_cli_controller.py
+uv run pytest -v -k test_controller_stdout_and_in_file
 ```
 
 Code coverage (with [missed branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
 
 ```sh
-poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 93
+uv run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 93
 ```
 
 ## Current limitations
