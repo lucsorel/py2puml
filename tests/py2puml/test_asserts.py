@@ -1,9 +1,11 @@
 from io import StringIO
 from pathlib import Path
 
-from pytest import raises
+from pytest import raises, warns
 
 from py2puml.asserts import assert_py2puml_command_args, assert_py2puml_ios
+
+from tests import PROJECT_PATH
 
 ACTUAL_CONTENTS = """@startuml contact
 !pragma useIntermediatePackages false
@@ -55,3 +57,23 @@ def test_assert_py2puml_command_args_with_runtime_error():
         str(error.value)
         == "An error occurred when running 'py2puml -p tests/modules/withrootnotincwd -n modules.withrootnotincwd'"
     )
+
+
+def test_assert_py2puml_command_args_warns_on_overwrite_mode_in_stdout():
+    with warns(
+        UserWarning, match=r"assert_py2puml_command_args\(\) is used to overwrite file '.+py2puml\.domain\.puml'"
+    ):
+        assert_py2puml_command_args(
+            '-p py2puml/domain', PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml', overwrite_expected_output=True
+        )
+
+
+def test_assert_py2puml_command_args_warns_on_overwrite_mode_in_file(tmp_path):
+    with warns(
+        UserWarning, match=r"assert_py2puml_command_args\(\) is used to overwrite file '.+py2puml\.domain\.puml'"
+    ):
+        assert_py2puml_command_args(
+            f'-p py2puml/domain -o {tmp_path / "py2puml.domain.puml"}',
+            PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml',
+            overwrite_expected_output=True,
+        )

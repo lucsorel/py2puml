@@ -57,20 +57,21 @@ class InspectorController:
             '--path',
             metavar='path',
             type=Path,
-            help='the filepath to the domain to inspect. Use the current working directory as the root of the domain if unspecified',
+            help='the filepath to the domain to inspect. It can be a package (a folder name) or a module (a .py file).',
             default=None,
         )
         argparser.add_argument(
             '-n',
             '--namespace',
             metavar='namespace',
-            help='the namespace of the domain to inspect. Use the current working directory',
+            help="the namespace of the domain to inspect, in case the command is not launched from the domain's root",
             default=None,
         )
         argparser.add_argument(
             '-o',
-            '--output_file',
+            '--output-file',
             metavar='output_file',
+            dest='output_file',
             type=Path,
             help='outputs the PlantUML contents in a file if defined, or in the standard output otherwise',
             default=None,
@@ -137,7 +138,7 @@ class InspectorController:
         Checks that the path to the domain to inspect matches its namespace.
 
         Raises:
-            ValueError: if there is an inconsistency
+            ValueError: if there is an inconsistency between the path and the namespace
 
         Returns:
             the path difference from the current working directory in which the inspection should start

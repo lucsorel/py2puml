@@ -3,6 +3,7 @@ from itertools import zip_longest
 from pathlib import Path
 from subprocess import PIPE, run
 from sys import stderr
+from warnings import warn
 
 from py2puml.controller import InspectorController
 
@@ -32,7 +33,11 @@ def assert_py2puml_ios(py2puml_contents: StringIO, expected_py2puml_contents: St
 
 
 def assert_py2puml_command_args(
-    command_args: str, expected_output_file_path: Path, current_working_directory: str = None
+    command_args: str,
+    expected_output_file_path: Path,
+    current_working_directory: str = None,
+    *,
+    overwrite_expected_output: bool = False,
 ):
     """
     Runs a py2puml command and compares its output with the contents of the given output file.
@@ -41,6 +46,7 @@ def assert_py2puml_command_args(
         command_args: the command you want to run, without the leading py2puml part
         expected_output_file_path: the path of the expected contents
         current_working_directory: the working directory where this command should be run. Leave to None if the current working directory is fine.
+        overwrite_expected_output: set to true to update the file containing the expected contents
 
     Raises:
         ValueError: on the first line where the contents are different. The error message includes the line index.
@@ -68,15 +74,25 @@ def assert_py2puml_command_args(
     parsed_args = InspectorController()._parse_args(command_args_parts)
 
     # verifies the generated contents, either in the written file or in the captured stdout
+    expected_output_file_open_mode = 'w' if overwrite_expected_output else 'r'
+    overwrite_warning = f"assert_py2puml_command_args() is used to overwrite file '{expected_output_file_path}'"
     if parsed_args.output_file:
         with (
             open(parsed_args.output_file, encoding='utf-8') as output_file,
-            open(expected_output_file_path, encoding='utf-8') as expected_output_file,
+            open(expected_output_file_path, expected_output_file_open_mode, encoding='utf-8') as expected_output_file,
         ):
-            assert_py2puml_ios(output_file, expected_output_file, py2puml_command)
+            if overwrite_expected_output:
+                expected_output_file.writelines(output_file)
+                warn(overwrite_warning, UserWarning, stacklevel=1)
+            else:
+                assert_py2puml_ios(output_file, expected_output_file, py2puml_command)
     else:
         # removes the last return carriage added by the stdout
         output_io = StringIO(cli_process.stdout[:-1])
 
-        with open(expected_output_file_path, encoding='utf-8') as expected_output_file:
-            assert_py2puml_ios(output_io, expected_output_file, py2puml_command)
+        with open(expected_output_file_path, expected_output_file_open_mode, encoding='utf-8') as expected_output_file:
+            if overwrite_expected_output:
+                expected_output_file.writelines(output_io)
+                warn(overwrite_warning, UserWarning, stacklevel=1)
+            else:
+                assert_py2puml_ios(output_io, expected_output_file, py2puml_command)
