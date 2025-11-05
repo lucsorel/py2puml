@@ -1,29 +1,31 @@
-[tool.poetry]
+[project]
 name = "py2puml"
 version = "0.11.0"
 description = "Generate PlantUML class diagrams to document your Python application."
 keywords = ["class diagram", "PlantUML", "documentation", "inspection", "AST"]
 readme = "README.md"
-repository = "https://github.com/lucsorel/py2puml"
-authors = ["Luc Sorel-Giffo"]
-maintainers = ["Luc Sorel-Giffo"]
+authors = [{ name = "Luc Sorel-Giffo" }]
+maintainers = [{ name = "Luc Sorel-Giffo" }]
 license = "MIT"
-include = [
-    "CONTRIBUTING.md"
+requires-python = ">=3.10.9"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/lucsorel/py2puml.git"
+Issues = "https://github.com/lucsorel/py2puml/issues"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "pytest-cov>=4.0.0",
 ]
+lint = ["pre-commit>=4.1.0"]
 
-[tool.poetry.scripts]
-py2puml = 'py2puml.__main__:run'
+[project.scripts]
+py2puml = "py2puml.__main__:run"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.2.1"
-pytest-cov = "^4.0.0"
-
-[tool.poetry.group.lint.dependencies]
-pre-commit = "^3.3.3"
+[tool.uv]
+default-groups = ["dev", "lint"]
 
 [tool.pytest.ini_options]
 console_output_style = "count"
@@ -83,5 +85,15 @@ extend-ignore = ["E501", "B905"]
 forced-separate = ["tests"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.9.7,<0.10.0"]
+build-backend = "uv_build"
+
+# [[tool.uv.index]]
+# name = "pypi"
+# url = "https://pypi.org/simple"
+# publish-url = "https://upload.pypi.org/legacy/"
+
+# [[tool.uv.index]]
+# name = "testpypi"
+# url = "https://test.pypi.org/simple"
+# publish-url = "https://test.pypi.org/legacy/"

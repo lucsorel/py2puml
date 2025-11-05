@@ -5,12 +5,14 @@ from pytest import mark, warns
 
 from py2puml.asserts import assert_py2puml_command_args
 
-from tests import PROJECT_PATH, TEST_MODULES_PATH, __description__, __version__
+from tests import PROJECT_SRC_PATH, TEST_MODULES_PATH, __description__, __version__
 
 
 def test_controller_warns_on_obsolete_positional_args():
-    with warns(DeprecationWarning, match='Use `py2puml --path py2puml/domain --namespace py2puml.domain` instead'):
-        assert_py2puml_command_args('py2puml/domain py2puml.domain', PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml')
+    with warns(DeprecationWarning, match='Use `py2puml --path src/py2puml/domain --namespace py2puml.domain` instead'):
+        assert_py2puml_command_args(
+            'src/py2puml/domain py2puml.domain', PROJECT_SRC_PATH / 'py2puml' / 'py2puml.domain.puml'
+        )
 
 
 @mark.parametrize('to_output_file', [True, False])
@@ -18,9 +20,12 @@ def test_controller_warns_on_obsolete_positional_args():
     ['command_args', 'expected_output_file_path', 'current_working_directory'],
     [
         # ensures that the documentation of the py2puml domain model is up-to-date
-        ('--path py2puml/domain --namespace py2puml.domain', PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml', None),
-        ('-p py2puml/domain -n py2puml.domain', PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml', None),
-        ('-p py2puml/domain', PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml', None),
+        (
+            '--path src/py2puml/domain --namespace py2puml.domain',
+            PROJECT_SRC_PATH / 'py2puml' / 'py2puml.domain.puml',
+            None,
+        ),
+        ('-p src/py2puml/domain -n py2puml.domain', PROJECT_SRC_PATH / 'py2puml' / 'py2puml.domain.puml', None),
         # ensures that __init__.py files are also parsed
         (
             '-p tests/modules/withpkginitonly -n tests.modules.withpkginitonly',
@@ -55,8 +60,8 @@ def test_controller_warns_on_obsolete_positional_args():
         # adapts the inspection directory to the parent py2puml directory
         (
             '--path domain --namespace py2puml.domain',
-            PROJECT_PATH / 'py2puml' / 'py2puml.domain.puml',
-            'py2puml',
+            PROJECT_SRC_PATH / 'py2puml' / 'py2puml.domain.puml',
+            'src/py2puml',
         ),
         ('-p withenum.py -n tests.modules.withenum', TEST_MODULES_PATH / 'withenum.puml', 'tests/modules'),
         # adapts the inspection directory to the nested directory

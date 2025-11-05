@@ -1,4 +1,4 @@
-name: Python package
+name: Lint and test py2puml code
 
 on: [push]
 
@@ -14,26 +14,26 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
+
+      # https://docs.astral.sh/uv/guides/integration/github/
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
 
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version-file: '.python-version'
-
-      - name: Install poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: 1.5.1
 
       - name: Define a cache for the virtual environment based on the dependencies lock file
         uses: actions/cache@v3
         with:
           path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ hashFiles('uv.lock') }}
 
       - name: Install project dependencies
-        run: poetry install --without lint
+        run: uv sync --no-default-groups
 
       - name: Run automated tests (with code coverage)
-        run: poetry run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under $MIN_CODE_COVERAGE_PERCENT
+        run: uv run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under $MIN_CODE_COVERAGE_PERCENT
