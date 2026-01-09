@@ -239,14 +239,14 @@ From a given path corresponding to a folder containing Python code, `py2puml` in
   * static class attributes and [dataclass](https://docs.python.org/3/library/dataclasses.html) fields
   * fields of [namedtuples](https://docs.python.org/3/library/collections.html#collections.namedtuple)
   * members of [enumerations](https://docs.python.org/3/library/enum.html)
-  * composition and inheritance relationships (between your domain classes only, for documentation sake).
+  * composition and inheritance relationships.
 The detection of composition relationships relies on type annotations only, assigned values or expressions are never evaluated to prevent unwanted side-effects
 
 * parsing **[abstract syntax trees](https://docs.python.org/3/library/ast.html#ast.NodeVisitor)** to detect the instance attributes defined in `__init__` constructors
 
 `py2puml` outputs diagrams in PlantUML syntax, which can be:
-* versioned along your code with a unit-test ensuring its consistency (see the [test_py2puml.py's test_py2puml_with_py2uml_domain](tests/py2puml/test_py2puml.py) example).
-You can also use the assert_py2puml_command_args utility from [py2puml.asserts](py2puml/asserts.py) to check the output of a `py2puml` command against a versioned file (that you can easily update):
+* versioned along your code with a unit-test ensuring its consistency (see the [test_py2puml.py's test_assert_domain_documentation](tests/py2puml/test_py2puml.py) example).
+You can also use the `assert_py2puml_command_args` utility from [py2puml.asserts](py2puml/asserts.py) to check the output of a `py2puml` command against a versioned file (that you can easily update):
 
 ```python
 from py2puml.asserts import assert_py2puml_command_args
@@ -375,7 +375,7 @@ uv run pytest -v -k test_controller_stdout_and_in_file
 Code coverage (with [missed branch statements](https://pytest-cov.readthedocs.io/en/latest/config.html?highlight=--cov-branch)):
 
 ```sh
-uv run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under 93
+uv run pytest -v --cov=src/py2puml --cov-branch --cov-report term-missing --cov-fail-under 93
 ```
 
 ## Current limitations

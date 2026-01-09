@@ -36,4 +36,4 @@ jobs:
         run: uv sync --no-default-groups
 
       - name: Run automated tests (with code coverage)
-        run: uv run pytest -v --cov=py2puml --cov-branch --cov-report term-missing --cov-fail-under $MIN_CODE_COVERAGE_PERCENT
+        run: uv run pytest -v --cov=src/py2puml --cov-branch --cov-report term-missing --cov-fail-under $MIN_CODE_COVERAGE_PERCENT

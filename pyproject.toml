@@ -29,6 +29,13 @@ default-groups = ["dev", "lint"]
 
 [tool.pytest.ini_options]
 console_output_style = "count"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+# Functional tests use src/py2puml/asserts.py::assert_py2puml_command_args(), which runs py2puml in subprocesses
+# set patch to subprocess to include the calls in the coverage
+# see https://coverage.readthedocs.io/en/latest/config.html#config-run-patch
+patch = ["subprocess"]
 
 [tool.isort]
 py_version=310
