@@ -40,7 +40,7 @@ def assert_py2puml_command_args(
     overwrite_expected_output: bool = False,
 ):
     """
-    Runs a py2puml command and compares its output with the contents of the given output file.
+    Runs a py2puml command in a subprocess and compares its output with the contents of the given output file.
 
     Args:
         command_args: the command you want to run, without the leading py2puml part
