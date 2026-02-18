@@ -19,7 +19,7 @@ dev = [
     "pytest>=8.3.4",
     "pytest-cov>=4.0.0",
 ]
-lint = ["pre-commit>=4.1.0"]
+lint = ["pre-commit>=4.5.1"]
 package = [
     "python-semantic-release>=10.5.3",
 ]
