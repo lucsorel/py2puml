@@ -2,6 +2,38 @@
 
 <!-- version list -->
 
+## v0.11.0 (2026-02-18)
+
+### Build System
+
+- Update poetry lockfile
+  ([`fd79941`](https://github.com/lucsorel/py2puml/commit/fd79941f4adce3e494cc4375da5d056a3b451c2d))
+
+- Upgrade pre-commit version to cascade-upgrade virtualenv, which had a CVE
+  ([`c5ed022`](https://github.com/lucsorel/py2puml/commit/c5ed0223098e88ec13c5638d7a83f878572bbac9))
+
+### Documentation
+
+- **readme**: Rework the docs
+  ([`90c8612`](https://github.com/lucsorel/py2puml/commit/90c8612c308ce00ca03ed2c7d1719bc7635d1b04))
+
+### Features
+
+- Handle src in working directory
+  ([`b1d58f1`](https://github.com/lucsorel/py2puml/commit/b1d58f1ff3b02dbdff0efbc9ede706dee996df2c))
+
+- **controller**: Handle old cli arguments in the controller
+  ([`e6f8dea`](https://github.com/lucsorel/py2puml/commit/e6f8deac24d1b500351eab3474df0bb4f92e8f39))
+
+- **controller, inspector**: New args parser to support optional inspection path and namespace,
+  output to file
+  ([`ef702e7`](https://github.com/lucsorel/py2puml/commit/ef702e7b2770da75a4325636c47e42983c326c19))
+
+- **inspection**: Adjust the inspection working directory to allow using the CLI from a parent or a
+  child folder of the namespace root
+  ([`9ee9f92`](https://github.com/lucsorel/py2puml/commit/9ee9f926062978f21215cad755ef966a7e3fb988))
+
+
 ## v0.10.0 (2025-03-27)
 
 ### Documentation
