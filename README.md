@@ -265,28 +265,7 @@ a webpack loader which converts PlantUML files into images during the webpack pr
 
 ## Changelog and versions
 
-* `0.11.0`: new CLI API with `-p` and `-n` flags, support parsing a specific module, the `py2puml` CLI can be called outside of the project namespace, use `uv` tooling instead of `poetry`
-* `0.10.0`: support ellipsis in type annotations (tuple with arbitrary length)
-* `0.9.1`: improved 0.7.2 by adding the current working directory at the beginning of the sys.path to resolve the module paths of the project being inspected.
-Fix url to PlantUML logo on the README.md page
-* `0.9.0`: add classes defined in `__init__.py` files to plantuml output; replaced yapf by the ruff formatter
-* `0.8.1`: delegated the grouping of nested namespaces (see `0.7.0`) to the PlantUML binary, which handles it natively
-* `0.8.0`: added support for union types, and github actions (pre-commit hooks + automated tests)
-* `0.7.2`: added the current working directory to the import path to make `py2puml` work in any directory or in native virtual environment (not handled by `poetry`)
-* `0.7.1`: removed obsolete part of documentation: deeply compound types are now well handled (by version `0.7.0`)
-* `0.7.0`: improved the generated PlantUML documentation (added the namespace structure of the code base, homogenized type  between inspection and parsing), improved relationships management (handle forward references, deduplicate relationships)
-* `0.6.1`: handle class names with digits
-* `0.6.0`: handle abstract classes
-* `0.5.4`: fixed the packaging so that the contribution guide is included in the published package
-* `0.5.3`: handle constructors decorated by wrapping decorators (decorators making uses of `functools.wrap`)
-* `0.5.2`: specify in `pyproject.toml` that `py2puml` requires python 3.8+ (`ast.get_source_segment` was introduced in 3.8)
-* `0.5.1`: prevent from parsing inherited constructors
-* `0.5.0`: handle instance attributes in class constructors, add code coverage of unit tests
-* `0.4.0`: add a simple CLI
-* `0.3.1`: inspect sub-folders recursively
-* `0.3.0`: handle classes derived from namedtuples (attribute types are `Any`)
-* `0.2.0`: handle inheritance relationships and enums
-* `0.1.3`: first release, handle all modules of a folder and compositions of domain classes
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## Licence
 

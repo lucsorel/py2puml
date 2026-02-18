@@ -3,9 +3,10 @@ from subprocess import PIPE, run
 
 from pytest import mark, warns
 
+from py2puml import __version__
 from py2puml.asserts import assert_py2puml_command_args
 
-from tests import PROJECT_SRC_PATH, TEST_MODULES_PATH, __description__, __version__
+from tests import PROJECT_SRC_PATH, TEST_MODULES_PATH, __description__
 
 
 def test_controller_warns_on_obsolete_positional_args():

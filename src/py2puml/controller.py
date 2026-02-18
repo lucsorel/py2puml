@@ -18,6 +18,7 @@ from sys import stdout
 from typing import Generator, Protocol, Sequence, TextIO
 from warnings import warn
 
+from py2puml import __version__
 from py2puml.domain.inspection import Inspection
 from py2puml.inspector import Inspector
 
@@ -32,7 +33,7 @@ class InspectorController:
     def _parse_args(self, args: Sequence[str] = None) -> InspectorArgs:
         argparser = ArgumentParser(description='Generate PlantUML class diagrams to document your Python application.')
 
-        argparser.add_argument('-v', '--version', action='version', version='py2puml 0.11.0')
+        argparser.add_argument('-v', '--version', action='version', version=f'py2puml {__version__}')
 
         # deprecated positional arguments
         argparser.add_argument(

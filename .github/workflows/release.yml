@@ -1,0 +1,138 @@
+name: release
+
+on:
+  workflow_run:
+    branches: [main]
+    workflows: ["code-quality"]
+    types:
+      - completed
+
+# default: least privileged permissions across all jobs
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-package-${{ github.ref_name }}
+      cancel-in-progress: false
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Project checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Setup | Force correct release branch on workflow sha
+        run: git checkout -B ${{ github.ref_name }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install Python semantic release only
+        run: uv sync --frozen --no-default-groups --group package
+
+      - name: Compute new version only (can modify the pyproject.toml)
+        id: version
+        env:
+          GH_TOKEN: "none"
+        run: uv run semantic-release -c releaserc.toml -v version --skip-build --no-commit --no-tag --no-changelog
+
+    outputs:
+      new-release-detected: ${{ steps.version.outputs.released }}
+      new-release-version: ${{ steps.version.outputs.version }}
+      new-release-tag: ${{ steps.version.outputs.tag }}
+      new-release-is-prerelease: ${{ steps.version.outputs.is_prerelease }}
+
+  release:
+    needs:
+      - package
+    if: ${{ needs.package.outputs.new-release-detected == 'true' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-release-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - name: Project checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Setup | Force correct release branch on workflow sha
+        run: git checkout -B ${{ github.ref_name }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install Python semantic release only
+        run: uv sync --frozen --no-default-groups --group package
+
+      - name: Create Release and publish the version tag and commit to Github
+        id: release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          uv run semantic-release -c releaserc.toml -v --strict version
+          uv lock --upgrade-package py2puml
+          git add pyproject.toml uv.lock
+          uv build
+          uv run semantic-release -c releaserc.toml publish
+
+      - name: Upload project distribution artifacts
+        if: ${{ steps.release.outputs.released == 'true' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: distribution-artifacts
+          path: dist
+          if-no-files-found: error
+          retention-days: 2
+
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      new-release-version: ${{ steps.release.outputs.version }}
+      new-release-tag: ${{ steps.release.outputs.tag }}
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: ${{ needs.release.outputs.released == 'true' && github.repository == 'lucsorel/py2puml' }}
+    concurrency:
+      group: ${{ github.workflow }}-deploy-${{ github.ref_name }}
+      cancel-in-progress: false
+    needs:
+      - package
+      - release
+
+    environment:
+      name: pypi
+      url: https://pypi.org/project/py2puml/
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        id: artifact-download
+        with:
+          name: distribution-artifacts
+          path: dist
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          print-hash: true
+          verbose: true

@@ -1,6 +1,6 @@
 [project]
 name = "py2puml"
-version = "0.11.0"
+version = "0.10.0"
 description = "Generate PlantUML class diagrams to document your Python application."
 keywords = ["class diagram", "PlantUML", "documentation", "inspection", "AST"]
 readme = "README.md"
@@ -20,6 +20,9 @@ dev = [
     "pytest-cov>=4.0.0",
 ]
 lint = ["pre-commit>=4.1.0"]
+package = [
+    "python-semantic-release>=10.5.3",
+]
 
 [project.scripts]
 py2puml = "py2puml.__main__:run"
