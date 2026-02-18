@@ -1,35 +1,47 @@
-[tool.poetry]
+[project]
 name = "py2puml"
 version = "0.10.0"
 description = "Generate PlantUML class diagrams to document your Python application."
 keywords = ["class diagram", "PlantUML", "documentation", "inspection", "AST"]
 readme = "README.md"
-repository = "https://github.com/lucsorel/py2puml"
-authors = ["Luc Sorel-Giffo"]
-maintainers = ["Luc Sorel-Giffo"]
+authors = [{ name = "Luc Sorel-Giffo" }]
+maintainers = [{ name = "Luc Sorel-Giffo" }]
 license = "MIT"
-include = [
-    "CONTRIBUTING.md"
+requires-python = ">=3.10.9"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/lucsorel/py2puml.git"
+Issues = "https://github.com/lucsorel/py2puml/issues"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "pytest-cov>=4.0.0",
+]
+lint = ["pre-commit>=4.5.1"]
+package = [
+    "python-semantic-release>=10.5.3",
 ]
 
-[tool.poetry.scripts]
-py2puml = 'py2puml.cli:run'
+[project.scripts]
+py2puml = "py2puml.__main__:run"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.2.1"
-pytest-cov = "^4.0.0"
-
-[tool.poetry.group.lint.dependencies]
-pre-commit = "^3.3.3"
+[tool.uv]
+default-groups = ["dev", "lint"]
 
 [tool.pytest.ini_options]
 console_output_style = "count"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+# Functional tests use src/py2puml/asserts.py::assert_py2puml_command_args(), which runs py2puml in subprocesses
+# set patch to subprocess to include the calls in the coverage
+# see https://coverage.readthedocs.io/en/latest/config.html#config-run-patch
+patch = ["subprocess"]
 
 [tool.isort]
-py_version=38
+py_version=310
 # maintain consistency with other quality tools
 line_length = 120
 # consistency with ruff-format: mode 3
@@ -47,19 +59,26 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER", "TEST
 known_tests = ["tests"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 # maintain consistency with other quality tools
 line-length = 120
+# automatically fixes when possible
+fix = true
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "lf"
+quote-style = "single"
+
+[tool.ruff.lint]
 # activated families of verifications (https://beta.ruff.rs/docs/rules/
 select = ["B", "E", "F", "W", "N", "SIM", "C4"]
 # do not check:
 # - E501 line lengths: ruff formatter already handles them
 # - B905 zip(*, strict=True): strict was introduced in Python 3.10+
 extend-ignore = ["E501", "B905"]
-# automatically fixes when possible
-fix = true
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # do not check unused imports in __init__.py files (they expose module features)
 "__init__.py" = ["E402"]
 # visiting function names include uppercase words (visit_FunctionDef)
@@ -72,14 +91,9 @@ fix = true
 # test classes with underscore in their names
 "tests/modules/withuniontypes.py" = ['N801']
 
-[tool.ruff.format]
-indent-style = "space"
-line-ending = "lf"
-quote-style = "single"
-
 [tool.ruff.lint.isort]
 forced-separate = ["tests"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.9.7,<0.10.0"]
+build-backend = "uv_build"

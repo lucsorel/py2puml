@@ -1,3 +1,5 @@
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -22,7 +24,7 @@ repos:
     hooks:
     -   id: commitlint
         stages: [commit-msg]
-        additional_dependencies: ['@commitlint/config-angular']
+        additional_dependencies: ['@commitlint/config-conventional']
 
 -   repo: https://github.com/PyCQA/isort
     rev: 7.0.0
@@ -33,5 +35,6 @@ repos:
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.1
     hooks:
-    -   id: ruff
+    -   id: ruff-check
+        args: [--fix]
     -   id: ruff-format

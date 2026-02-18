@@ -1,0 +1,44 @@
+name: code-quality
+
+on: [push]
+
+concurrency:
+  group: ${{ github.workflow }}-code-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MIN_CODE_COVERAGE_PERCENT: 93
+  # prevents uv from updating the uv.lock lockfile
+  # (https://docs.astral.sh/uv/reference/environment/#uv_frozen)
+  UV_FROZEN: 1
+
+jobs:
+  code-quality:
+    permissions:
+      actions: read
+      contents: read
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      # https://docs.astral.sh/uv/guides/integration/github/
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Define a cache for the virtual environment based on the dependencies lock file
+        uses: actions/cache@v4
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('uv.lock') }}
+
+      - name: Install project dependencies
+        run: uv sync --no-default-groups --group dev
+
+      - name: Run automated tests (with code coverage)
+        run: uv run pytest -v --cov=src/py2puml --cov-branch --cov-report term-missing --cov-fail-under $MIN_CODE_COVERAGE_PERCENT
