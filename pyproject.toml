@@ -97,13 +97,3 @@ forced-separate = ["tests"]
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]
 build-backend = "uv_build"
-
-# [[tool.uv.index]]
-# name = "pypi"
-# url = "https://pypi.org/simple"
-# publish-url = "https://upload.pypi.org/legacy/"
-
-# [[tool.uv.index]]
-# name = "testpypi"
-# url = "https://test.pypi.org/simple"
-# publish-url = "https://test.pypi.org/legacy/"

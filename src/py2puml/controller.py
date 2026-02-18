@@ -1,15 +1,3 @@
-"""
-cases
-- domain path does not exist -> error
-- domain path is None -> domain path is the current working directory
-- domain path is a folder / package -> inspect package (recursive)
-  - if domain namespace is None
-    - domain namespace is the diff between current working directory and domain path
-- domain path is a file / module -> inspect module
-- if domain namespace is None
-  - domain namespace is the diff between current working directory and domain path
-"""
-
 from argparse import ArgumentParser
 from contextlib import contextmanager
 from itertools import zip_longest

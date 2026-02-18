@@ -262,7 +262,6 @@ def test_assert_domain_documentation():
 If you like tools related with PlantUML, you may also be interested in this [lucsorel/plantuml-file-loader](https://github.com/lucsorel/plantuml-file-loader) project:
 a webpack loader which converts PlantUML files into images during the webpack processing (useful to [include PlantUML diagrams in your slides](https://github.com/lucsorel/markdown-image-loader/blob/master/README.md#web-based-slideshows) with RevealJS or RemarkJS).
 
-
 ## Changelog and versions
 
 See [CHANGELOG.md](CHANGELOG.md).
