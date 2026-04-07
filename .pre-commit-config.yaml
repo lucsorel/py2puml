@@ -33,7 +33,7 @@ repos:
         additional_dependencies: [toml]
 
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.8
+    rev: v0.15.9
     hooks:
     -   id: ruff-check
         args: [--fix]
