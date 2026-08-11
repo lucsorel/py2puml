@@ -27,13 +27,13 @@ repos:
         additional_dependencies: ['@commitlint/config-conventional']
 
 -   repo: https://github.com/PyCQA/isort
-    rev: 9.0.0b1
+    rev: 9.0.0b2
     hooks:
     -   id: isort
         additional_dependencies: [toml]
 
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.1
+    rev: v0.16.2
     hooks:
     -   id: ruff-check
         args: [--fix]
