@@ -251,10 +251,13 @@ You can also use the `assert_py2puml_command_args` utility from [py2puml.asserts
 ```python
 from py2puml.asserts import assert_py2puml_command_args
 
+
 def test_assert_domain_documentation():
     assert_py2puml_command_args('-p py2puml/domain', DOCUMENTATION_PATH / 'py2puml.domain.puml')
     # temporarily add the `overwrite_expected_output=True` argument to update the file containing the expected contents
-    assert_py2puml_command_args('-p py2puml/domain', DOCUMENTATION_PATH / 'py2puml.domain.puml', overwrite_expected_output=True)
+    assert_py2puml_command_args(
+        '-p py2puml/domain', DOCUMENTATION_PATH / 'py2puml.domain.puml', overwrite_expected_output=True
+    )
 ```
 
 * generated and hosted along other code documentation (better option: generated documentation should not be versioned with the codebase)
