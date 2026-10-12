@@ -101,9 +101,10 @@ Use **type annotations** in function signatures and for variables receiving the 
 When manipulating **literal strings**:
 
 ```python
-'favor single quote delimiters'
+"favor single quote delimiters"
+
 "use double quote delimiters if the text contains some 'single quotes'"
-'''use triple quote delimiters if the text contains both "double" and 'single' quote delimiters'''
+"""use triple quote delimiters if the text contains both "double" and 'single' quote delimiters"""
 
 python_version = '3.8+'
 f'use f-strings to format strings, py2puml use Python {python_version}'
