@@ -29,10 +29,10 @@ jobs:
       - name: Setup | Force correct release branch on workflow sha
         run: git checkout -B ${{ github.ref_name }}
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - name: proto and moon setup
+        uses: moonrepo/setup-toolchain@v0.6.4
         with:
-          enable-cache: true
+          auto-install: true
 
       - name: Install Python semantic release only
         run: uv sync --frozen --no-default-groups --group package
@@ -69,10 +69,10 @@ jobs:
       - name: Setup | Force correct release branch on workflow sha
         run: git checkout -B ${{ github.ref_name }}
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - name: proto and moon setup
+        uses: moonrepo/setup-toolchain@v0.6.4
         with:
-          enable-cache: true
+          auto-install: true
 
       - name: Install Python semantic release only
         run: uv sync --frozen --no-default-groups --group package

@@ -1,7 +1,4 @@
 uv='latest'
 
-[tools.python]
-backend = "uv"
-
 [settings]
 auto-install = true
